@@ -1,0 +1,19 @@
+{
+  "description": "Eingefrorene Leipziger Vergleichsauswertung vor dem portablen RDL-Collector",
+  "period_start": "2025-08-01",
+  "period_end": "2026-07-31",
+  "machines": [
+    "TB1_4632",
+    "TB2_5362",
+    "HAL1_2239",
+    "HAL2_2340"
+  ],
+  "sessions": 39414,
+  "unique_patients": 2152,
+  "active_calendar_days": 259,
+  "active_saturdays": 11,
+  "active_device_days": 1032,
+  "gross_device_hours": 9930.783333333333,
+  "net_proxy_hours": 8573.8315,
+  "legacy_device_day_filter": "HAVING COUNT(DISTINCT DimPatientID) >= 5"
+}

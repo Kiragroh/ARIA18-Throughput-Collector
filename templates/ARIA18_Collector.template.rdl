@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report MustUnderstand="df" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:df="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition/defaultfontfamily">
+  <Description>Klinikneutraler ARIA-18-Collector fuer Durchsatz- und Klinikvergleiche.</Description>
+  <df:DefaultFontFamily>Segoe UI</df:DefaultFontFamily>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DataSource1">
+      <DataSourceReference>/VarianTemplate/Data Sources/variandw</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>6a650bc3-bb2e-44a4-a993-ffea62af1b18</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+{{DATASETS}}
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+{{REPORT_ITEMS}}
+        </ReportItems>
+        <Height>{{BODY_HEIGHT}}mm</Height>
+        <Style />
+      </Body>
+      <Width>400mm</Width>
+      <Page>
+        <PageHeader>
+          <Height>8mm</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+{{PAGE_HEADER}}
+          </ReportItems>
+          <Style />
+        </PageHeader>
+        <PageFooter>
+          <Height>8mm</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+{{PAGE_FOOTER}}
+          </ReportItems>
+          <Style />
+        </PageFooter>
+        <PageHeight>297mm</PageHeight>
+        <PageWidth>420mm</PageWidth>
+        <LeftMargin>10mm</LeftMargin>
+        <RightMargin>10mm</RightMargin>
+        <TopMargin>10mm</TopMargin>
+        <BottomMargin>10mm</BottomMargin>
+        <ColumnSpacing>0mm</ColumnSpacing>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+{{REPORT_PARAMETERS}}
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>4</NumberOfColumns>
+      <NumberOfRows>3</NumberOfRows>
+      <CellDefinitions>
+{{PARAMETER_LAYOUT}}
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>de-DE</Language>
+  <rd:ReportUnitType>Mm</rd:ReportUnitType>
+  <rd:ReportID>fbc7de2f-80a7-4b66-bbe4-5135857e6ac7</rd:ReportID>
+  <CustomProperties>
+    <CustomProperty><Name>ProductVersion</Name><Value>Aura 2.0</Value></CustomProperty>
+    <CustomProperty><Name>ReportLanguage</Name><Value>DEU</Value></CustomProperty>
+    <CustomProperty><Name>ReportName</Name><Value>ARIA18_Durchsatz_Klinikvergleich_Collector</Value></CustomProperty>
+    <CustomProperty><Name>CategoryName</Name><Value>Datenbank-Service</Value></CustomProperty>
+    <CustomProperty><Name>IsRealTime</Name><Value>false</Value></CustomProperty>
+    <CustomProperty><Name>IsActive</Name><Value>true</Value></CustomProperty>
+    <CustomProperty><Name>IsTemplate</Name><Value>false</Value></CustomProperty>
+  </CustomProperties>
+</Report>

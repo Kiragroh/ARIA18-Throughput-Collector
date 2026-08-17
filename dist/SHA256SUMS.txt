@@ -1,0 +1,2 @@
+0b1a731e86e8b04fce8ea10070221c41b5e4bf97dbdd65a9771b018dac48b77e  ARIA18_Durchsatz_Klinikvergleich_Collector.rdl
+a959e18a3b7a0ee9326fbf0332c0f4d2b3513263133fc4b244877fb00ccc1d0e  ARIA18_Throughput_Collector_1.0.0.zip

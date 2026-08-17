@@ -1,0 +1,42 @@
+{
+  "description": "Read-only SQL-Lauf des portablen ARIA-18-Collectors gegen die Leipziger Produktiv-DWH",
+  "collected_on": "2026-08-17",
+  "method_version": "ARIA18-THROUGHPUT-1.0",
+  "period_start": "2025-08-01",
+  "period_end": "2026-07-31",
+  "machines": [
+    "TB1_4632",
+    "TB2_5362",
+    "HAL1_2239",
+    "HAL2_2340"
+  ],
+  "sessions": 39422,
+  "unique_patients": 2154,
+  "active_calendar_days": 261,
+  "active_saturdays": 12,
+  "active_device_days": 1035,
+  "gross_device_hours": 9936.78,
+  "net_proxy_hours": 8574.87,
+  "gap_minutes_ge30": 81723.63,
+  "collector_device_day_filter": "alle Behandlungstage der ausgewaehlten Geraete",
+  "legacy_excluded_device_days": [
+    {
+      "service_date": "2025-12-01",
+      "machine": "HAL2_2340",
+      "sessions": 2,
+      "patients": 2
+    },
+    {
+      "service_date": "2025-12-28",
+      "machine": "HAL1_2239",
+      "sessions": 1,
+      "patients": 1
+    },
+    {
+      "service_date": "2026-01-10",
+      "machine": "HAL2_2340",
+      "sessions": 5,
+      "patients": 3
+    }
+  ]
+}
