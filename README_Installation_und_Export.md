@@ -22,6 +22,8 @@
 - `Mindestgruppengröße`: Standard 5; schützt kleine klinische Fallmix-Gruppen. Gesamtzahlen und Gerätetage werden dadurch nicht entfernt.
 - `Pseudonymisierte Detailblätter`: nur einschalten, wenn die empfangende Stelle diese kontrollierten Forschungsdaten benötigt.
 
+Für die Analyse von Anmeldung, Pending/In Progress, Abschluss, erster Bildgebung und erstem Beam müssen die pseudonymisierten Detailblätter aktiviert sein. Das Blatt `08_Glossary` wird immer exportiert und erklärt Definition, Einheit, Quelle und Interpretation der wichtigsten Felder.
+
 ## Export
 
 Im Webportal kann der Bericht normal als Excel exportiert werden. Per HTTP funktioniert derselbe Weg wie bei anderen ARIA-Berichten:
@@ -52,8 +54,20 @@ Für den Klinikvergleich reicht die erzeugte `.xlsx`. Die RDL muss nicht dauerha
 - `00_Coverage` zeigt den erwarteten ersten und letzten Behandlungstag.
 - `07_DataQuality` enthält keine unerklärten großen Ausschlüsse.
 - Detailblätter `90_...` und `91_...` sind nur enthalten, wenn sie bewusst aktiviert wurden.
+- `08_Glossary` ist vorhanden und die Zeitfelder werden nicht mit Beam-on gleichgesetzt.
 - Die SHA-256-Prüfsumme der RDL stimmt mit `dist/SHA256SUMS.txt` überein.
 
 ## Lokale Besonderheiten
 
 Der Collector enthält zwei bekannte ARIA-18-Ressourcenpfade: `InSightiveResourceMachine` sowie `vv_ResourceInfo`/`ctrResourceSer`. Welche Variante verfügbar ist, wird im Blatt `00_Coverage` dokumentiert. Falls beide fehlen, bleibt die Slotauswertung leer und `07_DataQuality` weist darauf hin; die Behandlungsdaten können dennoch exportiert werden.
+
+## Einzelstandort-Auswertung
+
+Das mitgelieferte Python-Skript liest die SSRS-Excelstruktur direkt ein und erzeugt aggregierte Tabellen zu Standort, Geräten, Monatsverlauf, Slotnutzung, Wartezeiten und Datenqualität. Installation:
+
+```powershell
+py -3 -m pip install -r requirements-analysis.txt
+py -3 tools/analyze_single_site.py "Collector-Export.xlsx" --output-dir analysis_output
+```
+
+Die automatische Wartezeit nutzt nur Ankunftszeiten zwischen 0 und 360 Minuten vor dem klinischen Start. Spätere oder weiter zurückliegende Rohzeitpunkte bleiben im Collector erhalten und werden über `arrival_timing_quality` als Qualitätsfall gekennzeichnet.

@@ -27,6 +27,14 @@ SELECT
     s.session_start,
     s.session_end,
     CAST(s.actual_minutes AS decimal(10,2)) AS actual_minutes,
+    s.first_imaging_timestamp,
+    s.first_beam_timestamp,
+    s.clinical_start_timestamp,
+    CAST(s.imaging_to_beam_minutes AS decimal(10,2)) AS imaging_to_beam_minutes,
+    CAST(s.clinical_span_minutes AS decimal(10,2)) AS clinical_span_minutes,
+    s.image_record_count,
+    s.image_field_count,
+    s.imaging_after_beam_flag,
     s.field_count
 FROM session_metrics s
 LEFT JOIN primary_diagnosis p ON p.DimCourseID = s.DimCourseID AND p.diagnosis_rank = 1

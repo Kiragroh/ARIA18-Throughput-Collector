@@ -16,12 +16,12 @@ REQUIRED_PARAMETERS = {
 REQUIRED_DATASETS = {
     "Capabilities", "MachineCatalog", "SiteSummary", "MachineMonth",
     "DeviceDay", "SlotSummary", "CaseMix", "Imaging", "DataQuality",
-    "SessionDetails", "AppointmentDetails",
+    "Glossary", "SessionDetails", "AppointmentDetails",
 }
 REQUIRED_PAGE_MARKERS = {
     "00_Coverage", "01_SiteSummary", "02_MachineMonth", "03_DeviceDay",
     "04_SlotSummary", "05_CaseMix", "06_Imaging", "07_DataQuality",
-    "90_Sessions", "91_Appointments",
+    "08_Glossary", "90_Sessions", "91_Appointments",
 }
 FORBIDDEN = {
     "medizin.uni-leipzig.de", "10.23.", "s050", "Linac1_", "TB1_",

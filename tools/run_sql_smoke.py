@@ -22,6 +22,7 @@ DATASETS = {
     "CaseMix": "06_case_mix.sql",
     "Imaging": "07_imaging.sql",
     "DataQuality": "08_data_quality.sql",
+    "Glossary": "11_glossary.sql",
     "SessionDetails": "09_session_details.sql",
     "AppointmentDetails": "10_appointment_details.sql",
 }
@@ -74,7 +75,7 @@ def main() -> int:
     start_text = os.environ.get("ARIA_SMOKE_START")
     start = date.fromisoformat(start_text) if start_text else end.replace(day=1)
     common = {
-        "MethodVersion": sql_string("ARIA18-THROUGHPUT-1.0"),
+        "MethodVersion": sql_string("ARIA18-THROUGHPUT-1.1"),
         "RunId": sql_string("SQL-SMOKE"),
         "SiteLabel": sql_string(os.environ.get("ARIA_SMOKE_SITE", "Lokaler Smoke-Test")),
         "PeriodStart": sql_string(start.isoformat()),

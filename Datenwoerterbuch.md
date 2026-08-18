@@ -38,13 +38,17 @@ Anzahl dokumentierter Bildaufnahmen nach Monat, Gerät und Bildgebungstyp. `capa
 
 Qualitätsprotokoll mit Rohzeilen, ausgeschlossenen Bildfeldern, Brachytherapie- und Testpatientenzeilen sowie fehlenden Geräte- oder Fraktionsangaben. Dieses Blatt muss bei jedem Standort mit ausgewertet werden.
 
+### 08_Glossary
+
+Maschinenlesbares Glossar im Excel-Export. Es enthält Feldname, deutsche Bezeichnung, Definition, Einheit, DWH-Quelle und Interpretationshinweis. Damit bleibt die Methodik auch erhalten, wenn einzelne Blätter separat weitergegeben werden.
+
 ### 90_Sessions_JAHR
 
-Optionales, jahresweise geteiltes Sitzungsdetailblatt. Enthält nur gesalzene SHA-256-Schlüssel und fachliche Messwerte wie Datum, Gerät, Fraktion, Technik, Start/Ende, Dauer und Feldzahl. Es enthält keine Original-ID und keinen Freitext.
+Optionales, jahresweise geteiltes Sitzungsdetailblatt. Enthält nur gesalzene SHA-256-Schlüssel und fachliche Messwerte wie Datum, Gerät, Fraktion, Technik, erster Imaging-Zeitpunkt, erster Beam-Zeitpunkt, klinischer Start-Proxy, Ende, Dauer und Feldzahl. Es enthält keine Original-ID und keinen Freitext.
 
 ### 91_Appointments_JAHR
 
-Optionales, jahresweise geteiltes Termindetailblatt. Enthält pseudonymisierte Patienten-, Termin- und Matchschlüssel sowie Datum, Gerät, Slotzeiten, Aktivitätsklassifikation und zugeordnete Behandlungsdauer.
+Optionales, jahresweise geteiltes Termindetailblatt. Enthält pseudonymisierte Patienten-, Termin- und Matchschlüssel sowie Datum, Gerät, Slotzeiten, Aktivitätsklassifikation, Anmeldung, Pending/In Progress, Abschluss, erste Bildgebung, ersten Beam und abgeleitete Zeitdifferenzen.
 
 ## Zentrale Definitionen
 
@@ -53,4 +57,9 @@ Optionales, jahresweise geteiltes Termindetailblatt. Enthält pseudonymisierte P
 - `Netto-Proxy-Stunden`: Brutto-Gerätestunden minus Lücken von mindestens 30 Minuten.
 - `Sitzungstakt`: Abstand vom Start einer Sitzung bis zum Start der nächsten Sitzung am selben Gerätetag.
 - `Tatsächliche Dauer`: dokumentiertes Ende minus Start der Sitzung.
+- `Klinischer Sitzungsstart`: erste dokumentierte Bildgebung vor dem Beam; wenn keine solche Bildgebung vorliegt, erster Beam.
+- `Patientenanmeldung`: `PatientArrivalDateTime`, ersatzweise der Ankunftszeitpunkt aus der Termin-Historie.
+- `Pending/In Progress`: erster historischer Statuswechsel, der das Laden beziehungsweise Starten des Patientenworkflows markiert. Die lokale ARIA-Bezeichnung kann abweichen.
+- `Terminabschluss`: erster historischer Wechsel auf `Completed` oder `Manually Completed`; nicht identisch mit Beam-Ende.
+- `Plausible Wartezeit`: Anmeldung liegt zwischen 0 und 360 Minuten vor dem klinischen Sitzungsstart. Rohzeitpunkte außerhalb dieses Fensters bleiben exportiert, gehen aber nicht automatisch in die Wartezeit ein.
 - `Aktiver Samstag`: Samstag mit mindestens einer eingeschlossenen Behandlungssitzung.

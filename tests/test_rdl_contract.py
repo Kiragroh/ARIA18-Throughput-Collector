@@ -44,6 +44,7 @@ def test_generated_rdl_contract():
         "CaseMix",
         "Imaging",
         "DataQuality",
+        "Glossary",
         "SessionDetails",
         "AppointmentDetails",
     } <= datasets
@@ -66,6 +67,7 @@ def test_export_page_names_are_stable():
         "05_CaseMix",
         "06_Imaging",
         "07_DataQuality",
+        "08_Glossary",
         "90_Sessions",
         "91_Appointments",
     }

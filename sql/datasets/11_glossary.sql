@@ -1,0 +1,35 @@
+SELECT
+    @MethodVersion AS MethodVersion,
+    @RunId AS RunId,
+    @SiteLabel AS SiteLabel,
+    N'Glossary' AS RecordType,
+    v.field_name,
+    v.german_label,
+    v.definition,
+    v.unit,
+    v.source,
+    v.interpretation
+FROM (VALUES
+    (N'patient_arrival_timestamp', N'Patientenanmeldung', N'Zeitpunkt der dokumentierten Ankunft oder Anmeldung des Patienten.', N'Zeitstempel', N'DimActivityTransaction.PatientArrivalDateTime; ersatzweise Historie', N'Kann bei Standorten ohne Check-in-Workflow fehlen.'),
+    (N'pending_or_in_progress_timestamp', N'Patient geladen', N'Erster historischer Statuswechsel auf Pending oder In Progress.', N'Zeitstempel', N'DimActivityTransactionHistory', N'Die lokale Bezeichnung kann Pending oder In Progress lauten.'),
+    (N'completed_timestamp', N'Termin abgeschlossen', N'Erster historischer Statuswechsel auf Completed oder Manually Completed.', N'Zeitstempel', N'DimActivityTransactionHistory', N'Nicht mit Beam-Ende gleichzusetzen.'),
+    (N'activity_start', N'Aktivitaetsbeginn', N'Aktueller ARIA-Zeitpunkt fuer den Beginn der geplanten Aktivitaet.', N'Zeitstempel', N'DimActivityTransaction.ActivityStartDateTime', N'Workflowzeit, nicht zwingend Beam-on.'),
+    (N'activity_end', N'Aktivitaetsende', N'Aktueller ARIA-Zeitpunkt fuer das Ende der geplanten Aktivitaet.', N'Zeitstempel', N'DimActivityTransaction.ActivityEndDateTime', N'Workflowzeit, nicht zwingend Beam-off.'),
+    (N'matched_first_imaging_timestamp', N'Erste Bildgebung', N'Fruehester als Bildgebung gekennzeichneter Behandlungseintrag der gematchten Sitzung.', N'Zeitstempel', N'FactTreatmentHistory.IsImage = 1', N'Fehlt, wenn Bildgebung nicht in der DWH dokumentiert ist.'),
+    (N'matched_first_beam_timestamp', N'Erster Beam', N'Fruehester applizierter Nicht-Bildgebungs-Eintrag der gematchten Sitzung.', N'Zeitstempel', N'FactTreatmentHistory', N'Entspricht dem bisherigen Sitzungsbeginn.'),
+    (N'matched_clinical_start_timestamp', N'Klinischer Sitzungsstart', N'Erste Bildgebung, falls vorhanden, sonst erster Beam.', N'Zeitstempel', N'abgeleitet', N'Proxy fuer den klinischen Start; Imaging und Beam werden zusaetzlich einzeln exportiert.'),
+    (N'arrival_to_clinical_start_minutes', N'Wartezeit Anmeldung bis Start', N'Differenz zwischen Patientenanmeldung und klinischem Sitzungsstart.', N'Minuten', N'abgeleitet', N'Nur innerhalb eines Plausibilitaetsfensters ausgegeben.'),
+    (N'arrival_timing_quality', N'Plausibilitaet der Anmeldung', N'Kennzeichnet fehlende, nach dem Start liegende oder mehr als sechs Stunden vor dem Start liegende Ankunftszeiten.', N'Kategorie', N'abgeleitet', N'Nur usable geht in die automatische Wartezeitauswertung ein.'),
+    (N'slot_to_clinical_start_minutes', N'Slotabweichung Start', N'Differenz zwischen geplantem Slotbeginn und klinischem Sitzungsstart.', N'Minuten', N'abgeleitet', N'Positiv bedeutet Start nach dem geplanten Termin.'),
+    (N'pending_to_clinical_start_minutes', N'Laden bis Start', N'Differenz zwischen Pending/In Progress und klinischem Sitzungsstart.', N'Minuten', N'abgeleitet', N'Nur bei vorhandenem Statuswechsel auswertbar.'),
+    (N'arrival_to_pending_minutes', N'Anmeldung bis Laden', N'Differenz zwischen Patientenanmeldung und Pending/In Progress.', N'Minuten', N'abgeleitet', N'Beschreibt einen Teil der Wartezeit vor dem Laden.'),
+    (N'clinical_start_to_completed_minutes', N'Start bis Terminabschluss', N'Differenz zwischen klinischem Sitzungsstart und Terminabschluss.', N'Minuten', N'abgeleitet', N'Enthaelt lokale Dokumentations- und Abschlussverzoegerungen.'),
+    (N'actual_minutes', N'Beam-Spanne', N'Differenz zwischen erstem und letztem applizierten Beam-Eintrag einer Sitzung.', N'Minuten', N'abgeleitet', N'Keine reine Beam-on-Zeit; Unterbrechungen koennen enthalten sein.'),
+    (N'clinical_span_minutes', N'Klinische Sitzungsspanne', N'Differenz zwischen klinischem Sitzungsstart und letztem Beam-Eintrag.', N'Minuten', N'abgeleitet', N'Bezieht vorhandene Vorbehandlungsbildgebung ein.'),
+    (N'avg_cycle_minutes', N'Mittlere Start-zu-Start-Taktung', N'Zeit vom Start einer Sitzung bis zum Start der folgenden Sitzung am selben Geraetetag.', N'Minuten', N'abgeleitet', N'Beinhaltet Patientenwechsel und auftretende Luecken.'),
+    (N'net_proxy_hours', N'Netto-Proxy-Geraetezeit', N'Brutto-Betriebsfenster abzueglich dokumentierter Luecken ab 30 Minuten.', N'Stunden', N'abgeleitet', N'Keine technische Verfuegbarkeit und keine Beam-on-Zeit.'),
+    (N'match_coverage_pct', N'Slot-Matchquote', N'Anteil der relevanten Termine mit eindeutig zugeordneter Behandlungssitzung.', N'Prozent', N'abgeleitet', N'Slotmetriken gelten erst ab 50 Prozent Matchquote als belastbar.'),
+    (N'patient_key', N'Pseudonymisierter Patientenschluessel', N'Pro Ausfuehrung gesalzener SHA-256-Schluessel.', N'Text', N'abgeleitet', N'Zwischen unabhaengigen Exporten absichtlich nicht verknuepfbar.'),
+    (N'imaging_after_beam_flag', N'Bildgebung nach erstem Beam', N'Kennzeichnet Sitzungen, deren fruehester Bildgebungseintrag nach dem ersten Beam liegt.', N'0/1', N'abgeleitet', N'Datenqualitaetshinweis; klinischen Start im Einzelfall pruefen.')
+) v(field_name, german_label, definition, unit, source, interpretation)
+ORDER BY v.field_name;

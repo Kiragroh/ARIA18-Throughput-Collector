@@ -1,10 +1,19 @@
 {
-  "method_version": "ARIA18-THROUGHPUT-1.0",
+  "method_version": "ARIA18-THROUGHPUT-1.1",
   "rdl_namespace": "http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition",
   "shared_data_source": "/VarianTemplate/Data Sources/variandw",
   "default_period": "last_12_complete_calendar_months",
   "gap_threshold_minutes": 30,
   "slot_match_min_coverage_pct": 50,
+  "clinical_start_preference": [
+    "first_imaging_timestamp",
+    "first_beam_timestamp"
+  ],
+  "appointment_workflow_events": [
+    "patient_arrival",
+    "pending_or_in_progress",
+    "completed"
+  ],
   "default_minimum_group_patients": 5,
   "pseudonym_hash": "SHA2_256",
   "session_key": [

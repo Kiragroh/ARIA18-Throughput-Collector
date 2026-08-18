@@ -7,7 +7,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_method_contract_is_explicit_and_portable():
     method = json.loads((ROOT / "method.json").read_text(encoding="utf-8"))
-    assert method["method_version"] == "ARIA18-THROUGHPUT-1.0"
+    assert method["method_version"] == "ARIA18-THROUGHPUT-1.1"
+    assert method["clinical_start_preference"] == [
+        "first_imaging_timestamp", "first_beam_timestamp"
+    ]
     assert method["rdl_namespace"] == (
         "http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition"
     )

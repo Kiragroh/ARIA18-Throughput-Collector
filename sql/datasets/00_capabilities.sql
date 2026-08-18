@@ -1,6 +1,12 @@
 WITH required_sources AS (
     SELECT N'DWH.FactTreatmentHistory' AS source_name, N'TreatmentRecordDateTime' AS column_name UNION ALL
+    SELECT N'DWH.FactTreatmentHistory', N'TreatmentStartTime' UNION ALL
+    SELECT N'DWH.FactTreatmentHistory', N'IsImage' UNION ALL
     SELECT N'DWH.DimActivityTransaction', N'AppointmentDateTime' UNION ALL
+    SELECT N'DWH.DimActivityTransaction', N'PatientArrivalDateTime' UNION ALL
+    SELECT N'DWH.DimActivityTransactionHistory', N'ScheduledActivityHstryDateTime' UNION ALL
+    SELECT N'DWH.DimActivityTransactionHistory', N'ScheduledActivityCode' UNION ALL
+    SELECT N'DWH.DimActivityTransactionHistory', N'ArrivalDateTime' UNION ALL
     SELECT N'DWH.vv_ResourceInfo', N'ctrResourceSer' UNION ALL
     SELECT N'DWH.InSightiveResourceMachine', N'DimResourceID' UNION ALL
     SELECT N'DWH.FactCourseDiagnosis', N'DimCourseID' UNION ALL

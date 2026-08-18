@@ -18,6 +18,7 @@ DATASETS = {
     "CaseMix": "06_case_mix.sql",
     "Imaging": "07_imaging.sql",
     "DataQuality": "08_data_quality.sql",
+    "Glossary": "11_glossary.sql",
     "SessionDetails": "09_session_details.sql",
     "AppointmentDetails": "10_appointment_details.sql",
 }
@@ -32,8 +33,9 @@ FIELDS = {
     "CaseMix": ["MethodVersion", "RunId", "SiteLabel", "RecordType", "dimension_name", "period_month", "machine", "group_code", "group_label", "delivered_sessions", "patients", "avg_actual_minutes"],
     "Imaging": ["MethodVersion", "RunId", "SiteLabel", "RecordType", "period_month", "machine", "imaging_type", "image_count", "capability_status"],
     "DataQuality": ["MethodVersion", "RunId", "SiteLabel", "RecordType", "raw_rows", "excluded_images", "excluded_brachy", "excluded_test_patients", "valid_sessions", "missing_machine", "missing_fraction"],
-    "SessionDetails": ["MethodVersion", "RunId", "SiteLabel", "RecordType", "patient_key", "course_key", "plan_key", "session_key", "service_date", "machine", "fraction_number", "planned_fractions", "technique", "treatment_mode", "diagnosis_group", "session_start", "session_end", "actual_minutes", "field_count"],
-    "AppointmentDetails": ["MethodVersion", "RunId", "SiteLabel", "RecordType", "patient_key", "appointment_key", "matched_session_key", "service_date", "machine", "slot_start", "slot_end", "scheduled_minutes", "activity_start", "activity_end", "activity_minutes", "activity_code", "activity_name", "activity_category", "mapping_source", "matched_session_start", "matched_session_end", "matched_actual_minutes"],
+    "Glossary": ["MethodVersion", "RunId", "SiteLabel", "RecordType", "field_name", "german_label", "definition", "unit", "source", "interpretation"],
+    "SessionDetails": ["MethodVersion", "RunId", "SiteLabel", "RecordType", "patient_key", "course_key", "plan_key", "session_key", "service_date", "machine", "fraction_number", "planned_fractions", "technique", "treatment_mode", "diagnosis_group", "session_start", "session_end", "actual_minutes", "first_imaging_timestamp", "first_beam_timestamp", "clinical_start_timestamp", "imaging_to_beam_minutes", "clinical_span_minutes", "image_record_count", "image_field_count", "imaging_after_beam_flag", "field_count"],
+    "AppointmentDetails": ["MethodVersion", "RunId", "SiteLabel", "RecordType", "patient_key", "appointment_key", "matched_session_key", "service_date", "machine", "slot_start", "slot_end", "scheduled_minutes", "activity_start", "activity_end", "activity_minutes", "activity_code", "activity_name", "activity_category", "mapping_source", "patient_arrival_timestamp", "arrival_source", "appointment_status", "checked_in", "pending_or_in_progress_timestamp", "pending_or_in_progress_status", "completed_timestamp", "completed_status", "matched_first_imaging_timestamp", "matched_first_beam_timestamp", "matched_clinical_start_timestamp", "matched_session_start", "matched_session_end", "matched_actual_minutes", "matched_clinical_span_minutes", "imaging_after_beam_flag", "arrival_timing_quality", "arrival_to_clinical_start_minutes", "slot_to_clinical_start_minutes", "pending_to_clinical_start_minutes", "arrival_to_pending_minutes", "clinical_start_to_completed_minutes"],
 }
 
 PAGE_NAMES = {
@@ -45,6 +47,7 @@ PAGE_NAMES = {
     "CaseMix": "05_CaseMix",
     "Imaging": "06_Imaging",
     "DataQuality": "07_DataQuality",
+    "Glossary": "08_Glossary",
     "SessionDetails": "90_Sessions",
     "AppointmentDetails": "91_Appointments",
 }
@@ -58,6 +61,7 @@ CAPTIONS = {
     "CaseMix": "Klinischer Mix",
     "Imaging": "Bildgebung",
     "DataQuality": "Datenqualitaet und Filterfunnel",
+    "Glossary": "Glossar und Methodenbegriffe",
     "SessionDetails": "Kontrollierter pseudonymisierter Sitzungsexport",
     "AppointmentDetails": "Kontrollierter pseudonymisierter Terminexport",
 }
@@ -71,7 +75,7 @@ REPORT_PARAMETERS = [
 
 def _type_name(field: str) -> str:
     lower = field.lower()
-    if lower.endswith("_date") or lower.endswith("_start") or lower.endswith("_end") or lower == "period_month":
+    if lower.endswith("_date") or lower.endswith("_start") or lower.endswith("_end") or lower.endswith("_timestamp") or lower == "period_month":
         return "System.DateTime"
     if lower.startswith("is_") or lower.endswith("_count") or lower.endswith("_patients") or lower in {
         "delivered_sessions", "treated_patients", "active_device_days", "selected_machines",
@@ -80,6 +84,7 @@ def _type_name(field: str) -> str:
         "image_count", "raw_rows", "excluded_images", "excluded_brachy",
         "excluded_test_patients", "valid_sessions", "missing_machine", "missing_fraction",
         "fraction_number", "planned_fractions", "field_count", "active_machines_in_month",
+        "image_record_count", "image_field_count", "imaging_after_beam_flag",
     }:
         return "System.Int64"
     if any(token in lower for token in ("minutes", "hours", "pct", "share")):

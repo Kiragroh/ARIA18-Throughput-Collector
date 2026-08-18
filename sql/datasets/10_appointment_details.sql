@@ -11,6 +11,8 @@ appointment_deduplicated AS (
 candidate_matches AS (
     SELECT a.*,
            s.session_start, s.session_end, s.actual_minutes,
+           s.first_imaging_timestamp, s.first_beam_timestamp, s.clinical_start_timestamp,
+           s.clinical_span_minutes, s.imaging_after_beam_flag,
            ROW_NUMBER() OVER (PARTITION BY a.appointment_id
                               ORDER BY ABS(DATEDIFF(MINUTE, a.slot_start, s.session_start)), s.session_start) AS appointment_rank,
            ROW_NUMBER() OVER (PARTITION BY s.DimPatientID, s.machine, s.session_start
@@ -47,9 +49,49 @@ SELECT
     activity_name,
     activity_category,
     mapping_source,
+    patient_arrival_timestamp,
+    arrival_source,
+    appointment_status,
+    checked_in,
+    pending_or_in_progress_timestamp,
+    pending_or_in_progress_status,
+    completed_timestamp,
+    completed_status,
+    first_imaging_timestamp AS matched_first_imaging_timestamp,
+    first_beam_timestamp AS matched_first_beam_timestamp,
+    clinical_start_timestamp AS matched_clinical_start_timestamp,
     session_start AS matched_session_start,
     session_end AS matched_session_end,
-    CAST(actual_minutes AS decimal(10,2)) AS matched_actual_minutes
+    CAST(actual_minutes AS decimal(10,2)) AS matched_actual_minutes,
+    CAST(clinical_span_minutes AS decimal(10,2)) AS matched_clinical_span_minutes,
+    imaging_after_beam_flag,
+    CASE
+        WHEN patient_arrival_timestamp IS NULL THEN N'missing'
+        WHEN clinical_start_timestamp IS NULL THEN N'no_matched_clinical_start'
+        WHEN patient_arrival_timestamp > clinical_start_timestamp THEN N'after_clinical_start'
+        WHEN DATEDIFF(MINUTE, patient_arrival_timestamp, clinical_start_timestamp) > 360 THEN N'earlier_than_6h'
+        ELSE N'usable'
+    END AS arrival_timing_quality,
+    CAST(CASE WHEN patient_arrival_timestamp IS NOT NULL AND clinical_start_timestamp IS NOT NULL
+              AND DATEDIFF(MINUTE, patient_arrival_timestamp, clinical_start_timestamp) BETWEEN 0 AND 360
+              THEN DATEDIFF(SECOND, patient_arrival_timestamp, clinical_start_timestamp) / 60.0 END AS decimal(10,2))
+        AS arrival_to_clinical_start_minutes,
+    CAST(CASE WHEN slot_start IS NOT NULL AND clinical_start_timestamp IS NOT NULL
+              AND DATEDIFF(MINUTE, slot_start, clinical_start_timestamp) BETWEEN -120 AND 240
+              THEN DATEDIFF(SECOND, slot_start, clinical_start_timestamp) / 60.0 END AS decimal(10,2))
+        AS slot_to_clinical_start_minutes,
+    CAST(CASE WHEN pending_or_in_progress_timestamp IS NOT NULL AND clinical_start_timestamp IS NOT NULL
+              AND DATEDIFF(MINUTE, pending_or_in_progress_timestamp, clinical_start_timestamp) BETWEEN 0 AND 240
+              THEN DATEDIFF(SECOND, pending_or_in_progress_timestamp, clinical_start_timestamp) / 60.0 END AS decimal(10,2))
+        AS pending_to_clinical_start_minutes,
+    CAST(CASE WHEN patient_arrival_timestamp IS NOT NULL AND pending_or_in_progress_timestamp IS NOT NULL
+              AND DATEDIFF(MINUTE, patient_arrival_timestamp, pending_or_in_progress_timestamp) BETWEEN 0 AND 360
+              THEN DATEDIFF(SECOND, patient_arrival_timestamp, pending_or_in_progress_timestamp) / 60.0 END AS decimal(10,2))
+        AS arrival_to_pending_minutes,
+    CAST(CASE WHEN clinical_start_timestamp IS NOT NULL AND completed_timestamp IS NOT NULL
+              AND DATEDIFF(MINUTE, clinical_start_timestamp, completed_timestamp) BETWEEN 0 AND 240
+              THEN DATEDIFF(SECOND, clinical_start_timestamp, completed_timestamp) / 60.0 END AS decimal(10,2))
+        AS clinical_start_to_completed_minutes
 FROM final_rows
 WHERE @IncludePseudonymizedDetails = 1
 ORDER BY service_date, machine, slot_start;
