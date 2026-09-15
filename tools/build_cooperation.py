@@ -18,7 +18,7 @@ def build():
     (output/'Kooperation_ARIA_Performance.html').write_text(html,encoding='utf-8')
     path=output/'ARIA-Performance_Kooperation.zip'
     with zipfile.ZipFile(path,'w',compression=zipfile.ZIP_DEFLATED) as z:
-        for name in ['README.md','Begleitbogen.md','Upload_Checkliste.md','index.html',
+        for name in ['README.md','Begleitbogen.md','Upload_Checkliste.md','RDL_AUSFUEHREN.md','START_HIER.html','index.html',
                      'assets/qr-code.png','assets/projekt-qr-code.png','assets/boxplots-beispiel.png']:
             file=ROOT/'kooperation'/name
             z.write(file,file.relative_to(ROOT).as_posix())

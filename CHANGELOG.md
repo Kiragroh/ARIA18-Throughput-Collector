@@ -2,6 +2,9 @@
 
 ## Kooperation - 2026-09-15
 
+- Minimales Standorttest-ZIP mit zwei RDLs, Offline-Formular, Anleitung und Pruefsummen.
+- ARIA-Import/Sonstiges, Report-Builder-Vorschau ohne Import und anonymisierter Excel-Direktlink fuer 2025 dokumentiert.
+- Drei Rueckgabedateien unterschieden: Hauptreport ohne Ereignisdetails, Preflight und ausgefuelltes Standortformular.
 - Oeffentlicher Teilnahmeleitfaden mit Preflight-Einstieg, Upload-Checkliste und Begleitbogen.
 - Offline-HTML-Praesentation mit synthetischem Beispiel, Upload-Link und geprueftem QR-Code.
 - Eindeutige Einreichungs-IDs, Standort-/Kontaktangaben und Revisions-/Ersatzkennzeichnung.
