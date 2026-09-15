@@ -54,8 +54,9 @@ New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
 $target=Join-Path $OutputDirectory ('collector-v2-'+$PeriodStart+'-'+$PeriodEnd+'.'+$extension)
 [IO.File]::WriteAllBytes($target,$bytes)
 $watch.Stop()
+$release=[regex]::Match($definitionXml.OuterXml,"N'([^']+)' AS collector_release").Groups[1].Value
 $evidence=[ordered]@{
-    status='rendered'; execution='temporary_definition'; method='2.0.0-rc.2'
+    status='rendered'; execution='temporary_definition'; method=$release
     rdl_sha256=$definitionHash; export_sha256=(Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash
     period_start=$PeriodStart; period_end=$PeriodEnd; context_start=$ContextStart; data_through=$DataThrough
     format=$Format; details=$effectiveDetails; bytes=$bytes.Length

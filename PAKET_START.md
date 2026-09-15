@@ -1,4 +1,4 @@
-# ARIA Performance: Gesamtpaket 2.0.0-rc.3
+# ARIA Performance: Gesamtpaket 2.0.0-rc.4
 
 ## Durchfuehrung
 
@@ -22,8 +22,9 @@ und Statuswerte muessen fuer die Auswertung fachlich zugeordnet werden.
 
 Standardjahr 2025; bislang gegen ARIA 18 getestet. Auswertungsdaten und
 Prueftabellen stehen in derselben Exceldatei, kein separater Preflight noetig.
-rc.3 aktualisiert Formular und Paketaufbau. Der RDL und die Rechenmethodik
-bleiben auf rc.2: Vorhandene rc.2-Exceldateien weiterverwenden.
+rc.4 erweitert Klinikprofil, Planlogik und Vorjahreskohorte. Alte Exceldateien
+bleiben lesbar. Fuer vollstaendige Plan-/Vorjahresauswertung und die erweiterten
+Quellpruefungen den neuen RDL ausfuehren.
 
 Pilot-/Releasekandidat, keine klinische Freigabe. Exporte sind pseudonymisiert,
 nicht anonym. Nur lokal oder nach lokaler Freigabe im geschuetzten

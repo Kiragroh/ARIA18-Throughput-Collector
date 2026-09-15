@@ -1,7 +1,7 @@
 # RDL ausfuehren und Ergebnisse bereitstellen
 
-**[Gesamtpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Gesamtpaket.zip)** |
-**[Nur Durchfuehrung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Durchfuehrung.zip)**
+**[Gesamtpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.4/ARIA-Performance_Gesamtpaket.zip)** |
+**[Nur Durchfuehrung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.4/ARIA-Performance_Durchfuehrung.zip)**
 
 Entpacken und `Durchfuehrung/START_HIER.html` oeffnen. Beide Pakete enthalten
 dieselben Durchfuehrungsdateien: RDL, Offline-Anleitung mit JSON-Formular und

@@ -46,8 +46,15 @@ def test_sql_has_no_direct_identifiers_or_silent_schema_failures():
     text = path.read_text(encoding="utf-8")
     assert "sp_executesql" in text and "THROW" in text
     assert "IsMOTestPatient" in text
-    for forbidden in ("PatientFullName","PatientId","ResourceFullName","PatientDateOfBirth","NOLOCK"):
+    for forbidden in ("PatientFullName","ResourceFullName","PatientDateOfBirth","NOLOCK"):
         assert forbidden not in text
+    # PatientId/last name may only classify source rows inside the query, never be exported.
+    root = ET.fromstring(text)
+    for field in root.findall(".//r:Fields/r:Field",NS):
+        assert field.get("Name") not in {"PatientId","PatientLastName","DimPatientID"}
+    from tools.build_collector_v2 import event_sql
+    final = event_sql().rsplit("\nSELECT N'2.0' AS contract_version",1)[1]
+    assert "PatientId" not in final and "PatientLastName" not in final
     assert "2025" in text
 
 

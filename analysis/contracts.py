@@ -20,8 +20,13 @@ class Profile:
     complete_through: str = ""
     timezone: str = "Europe/Berlin"
     activity_codes: dict = field(default_factory=dict)
+    activity_names: dict = field(default_factory=dict)
     status_codes: dict = field(default_factory=dict)
     machines: dict = field(default_factory=dict)
+    manual_machine_labels: dict = field(default_factory=lambda: {
+        "treatment_legacy": "Historische Therapie", "treatment_brachy": "Brachytherapie",
+        "treatment_xray": "Roentgentherapie"})
+    require_numeric_patient_id: bool = False
     max_interval_minutes: int = 240
     imaging_before_beam_minutes: int = 120
     visit_merge_minutes: int = 5
@@ -44,7 +49,7 @@ class Profile:
             raise ValueError("Invalid interval limits")
         if not 0 <= self.imaging_before_beam_minutes <= 240:
             raise ValueError("Invalid imaging window")
-        if any(kind not in KINDS for kind in self.activity_codes.values()):
+        if any(kind not in KINDS for kind in [*self.activity_codes.values(), *self.activity_names.values()]):
             raise ValueError("Unknown activity classification")
         if any(value not in {'completed','cancelled','open','deleted','other'} for value in self.status_codes.values()):
             raise ValueError('Unknown status classification')
@@ -62,6 +67,12 @@ class Profile:
     def classify_status(self,value):
         from .metrics import status_group
         return self.status_codes.get(str(value),status_group(value))
+
+    def classify_activities(self, frame):
+        kinds = frame.activity_code.map(self.activity_codes)
+        if "activity_name" in frame:
+            kinds = frame.activity_name.map(self.activity_names).combine_first(kinds)
+        return kinds.fillna("unknown")
 
 
 def load_profile(path: Path) -> Profile:

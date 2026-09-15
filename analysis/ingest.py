@@ -11,7 +11,7 @@ def load_export(path: Path):
                      "data_through","data_through_confirmed"}
         if events.empty or not meta_fields <= set(events):
             raise ValueError("Incomplete flat export metadata")
-        meta_fields |= {"site", "period_reason"} & set(events)
+        meta_fields |= {"site", "period_reason", "comparison_population_complete", "collector_release"} & set(events)
         meta_rows=events[sorted(meta_fields)].drop_duplicates()
         if len(meta_rows)!=1 or str(meta_rows.iloc[0].contract_version)!="2.0":
             raise ValueError("Mixed or unsupported flat export contract")
@@ -61,11 +61,46 @@ def load_export(path: Path):
 
 def normalize_flow(events, profile):
     frame = events.copy()
-    frame["kind"] = frame.activity_code.map(profile.activity_codes).fillna("unknown")
+    frame["kind"] = profile.classify_activities(frame)
     delivered = frame.source.eq("delivery")
     brachy = pd.to_numeric(frame.get("is_brachy",pd.Series(0,index=frame.index)),errors="coerce").eq(1)
     frame.loc[delivered & ~brachy,"kind"] = "treatment_external"
     frame.loc[delivered & brachy,"kind"] = "treatment_brachy"
     # Imaging is never a treatment-start event by itself.
     frame = frame[~frame.source.eq("imaging") & frame.patient_key.notna()]
+    return frame
+
+
+def eligible_events(events, profile):
+    """Use non-identifying source flags when available; never guess from a hash."""
+    frame = events.copy()
+    if "patient_class" in frame:
+        frame = frame[~frame.patient_class.eq("test_name")]
+        if profile.require_numeric_patient_id:
+            frame = frame[frame.patient_class.isin(["clinical_numeric", "no_patient", "unknown"])]
+    if "resource_status" in frame:
+        # A deleted/cancelled resource assignment is not a second clinical appointment.
+        frame = frame[~frame.resource_status.fillna("").str.casefold().isin(["deleted", "cancelled"])
+                      | frame.status.map(profile.classify_status).eq("cancelled")]
+    return frame
+
+
+def resolve_treatment_devices(events, profile):
+    """Resolve missing/ambiguous external slots only from one actual device that day."""
+    frame = events.copy()
+    frame["machine"] = frame.machine.fillna("")
+    date = pd.to_datetime(frame.event_start, errors="coerce", format="mixed").dt.strftime("%Y-%m-%d")
+    technical = frame[frame.source.eq("delivery") & frame.machine.isin(profile.machines)].copy()
+    technical["_day"] = date.loc[technical.index]
+    candidates = technical.groupby(["patient_key", "_day"]).machine.agg(lambda values: tuple(set(values)))
+    candidates = candidates[candidates.map(len).eq(1)].map(lambda values: values[0]).to_dict()
+    selected = (frame.source.eq("appointment") & frame.machine.isin(["", "AMBIGUOUS_DEVICE"])
+                & profile.classify_activities(frame).eq("treatment_external"))
+    if "machine_inferred" not in frame:
+        frame["machine_inferred"] = False
+    for index in frame.index[selected]:
+        machine = candidates.get((frame.at[index,"patient_key"], date.loc[index]))
+        if machine:
+            frame.at[index,"machine"] = machine
+            frame.at[index,"machine_inferred"] = True
     return frame

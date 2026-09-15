@@ -1,11 +1,22 @@
-# ARIA Throughput 2.0.0-rc.3
+# ARIA Throughput 2.0.0-rc.4
 
 Pilotpaket fuer die AG Digitalisierung, Standardjahr 2025.
 
-Neu in rc.3: Rueckmeldung nur als JSON aus dem Offline-HTML. Fuer die Einreichung
-werden die Full-Collector-Exceldatei und diese JSON benoetigt.
-RDL und Rechenmethodik bleiben auf dem geprueften rc.2-Stand: Bereits erzeugte
-rc.2-Exceldateien weiterverwenden, kein erneuter Export fuer das Formularupdate.
+Neu in rc.4: Klinikprofil und Verlaeufe fuer Patienten, Fraktionen, bestrahlte
+Plaene, Neueinstellungen und Behandlungsepisoden, einschliesslich bestaetigter
+manueller Therapien. Neueinstellung wird aus der ersten Planbestrahlung abgeleitet.
+Unvollstaendige Plaene mit mehr als sieben Tagen beobachteter Pause werden
+getrennt von vollstaendig bestrahlten Plaenen ausgewiesen.
+
+Slotabdeckung (zeitliche Ueberlappung) und Dauer/Slot-Verhaeltnis sind getrennte
+Kennzahlen. Kleine Geraetegruppen unterdruecken nicht mehr die gesamte
+Periodensumme; der Pool enthaelt nur auswertbare Geraete.
+
+**Neuer Export erforderlich** fuer vollstaendige Vorjahrespopulation, Plansoll,
+Quellflags und exakte Aktivitaetsbezeichnungen. Alte rc.2-Exporte bleiben lesbar,
+fehlende Angaben werden jedoch nicht rekonstruiert oder als Null ausgegeben.
+Die sichtbaren Reportparameter bleiben Standort und Zeitraum. Rueckmeldung:
+Full-Collector-Exceldatei und JSON aus dem Offline-HTML.
 
 - Ein Full Collector fuer Auswertung und Quellenpruefung, ohne Preflight-/Final-Schalter.
 - Nur Standort und Zeitraum sichtbar; 2025 vorgegeben, Kontext automatisch.
@@ -25,10 +36,8 @@ rc.2-Exceldateien weiterverwenden, kein erneuter Export fuer das Formularupdate.
   und inhalts-/profilgebundener Aggregatcache.
 - AG-Projektskizze, Voraussetzungen, Standorteinrichtung und Vergleichskriterien.
 
-Nachweise: 74 Tests inklusive Auswertung aus dem entpackten Paket, Browserpruefung, kombinierter Excel-Kurzlauf via SSRS
-und lokale Python-Auswertung zweier vorhandener Jahreslieferungen. Historischer
-CSV-Jahreslauf 2025 vorhanden; fachlicher Quellenabgleich noch offen. Veroeffentlicht
-wird ausschliesslich eine synthetische Demo; reale Testdaten bleiben lokal.
+Nachweise und noch offene Validierung: [Pruefstatus](VALIDIERUNG.md).
+Veroeffentlicht wird ausschliesslich eine synthetische Demo; reale Testdaten bleiben lokal.
 
 Grenzen: keine klinische Freigabe und noch keine bestandene Multistandortabnahme.
 Objektbasierte RTPlan-/CBCT-Referenzextraktion ist noch nicht implementiert;

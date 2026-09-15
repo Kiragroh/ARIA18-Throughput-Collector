@@ -8,11 +8,11 @@ danach gemeinsam die Ergebnisse. Es geht nicht um eine unbereinigte Rangliste.
 
 **[Kurze Praesentation im Browser](https://kiragroh.github.io/ARIA18-Throughput-Collector/)**
 | [Projekt und Analyseplan](https://github.com/Kiragroh/ARIA18-Throughput-Collector/blob/main/docs/v2/AG_PROJEKT.md)
-| [Gesamtpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Gesamtpaket.zip)
+| [Gesamtpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.4/ARIA-Performance_Gesamtpaket.zip)
 
 Zum Weitergeben oder offline Oeffnen:
-[Praesentation als einzelne HTML-Datei](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/Kooperation_ARIA_Performance.html)
-| [Nur Durchfuehrung als ZIP](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Durchfuehrung.zip).
+[Praesentation als einzelne HTML-Datei](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.4/Kooperation_ARIA_Performance.html)
+| [Nur Durchfuehrung als ZIP](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.4/ARIA-Performance_Durchfuehrung.zip).
 
 ## Was Ihr Standort davon hat
 
@@ -31,11 +31,11 @@ keine klinische Entscheidungsunterstuetzung und keine Personalbewertung.
 
 ## Der kleinste erste Schritt
 
-**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Gesamtpaket.zip)**:
+**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.4/ARIA-Performance_Gesamtpaket.zip)**:
 Ordner `Durchfuehrung` mit Report, Offline-Formular und Anleitung;
 Ordner `Analyse` mit optionaler Python-Auswertung und synthetischem Probelauf.
 Wer nur exportieren und einreichen moechte, nimmt
-**[Nur Durchfuehrung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Durchfuehrung.zip)**.
+**[Nur Durchfuehrung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.4/ARIA-Performance_Durchfuehrung.zip)**.
 Entpacken und `Durchfuehrung/START_HIER.html` oeffnen. Die Durchfuehrungsdateien
 sind in beiden Paketen identisch.
 
@@ -176,7 +176,7 @@ oder Pull Requests ablegen. Der Upload-Link ersetzt keine lokale Freigabe.
 
 ## Status
 
-Pilot-/Releasekandidat **2.0.0-rc.3**. Technischer Preflight, Jahresexport und
+Pilot-/Releasekandidat **2.0.0-rc.4**. Technischer Preflight, Jahresexport und
 lokale Python-Auswertung wurden an einem Pilotstandort erprobt. Eine gemeinsame
 fachliche Multistandortabnahme steht noch aus. Die direkte objektbasierte
 RTPlan-/CBCT-Referenzextraktion ist noch nicht implementiert; das wird nicht als

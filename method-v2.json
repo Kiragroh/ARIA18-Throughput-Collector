@@ -1,6 +1,6 @@
 {
   "method_version": "ARIA18-THROUGHPUT-2.0",
-  "release": "2.0.0-rc.3",
+  "release": "2.0.0-rc.4",
   "default_period_start": "2025-01-01",
   "default_period_end": "2025-12-31",
   "default_model": "activity",
@@ -10,6 +10,9 @@
   "alternative_gap_filter": "strictly_greater_than_30_minutes",
   "clinical_maturity": "three_calendar_months_from_last_completed_counselling",
   "treatment_episode_gap_days": 30,
+  "incomplete_plan_end_observed_gap_days_strictly_greater_than": 7,
+  "new_plan_start": "first_delivered_fraction_not_appointment_name",
+  "comparison_population": "all_patients_in_context_and_selected_period",
   "clinical_followup_upper_limit_days": null,
   "default_context_lookback_years": 1,
   "future_booked_observation_horizon_months": 12,

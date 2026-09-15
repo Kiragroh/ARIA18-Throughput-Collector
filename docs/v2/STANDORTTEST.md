@@ -2,10 +2,10 @@
 
 ## Ersttest ohne Python
 
-Das [Paket Nur Durchfuehrung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Durchfuehrung.zip)
+Das [Paket Nur Durchfuehrung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.4/ARIA-Performance_Durchfuehrung.zip)
 enthaelt im Ordner `Durchfuehrung` eine RDL und START_HIER.html mit Anleitung,
 Rueckmeldeformular und Direktlink-Generator. Das
-[Gesamtpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Gesamtpaket.zip)
+[Gesamtpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.4/ARIA-Performance_Gesamtpaket.zip)
 ergaenzt die optionale Python-Auswertung im Ordner `Analyse`.
 Der Full Collector kann direkt laufen. Er enthaelt
 Auswertungsdaten und Prueftabellen. Fuer die Einreichung werden diese Exceldatei
