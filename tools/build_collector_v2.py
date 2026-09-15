@@ -354,6 +354,15 @@ def build(include_inventory=True):
     top = 40
     for name in queries:
         table,top = layout._tablix(name,top)
+        if name == "EventDetails":
+            # Millions of long hash cells do not need multiline print measurement.
+            # This changes row layout only; the full Excel cell values stay intact.
+            element = ET.fromstring(table)
+            for box in element.iter("Textbox"):
+                if box.get("Name", "").startswith("EventDetails_D_"):
+                    box.find("CanGrow").text = "false"
+                    box.find("KeepTogether").text = "false"
+            table = ET.tostring(element, encoding="unicode")
         items.append(table)
     template = (ROOT/"templates/ARIA18_Collector.template.rdl").read_text(encoding="utf-8")
     replace = {"DATASETS":"\n".join(datasets),"REPORT_ITEMS":"\n".join(items),"BODY_HEIGHT":str(top),

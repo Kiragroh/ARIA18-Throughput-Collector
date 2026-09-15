@@ -74,6 +74,16 @@ def test_context_is_limited_to_actual_period_cohort_before_loading_history():
     assert sql.index("CREATE INDEX ix_appointment_id")<sql.index("INSERT INTO #History")
 
 
+def test_excel_event_cells_do_not_measure_multiline_hashes():
+    from tools.build_collector_v2 import build
+    root=ET.parse(build()).getroot()
+    details=[box for box in root.findall(".//r:Textbox",NS)
+             if box.get("Name","").startswith("EventDetails_D_")]
+    assert details
+    assert all(box.findtext("r:CanGrow",namespaces=NS)=="false" for box in details)
+    assert all(box.findtext(".//r:Value",namespaces=NS).startswith("=Fields!") for box in details)
+
+
 def test_preflight_has_no_patient_detail_dataset_and_valid_table_links():
     path=ROOT/'dist/ARIA18_Standort_Preflight_2.0.rdl'
     root=ET.parse(path).getroot()

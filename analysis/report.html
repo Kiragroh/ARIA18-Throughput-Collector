@@ -126,7 +126,7 @@ function showNumbers(){
  table('plan-states',['Planstatus im Detailzeitraum','Anzahl'],[
  ['Soll erreicht: vollstaendig bestrahlt',fmt(pop.plan_ends_complete)],
  ['Soll nicht erreicht: mehr als 7 Tage ohne Fortsetzung',fmt(pop.plan_ends_incomplete)],
- ['Mehr als 7 Tage ohne Fortsetzung, Plansoll unbekannt',fmt(pop.plan_ends_target_unknown)],
+ ['Mehr als 7 Tage ohne Fortsetzung, Soll oder frueherer Kontext unbekannt',fmt(pop.plan_ends_target_unknown)],
  ['Bestrahlte Plaene mit noch offener Nachbeobachtung',fmt(pop.plan_open_followup)],
  ['Bestrahlte Plaene mit Fortsetzung nach mehr als 7 Tagen Pause',fmt(pop.plans_resumed_after_gap)]]);
  table('flow-periods',['Zeitraum','Aufklaerungen registriert','Abgeschlossen','Offen','Storniert','Aufklaerungsepisoden','Behandlungsbeginne'],(DATA.flow.periods?.[$('granularity').value]||[]).map(r=>[r.label,...['registered_counselling_appointments','completed_counselling_appointments','open_counselling_appointments','cancelled_counselling_appointments','counselling_episodes','treatment_starts'].map(k=>fmt(r.values[k]))]));

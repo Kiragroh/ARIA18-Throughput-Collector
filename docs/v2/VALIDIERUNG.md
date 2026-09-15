@@ -2,10 +2,11 @@
 
 ## Erweiterte Analyse rc.4
 
-- 89 automatisierte Tests bestanden, einschliesslich Auswertung aus dem
+- 90 automatisierte Tests bestanden, einschliesslich Auswertung aus dem
   entpackten Gesamtpaket und Ausschluss klinischer Daten aus beiden ZIPs.
 - Beide lokalen Standortanalysen: 17 von 17 Diagrammen befuellt; Desktop/Mobil,
   Hell/Dunkel, Box-/Linienansicht, Monatsauswahl und Popup geprueft.
+- Wiederholte lokale Auswertung aus dem SQLite-Cache geprueft.
 - Neuer Fast-CSV-RDL gegen ARIA 18 als temporaere Ausfuehrungsdefinition getestet,
   ohne Aenderung am SSRS-Katalog. Januar/Februar 2025: 153,2 s; Jahr 2025:
   226,2 s. Umfang einschliesslich vollstaendiger Vorjahrespopulation und Nachbeobachtung.
