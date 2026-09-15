@@ -1,5 +1,12 @@
 # Changelog
 
+## Kooperation - 2026-09-15
+
+- Oeffentlicher Teilnahmeleitfaden mit Preflight-Einstieg, Upload-Checkliste und Begleitbogen.
+- Offline-HTML-Praesentation mit synthetischem Beispiel, Upload-Link und geprueftem QR-Code.
+- Eindeutige Einreichungs-IDs, Standort-/Kontaktangaben und Revisions-/Ersatzkennzeichnung.
+- Eigenes Kooperationspaket und Browseransicht; keine Aenderung der Rechenmethodik 2.0.0-rc.1.
+
 ## 2.0.0-rc.1 - 2026-09-15
 
 - Standalone AG-Pilot mit Standardjahr 2025 und begruendeter Periodenabweichung.
