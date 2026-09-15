@@ -1,5 +1,13 @@
 # ARIA 18+ Throughput Collector
 
+## Interesse an einer Kooperation?
+
+**[Hier beginnt die Teilnahme](kooperation/README.md)**: Projektidee, Nutzen fuer
+Ihren Standort, kleiner Preflight als erster Schritt und Upload gepruefter Unterlagen.
+Die [kurze Praesentation](https://kiragroh.github.io/ARIA18-Throughput-Collector/)
+laesst sich direkt im Browser ansehen. Fuer den Einstieg ist noch keine lokale
+Python-Installation erforderlich.
+
 ## Version 2.0: AG-Pilot
 
 Der neue Stand liegt in [START 2.0](docs/v2/START.md).
