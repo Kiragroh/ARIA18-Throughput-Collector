@@ -1,149 +1,132 @@
-# RDL ausfuehren und den Standorttest zurueckgeben
+# RDL ausfuehren und Ergebnisse bereitstellen
 
-Der Hauptreport kann bei passender Datenquelle und passendem Schema bereits
-beim ersten Versuch laufen. **Preflight und Formular helfen trotzdem**: Sie
-erklaeren lokale Geraete, Statuswerte und Besonderheiten, auch wenn kein Fehler
-auftritt. Ein technisch erfolgreicher Export bestaetigt noch nicht alle Zahlen.
+**[Standorttest-ZIP herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.2/ARIA-Performance_Standorttest.zip)**
 
-## Kleines Downloadpaket
+Entpacken und `START_HIER.html` oeffnen. Das kleine Paket enthaelt nur eine
+RDL, die Offline-Anleitung mit optionalem Formular, diese README und Pruefsummen.
+Fuer den Export sind weder Python noch ein ausgefuelltes Formular erforderlich.
 
-**[Standorttest-ZIP herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.1/ARIA-Performance_Standorttest.zip)**
+## Die Einstellungen
 
-Das Paket enthaelt nur `START_HIER.html` mit Anleitung, ausfuellbarem Formular
-und lokalem Linkgenerator, diese README, die beiden benoetigten RDLs und eine
-Pruefsummenliste. ZIP entpacken und `START_HIER.html` im Browser oeffnen.
-Keine Python-Installation fuer diesen Ersttest, keine alten Versionen und kein
-Quellcodepaket. Die HTML-Datei fuehrt selbst kein SQL aus und laedt nichts hoch.
+- **Standort / Klinik:** `Ändere mich` beispielsweise durch `UKE-STR` ersetzen.
+  Der Export wird bei einem leeren Standort nicht blockiert.
+- **Auswertung von / bis:** standardmaessig 01.01.2025 bis 31.12.2025.
 
-## Weg A: im ARIA-Modul Berichte
+Auswertungsdaten und technische Prueftabellen sind immer enthalten.
+Kein Preflight-/Final-Schalter und keine weitere sichtbare Checkbox.
 
-1. Im Modul **Berichte** die Importfunktion oeffnen und die gewuenschte `.rdl`
-   auswaehlen. Nicht jede ARIA-Benutzerrolle darf Berichte importieren. Fehlt die
-   Funktion oder das Recht, bitte die lokale ARIA-/Berichtsadministration ansprechen.
-2. Falls erforderlich, die gemeinsame Datenquelle an die lokale **ARIA-DWH**
-   binden. Der mitgelieferte Verweis ist `/VarianTemplate/Data Sources/variandw`;
-   bei anderen lokalen Bezeichnungen muss er angepasst werden.
-3. **Nach einer Importwarnung zuerst nachsehen:** In den bisher beobachteten
-   Installationen kann der Bericht trotz Warnung bereits unter **Sonstiges**
-   liegen. Dort nach dem Berichtsnamen suchen, bevor erneut importiert wird.
-   Das ist installationsabhaengig, keine Garantie fuer jede Warnung. Fehler bei
-   Rechten, Datenquelle oder Ausfuehrung muessen weiterhin geklaert werden.
-4. Den Bericht unter Sonstiges belassen oder, mit den noetigen Rechten, in eine
-   passende Berichtsgruppe verschieben. Von dort **ausfuehren**, Parameter
-   kontrollieren und im Ergebnis **Exportieren > Excel (.xlsx)** waehlen.
-5. Zuerst den kleinen Preflight fuer Januar/Februar 2025 ausfuehren. Den
-   Hauptreport fuer 2025 koennen Sie ebenfalls direkt testen. Fuer die
-   Rueckgabe bleibt **Lokale pseudonymisierte Ereignisse exportieren = Nein**.
+Keine zusaetzliche Begruendung und keine Vollstaendigkeitsbestaetigung im RDL.
+Vorlauf (ein Jahr vor Beginn), Nachbeobachtung (bis gestern) und vorgemerkte
+Folgetermine (bis zwoelf Monate danach) werden automatisch bestimmt.
+Der Terminartenkatalog wird vollstaendig gelesen, unabhaengig vom Zeitraum.
+Vorlauf und Nachbeobachtung werden nicht als zusaetzliche Jahresfaelle gezaehlt.
 
-## Weg B: Microsoft Report Builder, ohne ARIA-Import
+Der **Full Collector** ist Auswertung und Preflight in einem Report.
+Bei Unstimmigkeiten helfen die Zusatzabfragen gemeinsam mit dem optionalen
+Formular bei der Ergebnisanalyse und gezielten Korrektur.
+Ein Probelauf fuer Januar/Februar ist moeglich, danach fuer den Vergleich
+das vollstaendige Jahr exportieren.
+Bei bereits importierten alten RDLs die Definition auf dem Server ersetzen.
 
-1. Wenn installiert und berechtigt, **Microsoft Report Builder** starten und
-   ueber **Oeffnen > Dieser PC / Durchsuchen** die lokale `.rdl` oeffnen.
-2. Unter **Berichtsdaten > Datenquellen** die passende DWH-Datenquelle zuordnen.
-   Die mitgelieferte RDL verwendet eine freigegebene Serverdatenquelle. Deshalb
-   muss Report Builder den lokalen Reportserver erreichen und darauf zugreifen
-   duerfen. Alternativ kann die Administration eine zulaessige eingebettete
-   Verbindung einrichten; Zugangsdaten niemals in die Rueckgabe aufnehmen.
-3. **Ausfuehren / Run** waehlen, Parameter setzen und gegebenenfalls
-   **Bericht anzeigen / Aktualisieren** ausloesen.
-4. Im ausgefuehrten Bericht **Exportieren > Excel** waehlen und lokal speichern.
-   Das speichert das Ergebnis, nicht nur die RDL-Definition.
+**Gegen ARIA 18 geprueft**, andere Versionen sind nicht bestaetigt.
+`VersionInfo` trennt den ARIA-Pruefstand von der tatsaechlichen SQL-Version.
+Die installierte ARIA-Version wird nicht geraten, wenn das DWH sie nicht
+zuverlaessig bereitstellt; dann kann sie optional im Formular ergaenzt werden.
+Capabilities, ActivityCatalog, AppointmentInventory, MachineInventory,
+HistoryStatusInventory und CompletionDiagnostics helfen beim Quellenabgleich.
+Fehlende Pflichtquellen fuehren zu leeren Ereignisdaten mit Diagnosehinweis,
+nicht zu auswertbaren Nullzahlen. Rechte- oder Verbindungsfehler koennen einen
+Export trotzdem verhindern.
 
-Hierfuer ist weder ein Import in ARIA noch eine dauerhafte Veroeffentlichung des
-Berichts erforderlich. Datenbank-/Datenquellenrechte werden dadurch nicht umgangen.
-Siehe Microsoft zu [Report-Builder-Vorschau](https://learn.microsoft.com/en-us/sql/reporting-services/report-builder/previewing-reports-in-report-builder)
-und [Speichern bzw. Exportieren](https://learn.microsoft.com/en-us/sql/reporting-services/report-builder/saving-reports-report-builder).
+## A. Im ARIA-Modul Berichte
 
-## Weg C: nach Import direkt als Excel per URL
+1. Unter **Berichte > Importieren** die RDL auswaehlen. Fehlen Rechte, die lokale
+   ARIA-/Berichtsadministration ansprechen.
+2. Die gemeinsame Datenquelle an die lokale **ARIA-DWH** binden.
+   Mitgelieferter Verweis: `/VarianTemplate/Data Sources/variandw`.
+3. Nach einer Importwarnung zuerst unter **Sonstiges** suchen. Je nach Installation
+   kann der Report trotz Warnung bereits angelegt sein. Nicht blind mehrfach
+   importieren. Rechte-/Datenquellenfehler muessen weiterhin geklaert werden.
+4. Dort belassen oder in eine passende Gruppe verschieben. Ausfuehren und
+   **Exportieren > Excel** waehlen.
 
-Das folgende Beispiel startet den **Hauptreport fuer 2025 ohne Ereignisdetails**.
-Servername und Ordner sind absichtlich Platzhalter:
+## B. Microsoft Report Builder, ohne Import
+
+Die lokale RDL in **Report Builder > Oeffnen / Durchsuchen** oeffnen.
+Unter **Berichtsdaten > Datenquellen** die lokale DWH-Datenquelle zuordnen,
+dann **Ausfuehren / Run > Exportieren > Excel**.
+Eine dauerhafte Veroeffentlichung oder ein ARIA-Import ist dafuer nicht noetig;
+die normalen Datenquellenrechte bleiben erforderlich.
+[Microsoft: Report-Builder-Vorschau](https://learn.microsoft.com/en-us/sql/reporting-services/report-builder/previewing-reports-in-report-builder).
+
+Fuer grosse Jahresdaten ist der Fast-CSV-Collector im vollstaendigen Analysepaket
+meist geeigneter als der aufwendigere Excel-Renderer. Gleiche Ereignisabfrage;
+die Python-Auswertung akzeptiert beide Formate.
+
+## C. Excel-Direktlink nach Import
+
+Full Collector fuer die Auswertung 2025, mit Auswertungsdaten:
 
 ```text
-https://REPORTSERVER.example.invalid/ReportServer?/ORDNER/ARIA18_Throughput_Collector_2.0&rs:Command=Render&rs:Format=EXCELOPENXML&PeriodStart=2025-01-01&PeriodEnd=2025-12-31&IncludePseudonymizedDetails=0&DataThroughConfirmed=0
+https://REPORTSERVER.example.invalid/ReportServer?/ORDNER/ARIA18_Throughput_Collector_2.0&rs:Command=Render&rs:Format=EXCELOPENXML&PeriodStart=2025-01-01&PeriodEnd=2025-12-31&SiteLabel=AENDERE-MICH
 ```
 
-Fuer den kleinen Preflight als Excel:
+Host, Port, Standort und Katalogpfad ersetzen. Gemeint ist der SSRS-Endpunkt
+`/ReportServer`, nicht die Verwaltungsseite `/Reports`.
+Der ARIA-Ordner Sonstiges entspricht nicht zwingend dem SSRS-Katalogpfad.
+Bei `rsItemNotFound` den Pfad aus einem funktionierenden Aufruf uebernehmen.
+Eine lokale RDL-Datei allein reicht fuer den URL-Aufruf nicht.
+[Microsoft: URL-Export](https://learn.microsoft.com/en-us/sql/reporting-services/export-a-report-using-url-access).
 
-```text
-https://REPORTSERVER.example.invalid/ReportServer?/ORDNER/ARIA18_Standort_Preflight_2.0&rs:Command=Render&rs:Format=EXCELOPENXML&PeriodStart=2025-01-01&PeriodEnd=2025-02-28&IncludePseudonymizedDetails=0&DataThroughConfirmed=0
-```
+Der Offline-Linkgenerator in `START_HIER.html` hilft beim Kodieren. Nur der
+Klick auf den erzeugten Link ruft Ihren Server auf. Serveradresse und Pfad
+werden nicht im Rueckmeldeformular gespeichert.
 
-- `REPORTSERVER.example.invalid` durch den lokalen Host einschliesslich des
-  passenden Protokolls und gegebenenfalls Ports ersetzen. Der Beispielhost ist
-  absichtlich nicht erreichbar. Keine realen Klinikhostnamen im oeffentlichen Beispiel.
-- `/ReportServer` kann am Standort anders heissen. Gemeint ist der SSRS-Endpunkt,
-  nicht die Verwaltungsseite `/Reports`.
-- `/ORDNER/...` ist der **tatsaechliche SSRS-Katalogpfad nach dem Import**, ohne
-  `.rdl` in einer normalen Native-Mode-Installation. Die ARIA-Gruppe Sonstiges ist
-  nicht zwingend ein gleichnamiger SSRS-Ordner. Pfad aus dem funktionierenden
-  Berichtsaufruf uebernehmen oder bei der Administration erfragen.
-- `rsItemNotFound` bedeutet: Katalogpfad oder Berichtsname stimmt nicht oder der
-  Bericht ist dort nicht vorhanden. Ein Import allein beweist nicht den Beispielpfad.
-- Parameternamen sind exakt und gross-/kleinschreibungssensitiv. Der Hauptreport
-  verwendet `PeriodStart` und `PeriodEnd`. `EXCELOPENXML` bedeutet `.xlsx`.
-- Fuer die gemeinsame Rueckgabe muss `IncludePseudonymizedDetails=0` bleiben.
-  `DataThroughConfirmed=0` bestaetigt keine Datenvollstaendigkeit. Den Datenstand
-  im Ergebnis pruefen; der Standardwert von gestern ist keine fachliche Freigabe.
+## Rueckgabe und Offline-Formular
 
-Der Linkgenerator in `START_HIER.html` kodiert Pfad und Parameter und startet
-erst nach einem ausdruecklichen Klick auf den erzeugten Link. Er speichert den
-Servernamen nicht im Standortformular und uebertraegt ihn nicht an das Projekt.
-Die URL benoetigt einen bereits veroeffentlichten Bericht und die normalen
-Zugriffsrechte. Eine lokale RDL-Datei laesst sich damit nicht ohne Import ausfuehren.
-Microsoft beschreibt [URL-Export](https://learn.microsoft.com/en-us/sql/reporting-services/export-a-report-using-url-access)
-und [URL-Parameter](https://learn.microsoft.com/en-us/sql/reporting-services/pass-a-report-parameter-within-a-url).
+Soweit vorhanden: **Full Collector XLSX mit integrierten Prueftabellen** und optional eine
+kurze Rueckmeldung. Das Formular braucht kein Internet. Nur Standortkuerzel und
+Auswertungszeitraum werden fuer die eindeutige Benennung benoetigt.
+Exportdatum und Datenstand stehen schon in der Exceldatei
+und muessen nicht nochmals eingegeben werden. Keine Datenschutz-Pflichtcheckbox.
 
-## Bitte alle drei Unterlagen hochladen, soweit verfuegbar
+Download als JSON oder Text; alternativ Drucken/PDF. Falls das Klinikgeraet
+Downloads blockiert, genuegt eine normale Textdatei mit:
+Standortkuerzel, Zeitraum, Rueckkontakt und gegebenenfalls Besonderheiten.
+Das Formular ist niemals Voraussetzung fuer einen Reportlauf.
 
-1. **Hauptreport als Excel ohne Ereignisdetails**, fuer 2025. Er enthaelt
-   Exportmetadaten, Quellenabdeckung und Aktivitaetsinventar. Das Blatt `90_Events`
-   darf hoechstens Ueberschriften, aber keine Ereigniszeilen enthalten;
-   `details_included` in `00_Metadata` muss `0` bzw. `False` sein.
-   Das ist ein technischer Pruefbericht, noch keine vollstaendige Durchsatzanalyse.
-2. **Preflight als Excel**, normalerweise Januar/Februar 2025, auch wenn der
-   Hauptreport bereits lief. Er ergaenzt Geraete-/Termin-/Statusinventare und
-   die Verfuegbarkeit der Zeitanker. Inventarwerte sind keine klinischen Kennzahlen.
-3. **Ausgefuelltes Standortformular als JSON**, erzeugt mit `START_HIER.html`.
-   Es enthaelt zugleich den Begleitbogen: Einreichungs-ID, Kontakt, Zeitraeume,
-   Exportstatus, Besonderheiten und die erwarteten Dateinamen. Die Datei muss
-   nicht von Hand bearbeitet werden. Das ist nicht das spaetere technische
-   `standort.json`-Zuordnungsprofil.
+Nuetzliche optionale Angaben:
+- ARIA-Version, soweit bekannt; aktuell gegen ARIA 18 geprueft.
+- Geraeteanzahl, Kalender-/Ressourcenname, Betrieb von/bis (Monat/Jahr reicht),
+  laengere Stillstaende, Ersatzgeraet.
+- Bei Therapie ohne technisches R&V, etwa Tomotherapy oder Brachy:
+  exakter Ressourcenname, Aktivitaetsname oder ActivityCode und Status nach
+  Durchfuehrung, etwa `Manually Completed`. Planung, Vermessung und QA abgrenzen.
 
-Falls ein Report nicht laeuft, trotzdem Formular und vorhandene Datei schicken;
-Fehlercode und kurze Beschreibung ohne Einzelfalldaten angeben. Kein mehrfaches
-Blind-Neustarten und keine unbereinigten Logs senden.
+Die Dateien sind pseudonymisiert, **nicht anonym**. Lokal auswerten oder nach
+lokaler Freigabe ausschliesslich ueber den geschuetzten Projektweg bereitstellen.
+Die Ereignis-Hashschluessel sind zur Episodenbildung notwendig. Keine Namen,
+Original-Patientenkennungen, Freitextnotizen oder Zugangsdaten hinzufuegen.
+Auf GitHub gehoeren weder klinische Detaildateien noch reale Standortergebnisse.
 
-Alle Dateien vor Weitergabe pruefen, auch ausgeblendete Tabellenblaetter.
-Keine Patienten-/Fall-/Plan-IDs oder zugehoerigen Hash-Schluessel, Notizen,
-Geburtsdaten, Original-DICOM-UIDs oder Zugangsdaten hochladen. Technische
-Katalogbezeichnungen auf enthaltene Personen-/Patientennamen kontrollieren.
-Nur notwendige dienstliche Kontaktdaten im Formular belassen. Kleine Aggregate
-brauchen eine lokale Freigabe. Der Detail-CSV-Collector und das lokale
-Zuordnungsprofil bleiben fuer die spaetere Analyse am Standort.
-
-## Eindeutige Einreichung und Rueckfragen
-
-Ein ZIP mit derselben Einreichungs-ID in allen Dateinamen, beispielsweise:
+## Eindeutige Benennung
 
 ```text
 MUSTER-STR_Standorttest_20250101-20251231_R01.zip
-  MUSTER-STR_Standorttest_20250101-20251231_R01_Bericht_20250101-20251231.xlsx
-  MUSTER-STR_Standorttest_20250101-20251231_R01_Preflight_20250101-20250228.xlsx
+  MUSTER-STR_Standorttest_20250101-20251231_R01_FullCollector.xlsx
   MUSTER-STR_Standorttest_20250101-20251231_R01_Standortformular.json
 ```
 
-Das Formular erzeugt die Namen. Fuer Korrekturen die Revision erhoehen und
-angeben, welche Einreichung ersetzt wird. Immer das vollstaendige Paket senden.
-Unveraenderte Wiederholungen behalten ihre ID; der Upload dedupliziert nicht selbst.
+Fehlende Dateien einfach weglassen. Bei Korrekturen Revision erhoehen und
+moeglichst die ersetzte ID nennen; unveraenderte Wiederholungen behalten ihre ID.
 
-**[Gepruefte Einreichung hochladen](https://filesync.medizin.uni-leipzig.de/u/d/7aa97de1de02445cad42/)**
+**[Geschuetzte Einreichung hochladen](https://filesync.medizin.uni-leipzig.de/u/d/7aa97de1de02445cad42/)**
 
-Die Dateien sind ausschliesslich fuer **Maximilian Grohmann** freigegeben.
-Er erhaelt Upload-Benachrichtigungen und kann ueber die dienstliche Kontaktadresse
-Rueckfragen stellen. Andere Teilnehmende haben keinen Zugriff auf Ihre Einreichung.
-Eine lokale Freigabe bleibt erforderlich. Keine klinischen Dateien auf GitHub.
+Die Einreichung ist ausschliesslich fuer **Maximilian Grohmann** freigegeben.
+Er erhaelt Upload-Benachrichtigungen und kann bei Rueckfragen reagieren.
+Andere Teilnehmende haben keinen Zugriff. Lokale Freigaben bleiben erforderlich.
 
-Zur vollstaendigen lokalen Analyse spaeter:
-[Standortprofil und Testablauf](https://github.com/Kiragroh/ARIA18-Throughput-Collector/blob/main/docs/v2/STANDORTTEST.md)
-und [Python-Auswertung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/blob/main/docs/v2/START.md).
+Die fachliche Quellenpruefung erfolgt bei der Auswertung: Ein vollstaendiger
+Datenstand ist nur fuer die belastbare Quote ohne spaeteren Behandlungsbeginn
+erforderlich, nicht fuer den Export oder alle anderen berechenbaren Kennzahlen.
+[Lokale Auswertung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/blob/main/docs/v2/START.md)

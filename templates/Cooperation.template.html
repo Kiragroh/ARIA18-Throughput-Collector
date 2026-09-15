@@ -34,34 +34,34 @@
  <p class="footnote">Sie k&ouml;nnen Definitionen und Fragestellungen mitgestalten. Gemeinsame Vergleiche folgen erst nach Quellenabgleich und lokaler Freigabe.</p>
 </section>
 <section class="slide" aria-label="Einstieg" hidden>
- <p class="kicker">So beginnt die Teilnahme</p><h2 tabindex="-1">Zwei Reports und ein kurzes Formular</h2>
+ <p class="kicker">So beginnt die Teilnahme</p><h2 tabindex="-1">Ein Report f&uuml;r Auswertung und Pr&uuml;fung</h2>
  <ol class="steps"><li><div><strong>Ansprechpersonen und Freigaben kl&auml;ren</strong><span>Fachliche Zust&auml;ndigkeit und ARIA-/Datenzugang am Standort abstimmen.</span></div></li>
- <li><div><strong>Kleines Testpaket laden und Reports ausf&uuml;hren</strong><span>Preflight Januar/Februar 2025; Hauptreport 2025 ohne Ereignisdetails. In ARIA importieren oder lokal im Report Builder &ouml;ffnen.</span></div></li>
- <li><div><strong>Beide Exceldateien und Standortformular hochladen</strong><span>Der Report kann sofort laufen; Preflight und Formular helfen trotzdem. Ein ZIP mit eindeutiger ID und dienstlichem R&uuml;ckkontakt.</span></div></li>
+ <li><div><strong>Kleines Testpaket laden und Report ausf&uuml;hren</strong><span>Full Collector 2025 mit Auswertungsdaten und Pr&uuml;ftabellen. Nur Standort und Zeitraum. In ARIA importieren oder lokal im Report Builder &ouml;ffnen.</span></div></li>
+ <li><div><strong>Vorhandene Exceldateien und kurze R&uuml;ckmeldung</strong><span>Kann sofort laufen; bei Unstimmigkeiten helfen Pr&uuml;ftabellen und optionales Formular, offline auch als Text. Gesch&uuml;tzte Einreichung mit Standort, Zeitraum und R&uuml;ckkontakt.</span></div></li>
  <li><div><strong>Danach lokal das ganze Jahr auswerten</strong><span>Profil im Formular best&auml;tigen, Fallbeispiele vor Ort pr&uuml;fen und nur freigegebene Aggregate teilen.</span></div></li></ol>
  <p class="notice">F&uuml;r den ersten Schritt brauchen Sie weder Python noch SQL- oder JSON-Bearbeitung.</p>
 </section>
 <section class="slide" aria-label="Vergleichbarkeit" hidden>
  <p class="kicker">Was vergleichbar sein muss</p><h2 tabindex="-1">Gleiche Definitionen, passende Nachweise</h2>
  <div class="columns"><div><h3>Behandlung ist nicht markenabh&auml;ngig</h3><p>Technischer Dosis-/MU-Nachweis oder eindeutig zugeordnete, abgeschlossene Therapietermine k&ouml;nnen Behandlung belegen.</p><p class="small muted">Auch Brachy und historische Systeme ohne technisches R&amp;V. Planung und Vermessung allein z&auml;hlen nicht als Therapie. Kalenderzeit ersetzt keine gemessene Dauer.</p></div>
- <div><h3>2025 als gemeinsamer Ausgangspunkt</h3><p>Ger&auml;tewechsel, Stillstand, Datenstand und Nachbeobachtung werden kenntlich gemacht. Abweichende Jahre brauchen eine Begr&uuml;ndung.</p><p class="small muted">Mindestens drei Kalendermonate Nachbeobachtung f&uuml;r negative Einstufungen. Sp&auml;tere Behandlung und Wiedervorstellungen bleiben ber&uuml;cksichtigt.</p></div></div>
- <p class="footnote">Technische Basis: ARIA-DWH mit lesendem SSRS-Zugriff. Ohne diesen Datenweg ist ein eigener Adapter erforderlich. Ein Preflight ersetzt keine fachliche Pr&uuml;fung.</p>
+ <div><h3>2025 als gemeinsamer Ausgangspunkt</h3><p>Ger&auml;tewechsel, Stillstand, Datenstand und Nachbeobachtung werden kenntlich gemacht. Abweichende Jahre und Besonderheiten kurz erl&auml;utern.</p><p class="small muted">Mindestens drei Kalendermonate Nachbeobachtung f&uuml;r negative Einstufungen. Sp&auml;tere Behandlung und Wiedervorstellungen bleiben ber&uuml;cksichtigt.</p></div></div>
+ <p class="footnote">Bisher gegen ARIA 18 gepr&uuml;ft. VersionInfo trennt ARIA-Pr&uuml;fstand und SQL-Version. Andere ARIA-Versionen sind noch nicht best&auml;tigt. Lesender SSRS-Zugriff bleibt erforderlich.</p>
 </section>
 <section class="slide" aria-label="Datenweitergabe" hidden>
  <p class="kicker">Daten bleiben unter lokaler Kontrolle</p><h2 tabindex="-1">Nur gepr&uuml;fte Unterlagen weitergeben</h2>
- <div class="columns"><div class="boundary"><h3>Zum Einstieg</h3><ul><li>Hauptreport-XLSX ohne Ereignisdetails.</li><li>Lokal gepr&uuml;fter Preflight als XLSX.</li><li>Standortformular-JSON mit Begleitangaben.</li></ul><h3>Sp&auml;ter</h3><p>Freigegebene aggregierte HTML-, CSV- und JSON-Ergebnisse.</p></div>
- <div class="boundary no"><h3>Nicht hochladen</h3><ul><li>Collector-Details und Patientenlisten.</li><li>Fall-/Plan-IDs oder Hash-Schl&uuml;ssel.</li><li>Namen, Geburtsdaten, Befundnotizen und unbereinigte Logs.</li><li>Screenshots mit Patientendaten oder Zugangsdaten.</li></ul></div></div>
- <p class="footnote">Auch Aggregate sind nicht automatisch anonym. Kleine Gruppen und Metadaten vor Weitergabe pr&uuml;fen. Keine klinischen Dateien auf GitHub. Der Upload-Link ersetzt keine lokale Freigabe.</p>
+ <div class="columns"><div class="boundary"><h3>Zum Einstieg</h3><ul><li>Full Collector XLSX: pseudonymisiert, nicht anonym.</li><li>Integrierte Quellen-, Status- und Abschlussdiagnostik.</li><li>Optional: Standortformular oder Text-Begleitbogen.</li></ul><h3>Sp&auml;ter</h3><p>Freigegebene aggregierte HTML-, CSV- und JSON-Ergebnisse.</p></div>
+ <div class="boundary no"><h3>Nicht hochladen</h3><ul><li>Patientenlisten und Original-Fall-/Plan-IDs.</li><li>Keine Detaildaten auf GitHub.</li><li>Namen, Geburtsdaten, Befundnotizen und unbereinigte Logs.</li><li>Screenshots mit Patientendaten oder Zugangsdaten.</li></ul></div></div>
+ <p class="footnote">Full Collector nur mit lokaler Freigabe im gesch&uuml;tzten Projektbereich. &Ouml;ffentlich nur gepr&uuml;fte Aggregate. Keine klinischen Dateien auf GitHub. Der Upload-Link ersetzt keine lokale Freigabe.</p>
 </section>
 <section class="slide" aria-label="Upload und Kontakt" hidden>
  <p class="kicker">Ihr n&auml;chster Schritt</p><h2 tabindex="-1">Das kleine Standorttest-Paket laden</h2>
- <div class="upload"><div><p class="lead">Zwei RDLs und <strong>START_HIER.html</strong> mit Anleitung, Formular und Excel-Linkgenerator. Nur die n&ouml;tigen Dateien.</p>
+ <div class="upload"><div><p class="lead">Eine RDL und <strong>START_HIER.html</strong> mit Anleitung, Formular und Excel-Linkgenerator. Nur die n&ouml;tigen Dateien.</p>
  <a class="action" href="https://filesync.medizin.uni-leipzig.de/u/d/7aa97de1de02445cad42/" target="_blank" rel="noopener">Freigegebene Dateien hochladen &rarr;</a>
- <p class="small muted">Ein ZIP: <strong>STANDORT_Phase_VON-BIS_R01.zip</strong><br>Hauptreport ohne Ereignisdetails, Preflight und Standortformular.<br>Bei Korrekturen: neue Revision und ersetzte ID angeben.<br>Dienstliche Kontaktadresse f&uuml;r R&uuml;ckfragen beilegen.</p>
- <p class="small"><a href="https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.1/ARIA-Performance_Standorttest.zip" target="_blank" rel="noopener">Testpaket (ZIP)</a> &middot; <a href="https://github.com/Kiragroh/ARIA18-Throughput-Collector/tree/main/kooperation" target="_blank" rel="noopener">Anleitung und Teilnahme</a></p>
+ <p class="small muted">Ein ZIP: <strong>STANDORT_Phase_VON-BIS_R01.zip</strong><br>Full Collector mit Pr&uuml;ftabellen und optionales Standortformular.<br>Bei Korrekturen: neue Revision und ersetzte ID angeben.<br>Dienstliche Kontaktadresse f&uuml;r R&uuml;ckfragen beilegen.</p>
+ <p class="small"><a href="https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.2/ARIA-Performance_Standorttest.zip" target="_blank" rel="noopener">Testpaket (ZIP)</a> &middot; <a href="https://github.com/Kiragroh/ARIA18-Throughput-Collector/tree/main/kooperation" target="_blank" rel="noopener">Anleitung und Teilnahme</a></p>
  <p class="small">Nur f&uuml;r <strong>Maximilian Grohmann</strong> freigegeben.<br>Er erh&auml;lt Upload-Benachrichtigungen, pr&uuml;ft die Einreichung und kann sich bei R&uuml;ckfragen melden. Andere Teilnehmende haben keinen Zugriff.</p></div>
  <figure><a href="https://filesync.medizin.uni-leipzig.de/u/d/7aa97de1de02445cad42/" target="_blank" rel="noopener"><img class="qr" src="__QR_DATA__" alt="QR-Code zum Upload bei UML-Filesync"></a><figcaption>Zum selben Upload per Smartphone.</figcaption></figure></div>
- <p class="footnote">Pilot-/Releasekandidat 2.0.0-rc.1. Keine klinische Freigabe oder bereits abgeschlossene Multistandortvalidierung. Eine direkte objektbasierte RTPlan-/CBCT-Referenzextraktion ist noch nicht implementiert.</p>
+ <p class="footnote">Pilot-/Releasekandidat 2.0.0-rc.2. Keine klinische Freigabe oder bereits abgeschlossene Multistandortvalidierung. Eine direkte objektbasierte RTPlan-/CBCT-Referenzextraktion ist noch nicht implementiert.</p>
 </section>
 </main>
 <script>

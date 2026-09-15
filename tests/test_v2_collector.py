@@ -14,8 +14,30 @@ def test_v2_rdl_contract_and_default_year():
     assert "2025" in parameters["PeriodEnd"].findtext("r:DefaultValue/r:Values/r:Value", namespaces=NS)
     assert {"DataThrough","ContextStart","PeriodReason"} <= parameters.keys()
     assert set(d.get("Name") for d in root.findall("r:DataSets/r:DataSet",NS)) == {
-        "Metadata","Capabilities","ActivityCatalog","EventDetails"}
+        "Metadata","Capabilities","ActivityCatalog","EventDetails","AppointmentInventory",
+        "MachineInventory","HistoryStatusInventory","CompletionDiagnostics","VersionInfo"}
     assert root.find(".//r:Query/r:Timeout",NS) is not None
+
+
+def test_visible_parameters_are_simple_and_analysis_details_are_enabled():
+    for name in ['ARIA18_Throughput_Collector_2.0.rdl','ARIA18_Throughput_Collector_Fast_2.0.rdl']:
+        root=ET.parse(ROOT/'dist'/name).getroot()
+        params={p.get('Name'):p for p in root.findall('r:ReportParameters/r:ReportParameter',NS)}
+        assert {n for n,p in params.items() if p.findtext('r:Hidden',namespaces=NS)!='true'} == {
+            'SiteLabel','PeriodStart','PeriodEnd'}
+        assert params['IncludePseudonymizedDetails'].findtext('r:DefaultValue/r:Values/r:Value',namespaces=NS)=='true'
+        assert params['SiteLabel'].findtext('r:DefaultValue/r:Values/r:Value',namespaces=NS)=='\u00c4ndere mich'
+        assert params['DataThroughConfirmed'].findtext('r:DefaultValue/r:Values/r:Value',namespaces=NS)=='false'
+        assert 'DateAdd' in params['ContextStart'].findtext('r:DefaultValue/r:Values/r:Value',namespaces=NS)
+        assert 'Today()' in params['DataThrough'].findtext('r:DefaultValue/r:Values/r:Value',namespaces=NS)
+    preflight=ET.parse(ROOT/'dist/ARIA18_Standort_Preflight_2.0.rdl')
+    param=preflight.find("r:ReportParameters/r:ReportParameter[@Name='IncludePseudonymizedDetails']",NS)
+    assert param.findtext('r:DefaultValue/r:Values/r:Value',namespaces=NS)=='false'
+
+
+def test_full_activity_catalog_does_not_use_the_cohort_window():
+    from tools.build_collector_v2 import stage
+    assert ' WHERE ' not in stage('Activity')
 
 
 def test_sql_has_no_direct_identifiers_or_silent_schema_failures():

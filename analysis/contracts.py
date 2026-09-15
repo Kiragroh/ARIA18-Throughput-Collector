@@ -17,6 +17,7 @@ class Profile:
     minimum_patients: int = 5
     confirmed: bool = False
     sources_complete: bool = False
+    complete_through: str = ""
     timezone: str = "Europe/Berlin"
     activity_codes: dict = field(default_factory=dict)
     status_codes: dict = field(default_factory=dict)
@@ -31,8 +32,10 @@ class Profile:
         start, end = date.fromisoformat(self.start), date.fromisoformat(self.end)
         if start > end:
             raise ValueError("start must precede end")
-        if (self.start, self.end) != ("2025-01-01", "2025-12-31") and not self.period_reason.strip():
-            raise ValueError("A differing period requires period_reason")
+        if self.complete_through:
+            checked = date.fromisoformat(self.complete_through)
+            if checked >= date.today():
+                raise ValueError("complete_through must be a complete past date")
         if self.model not in {"activity", "workflow", "technical"}:
             raise ValueError("Invalid time model")
         if self.minimum_patients < 5:

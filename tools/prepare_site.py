@@ -38,7 +38,7 @@ def read_preflight(path):
 def create(path,output,existing=None):
     tables=read_preflight(path)
     profile=Profile().as_dict() if existing is None else Profile(**json.loads(existing.read_text(encoding='utf-8-sig'))).as_dict()
-    profile['confirmed']=False;profile['sources_complete']=False
+    profile['confirmed']=False;profile['sources_complete']=False;profile['complete_through']=''
     uses={}
     statuses=set()
     for row in tables['AppointmentInventory']:
@@ -71,7 +71,7 @@ def main():
     if interactive:
         from tkinter import Tk,filedialog
         root=Tk();root.withdraw()
-        selected=filedialog.askopenfilename(title='Standort-Preflight als Excel auswaehlen',filetypes=[('Excel','*.xlsx')])
+        selected=filedialog.askopenfilename(title='Full Collector mit Prueftabellen als Excel auswaehlen',filetypes=[('Excel','*.xlsx')])
         root.destroy()
         if not selected:return
         args.preflight=Path(selected)

@@ -15,8 +15,8 @@ def test_default_year_and_reason():
     c, _, _ = modules()
     p = c.Profile()
     assert (p.start, p.end, p.model) == ("2025-01-01", "2025-12-31", "activity")
-    with pytest.raises(ValueError, match="reason"):
-        c.Profile(start="2024-01-01", end="2024-12-31")
+    alternative = c.Profile(start="2024-01-01", end="2024-12-31")
+    assert alternative.period_reason == ""
 
 
 def test_interval_union_nested_overlap_and_threshold():

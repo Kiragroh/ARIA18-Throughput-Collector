@@ -2,11 +2,11 @@
 
 ## Ersttest ohne Python
 
-Das [kleine Standorttest-ZIP](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.1/ARIA-Performance_Standorttest.zip)
-enthaelt zwei RDLs und START_HIER.html mit Anleitung, Rueckmeldeformular und
-Direktlink-Generator. Der Hauptreport kann schon direkt laufen. Bitte trotzdem
-Preflight, Hauptreport ohne Ereignisdetails und ausgefuelltes Rueckmeldeformular
-senden, soweit verfuegbar. [Ausfuehrungswege und Datenschutzgrenzen](../../kooperation/RDL_AUSFUEHREN.md).
+Das [kleine Standorttest-ZIP](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.2/ARIA-Performance_Standorttest.zip)
+enthaelt eine RDL und START_HIER.html mit Anleitung, Rueckmeldeformular und
+Direktlink-Generator. Der Full Collector kann direkt laufen. Er enthaelt
+Auswertungsdaten und Prueftabellen; ein kurzes Formular kann ergaenzt werden,
+soweit verfuegbar. Detaildaten nur nach lokaler Freigabe im geschuetzten Projektbereich. [Ausfuehrungswege und Datenschutzgrenzen](../../kooperation/RDL_AUSFUEHREN.md).
 Das kleine Standortformular ist nicht das nachfolgende technische Zuordnungsprofil.
 
 ## So wenig Anpassung wie moeglich
@@ -16,27 +16,28 @@ RDL und ein lokales JSON-Standortprofil. Keine neuen lokalen SQL-Tabellen,
 keine Aenderung an ARIA und keine eingetragenen Passwoerter im Quellpaket.
 Das JSON wird im lokalen Formular erzeugt; es muss nicht von Hand bearbeitet werden.
 
-## Normaler Einstieg: Preflight und Formular
+## Ein Report fuer Export und Quellenpruefung
 
-1. [ARIA18_Standort_Preflight_2.0.rdl](../../dist/ARIA18_Standort_Preflight_2.0.rdl)
+1. [ARIA18_Throughput_Collector_2.0.rdl](../../dist/ARIA18_Throughput_Collector_2.0.rdl)
    importieren, einmal die lokale DWH-Datenquelle zuweisen und als Excel ausfuehren.
-   Vorgabe: Januar/Februar 2025. Erfasst werden Schema, Codes, Statuskonventionen,
-   Geraete und Ankerverfuegbarkeit. Keine Patientenlisten. Fuer Geraetewechsel
-   zusaetzlich einen Zeitraum nach dem Wechsel pruefen.
+   Vorgabe: 2025. Nur Standort und Zeitraum; kein Preflight-/Final-Schalter.
+   Auswertungsdaten, Schema, Codes, Statuskonventionen, Geraete, Ankerverfuegbarkeit
+   und mehrfache Abschlusszeitpunkte werden gemeinsam exportiert.
 2. `tools/Standort_vorbereiten.cmd` starten und diese Exceldatei auswaehlen.
    Python mit den Paketen aus `requirements-analysis.txt` muss einmal installiert
-   sein. Alternativ: `python tools/prepare_site.py Preflight.xlsx --open`.
+   sein. Alternativ: `python tools/prepare_site.py FullCollector.xlsx --open`.
 3. Im offline geoeffneten Formular Geraete, Aktivitaeten und gegebenenfalls
    abweichende Terminstatus zuordnen. Ein vorhandenes `standort.json` kann direkt
    geladen werden; bekannte Zuordnungen bleiben erhalten, neue Eintraege offen.
 4. Profil herunterladen. Bei der ersten Einrichtung kann die Zuordnung anhand
    der Preflight-Datei vorbereitet werden; der Standort bestaetigt dann nur noch
    die fachliche Interpretation. Kein automatisches Raten einer Therapie aus
-   einem Planungscode. Nach der ersten Fallpruefung folgt der Detail-Collector.
+   einem Planungscode. Nach der ersten Fallpruefung dieselben Ereignisdaten auswerten.
    Die fachliche Bestaetigung ist spaeter ebenfalls per Checkbox im Formular
-   moeglich; der bestaetigte Datenstand bleibt zusaetzlich ein RDL-Parameter.
+   moeglich. Der fachlich gepruefte Datenstand wird ebenfalls dort hinterlegt;
+er ist kein Pflichtfeld im RDL. Er betrifft die negative Quote, nicht den Export.
 
-Spaeter den Preflight bei Schema-, Geraete- oder Aktivitaetsaenderungen erneut
+Spaeter den gemeinsamen Report bei Schema-, Geraete- oder Aktivitaetsaenderungen erneut
 ausfuehren; sonst dasselbe Profil verwenden. Ein Preflight prueft technische
 Voraussetzungen, kann aber unzuverlaessige klinische Dokumentation nicht garantieren.
 Das Formular und Preflight-Ergebnis enthalten lokale Konventionen und bleiben
@@ -44,6 +45,7 @@ geschuetzt. Zur Quellenpruefung nur den vereinbarten geschuetzten Datenweg verwe
 
 | Voraussetzung | Wofuer | Wenn sie fehlt |
 |---|---|---|
+| ARIA 18 | Bisheriger Pruefstand | Andere Versionen brauchen einen technischen Test; VersionInfo trennt SQL- und ARIA-Version |
 | ARIA-DWH mit Lesezugriff ueber SSRS | Basisexport | Ohne diesen Datenweg braucht es einen separaten Adapter; kein vorgetaeuschter leerer Bericht |
 | DimPatient, DimActivityTransaction, DimActivity, DimMachine, FactTreatmentHistory | Gemeinsamer Ereignisvertrag | Fehlende Pflichtspalten werden im Metadatenlauf benannt; Detailausgabe stoppt |
 | Testpatientenkennzeichen, Patienten-/Aktivitaetsschluessel, Terminzeit und Status | Ausschluss von Testdaten, Deduplizierung, Verlauf | Keine stille Ersatzheuristik nach ID oder Name |
@@ -52,8 +54,10 @@ geschuetzt. Zur Quellenpruefung nur den vereinbarten geschuetzten Datenweg verwe
 | Erkennbare Maschinenressource und neutrale Geraetelabels | Geraetebezogene Zeiten/Slots | Patientenfluss bleibt moeglich, unzugeordnete Geraetezeiten nicht |
 | Bestaetigter vollstaendiger DWH-Datenstand | Reife Kohorten und negative Quote | Keine belastbare Quote ohne gefundenen Beginn |
 
-Der Metadatenlauf listet die konkreten Pflicht-/Optionalspalten auf. Er funktioniert
-ohne den schweren Ereignisexport. Fehlende optionale Historien-/Zeitspalten
+Die Pruefblaetter listen die Pflicht-/Optionalspalten auf. Bekannte fehlende
+Pflichtquellen ergeben einen diagnostischen Export ohne Ereignisdaten, kein
+auswertbares Null-Ergebnis. Verbindungs- und Rechtefehler koennen den Report
+trotzdem stoppen. Fehlende optionale Historien-/Zeitspalten
 werden zu leeren Ankern, nicht zu einem Abbruch aller Auswertungen.
 
 ## Nicht-Varian, historische Geraete und Brachy
@@ -83,20 +87,20 @@ nicht, wenn darunter auch Planungstermine liegen.
 
 ## Test in zwei Stufen
 
-1. Basis-RDL ohne Details: Datenquelle, Capabilities und ActivityCatalog pruefen.
+1. Gemeinsamen Report exportieren: Datenquelle, Capabilities und ActivityCatalog pruefen.
 2. Lokales Profil: reale Maschinen und exakte Aktivitaetscodes zuordnen; unklare
    Codes nicht vorschnell als `ignore` markieren. Bestaetigungsfelder vorerst false.
-3. Fast-RDL als CSV, Januar/Februar 2025, Kontextbeginn 01.01.2024 und Datenstand
-   mindestens 31.05.2025, besser aktueller bestaetigter Stand. Der kurze Zeitraum
-   ist ein Funktionstest; der Kontext darf fuer die klinische Pruefung nicht
-   auf den 01.01.2025 gekuerzt werden.
+3. Collector mit dem voreingestellten Datenexport ausfuehren. Fuer einen kurzen
+   Funktionstest Januar/Februar 2025 waehlen, fuer den Jahresvergleich ganz 2025.
+   Vorlauf und Nachbeobachtung werden automatisch gesetzt. Fuer grosse Datenmengen
+   Fast-RDL als CSV verwenden.
 4. Python nach START.md ausfuehren. Modellwechsel und Messabdeckung pruefen.
 5. Lokale Positiv-/Negativfaelle aus der AG-Prueffallmatrix abgleichen: insbesondere
    manuelle Therapie, Brachy, Mehrfachaufklaerung, Wiederkehr nach Storno und
-   laufende Behandlung am Periodenende. Keine Einzelfalldaten zentral weitergeben.
+   laufende Behandlung am Periodenende. Keine Original-IDs oder Freitexte weitergeben.
 6. Danach 2025 vollstaendig, mit gleicher Profil-/Methodenversion und ausreichend
    Kontext/Nachbeobachtung. Erst nach Abgleich `confirmed`, `sources_complete`
-   und im RDL `DataThroughConfirmed` bestaetigen.
+   sowie `complete_through` im lokalen Profil bestaetigen.
 
 Workflow darf deutlich weniger Messungen liefern als Aktivitaet. Das ist eine
 Quellen-/Dokumentationsfrage, kein Grund, ein Kalenderende als echten Abschluss

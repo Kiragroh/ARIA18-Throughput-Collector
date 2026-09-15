@@ -39,4 +39,4 @@ SELECT N'2.0' AS contract_version, source_name, column_name, is_required, CASE W
 (N'DWH.InSightiveResourceMachine',N'MachineId',0),
 (N'DWH.DimActivityTransactionHistory',N'DimActivityTransactionID',0),
 (N'DWH.DimActivityTransactionHistory',N'ScheduledActivityHstryDateTime',0),
-(N'DWH.DimActivityTransactionHistory',N'ScheduledActivityCode',0)) v(source_name,column_name,is_required);
+(N'DWH.DimActivityTransactionHistory',N'ScheduledActivityCode',0)) v(source_name,column_name,is_required) UNION ALL SELECT N'2.0',N'DWH.FactTreatmentHistory',N'delivery_evidence_any_of_MU_or_dose',1,CASE WHEN COL_LENGTH(N'DWH.FactTreatmentHistory',N'DeliveredMU') IS NULL AND COL_LENGTH(N'DWH.FactTreatmentHistory',N'FieldMUActual') IS NULL AND COL_LENGTH(N'DWH.FactTreatmentHistory',N'DoseDelivered') IS NULL THEN 0 ELSE 1 END;

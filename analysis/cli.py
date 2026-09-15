@@ -18,6 +18,14 @@ def boolean(value):
     return str(value).casefold() in {"true","1","1.0"}
 
 
+def watermark_confirmed(metadata, profile):
+    # Older exports may carry an explicit confirmation; new exports leave this local.
+    return (boolean(metadata.get("data_through_confirmed", False)) or
+            bool(profile.complete_through and
+                 pd.Timestamp(profile.complete_through).date() >=
+                 pd.Timestamp(metadata["data_through"]).date()))
+
+
 def suppress_flow(flow,minimum):
     data={k:v for k,v in flow.items() if k not in {"duplicates","series"}}
     hidden={k for k,v in data.items() if isinstance(v,int) and not isinstance(v,bool) and 0<v<minimum}
@@ -52,6 +60,8 @@ def analyze(path,profile):
     if any(c["is_required"] and not c["available"] for c in coverage):
         raise ValueError("Required source coverage is missing")
     notes = []
+    if (profile.start, profile.end) != ("2025-01-01", "2025-12-31") and not profile.period_reason.strip():
+        notes.append("Abweichender Zeitraum ohne Zusatzkommentar; separat vom Standardjahr 2025 vergleichen.")
     unknown = events[events.source.eq("appointment") &
                      ~events.activity_code.isin(profile.activity_codes)]
     if not unknown.empty:
@@ -59,7 +69,7 @@ def analyze(path,profile):
     if not profile.confirmed:
         notes.append("Standortprofil noch nicht fachlich bestaetigt.")
     confirmed = (profile.confirmed and profile.sources_complete and
-                 boolean(metadata.get("data_through_confirmed",False)))
+                 watermark_confirmed(metadata,profile))
     if not confirmed:
         notes.append("Quellenumfang/Datenstand unbestaetigt: keine belastbare Quote ohne Behandlungsbeginn.")
     flow_events = normalize_flow(events,profile)

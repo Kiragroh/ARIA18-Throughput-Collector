@@ -13,12 +13,12 @@ NS = {"r":"http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefini
 PARAMETERS = {
     "PeriodStart":("DateTime",'=DateSerial(2025, 1, 1)',"Auswertung von"),
     "PeriodEnd":("DateTime",'=DateSerial(2025, 12, 31)',"Auswertung bis"),
-    "PeriodReason":("String","Standardjahr 2025","Grund bei abweichendem Zeitraum"),
-    "ContextStart":("DateTime",'=DateAdd("yyyy", -1, Parameters!PeriodStart.Value)',"Kontext ab"),
-    "DataThrough":("DateTime",'=Today().AddDays(-1)',"Datenstand bis"),
-    "DataThroughConfirmed":("Boolean","false","Vollstaendigkeit bis Datenstand lokal bestaetigt"),
-    "SiteLabel":("String","Standort","Neutraler Standortname"),
-    "IncludePseudonymizedDetails":("Boolean","false","Lokale pseudonymisierte Ereignisse exportieren"),
+    "PeriodReason":("String",'=IIf(Parameters!PeriodStart.Value = DateSerial(2025,1,1) And Parameters!PeriodEnd.Value = DateSerial(2025,12,31), "Standardjahr 2025", "Abweichender Zeitraum")',None),
+    "ContextStart":("DateTime",'=DateAdd("yyyy", -1, Parameters!PeriodStart.Value)',None),
+    "DataThrough":("DateTime",'=Today().AddDays(-1)',None),
+    "DataThroughConfirmed":("Boolean","false",None),
+    "SiteLabel":("String","\u00c4ndere mich","Standort / Klinik"),
+    "IncludePseudonymizedDetails":("Boolean","true",None),
     "RunId":("String",'=System.Guid.NewGuid().ToString("N")',None),
     "ExportSalt":("String",'=System.Guid.NewGuid().ToString("N")',None),
 }
@@ -103,7 +103,20 @@ def capabilities():
                           for table,columns in SOURCES.values() for col,_,required in columns)
     return ("SELECT N'2.0' AS contract_version, source_name, column_name, is_required,"
             " CASE WHEN COL_LENGTH(source_name,column_name) IS NULL THEN 0 ELSE 1 END AS available"
-            " FROM (VALUES "+values+") v(source_name,column_name,is_required);")
+            " FROM (VALUES "+values+") v(source_name,column_name,is_required)"
+            " UNION ALL SELECT N'2.0',N'DWH.FactTreatmentHistory',N'delivery_evidence_any_of_MU_or_dose',1,"
+            "CASE WHEN "+delivery_evidence_missing()+" THEN 0 ELSE 1 END;")
+
+
+def delivery_evidence_missing():
+    return " AND ".join("COL_LENGTH(N'DWH.FactTreatmentHistory',N'"+column+"') IS NULL"
+                        for column in ("DeliveredMU","FieldMUActual","DoseDelivered"))
+
+
+def source_gaps():
+    required = [f"COL_LENGTH(N'{table}',N'{column}') IS NULL"
+                for table, columns in SOURCES.values() for column, _, needed in columns if needed]
+    return " OR ".join(required+["("+delivery_evidence_missing()+")"])
 
 
 def event_sql():
@@ -118,10 +131,7 @@ IF CAST(@PeriodStart AS date) > CAST(@PeriodEnd AS date) OR @ContextStart > @Per
   THROW 51000, N'Invalid period/context/data watermark. Use complete past dates.', 1;
 IF DATEDIFF(day,@ContextStart,@DataThrough)>1827
   THROW 51000, N'Context larger than five years: split extraction.', 1;
-IF (CAST(@PeriodStart AS date)<>'20250101' OR CAST(@PeriodEnd AS date)<>'20251231')
- AND (LEN(LTRIM(RTRIM(@PeriodReason)))=0 OR @PeriodReason=N'Standardjahr 2025')
-  THROW 51000, N'Differing period requires a reason.', 1;
-IF @IncludePseudonymizedDetails=0
+IF @IncludePseudonymizedDetails=0 OR """+source_gaps()+"""
 BEGIN
  SELECT """+",".join(f"CAST(NULL AS {'datetime2' if f in ['event_start','event_end','activity_start','activity_end','completed'] else 'nvarchar(255)'}) AS [{f}]" for f in FIELDS)+""" WHERE 1=0;
  RETURN;
@@ -195,7 +205,7 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
  a.AppointmentDateTime,a.ScheduledEndTime,CAST(NULL AS int),act.ActivityCode,
  a.AppointmentStatus,0,
  a.ActivityStartDateTime,a.ActivityEndDateTime,
- CASE WHEN h.candidate_count=1 THEN h.completed END,N'calendar',h.candidate_count
+ h.completed,N'calendar',h.candidate_count
  FROM #Appointment a JOIN #Activity act ON act.DimActivityID=a.DimActivityID
  LEFT JOIN #Patient p ON p.DimPatientID=a.DimPatientID
  LEFT JOIN appointment_devices r ON (r.DimPatientID=a.DimPatientID OR (r.DimPatientID IS NULL AND a.DimPatientID IS NULL))
@@ -203,7 +213,7 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
  OUTER APPLY (
   SELECT MIN(h.ScheduledActivityHstryDateTime) AS completed,COUNT(DISTINCT h.ScheduledActivityHstryDateTime) AS candidate_count
   FROM #History h WHERE h.DimActivityTransactionID=a.DimActivityTransactionID
-   AND UPPER(h.ScheduledActivityCode) IN (N'COMPLETED',N'MANUALLY COMPLETED',N'COMPLTFINISH')
+   AND UPPER(h.ScheduledActivityCode) IN (N'COMPLETED',N'MANUALLY COMPLETED',N'COMPLTFINISH',N'PT. COMPLTFINISH')
    AND h.ScheduledActivityHstryDateTime >= COALESCE(a.ActivityStartDateTime,a.AppointmentDateTime)
    AND h.ScheduledActivityHstryDateTime < DATEADD(hour,12,a.AppointmentDateTime)
  ) h
@@ -239,14 +249,17 @@ ORDER BY event_start,source;
     return guard+cohort_checks+cohort_sql+sources+checks
 
 
-def build():
+def build(include_inventory=True):
     metadata_fields = ["contract_version","run_id","site","period_start","period_end","period_reason",
-                       "context_start","data_through","data_through_confirmed","details_included"]
+                       "context_start","data_through","data_through_confirmed","details_included",
+                       "collector_release","tested_aria_major","aria_version_status","collection_state"]
     queries = {
         "Metadata": "SELECT N'2.0' AS contract_version,@RunId AS run_id,@SiteLabel AS site,"
         "@PeriodStart AS period_start,@PeriodEnd AS period_end,@PeriodReason AS period_reason,"
         "@ContextStart AS context_start,@DataThrough AS data_through,"
-        "@DataThroughConfirmed AS data_through_confirmed,@IncludePseudonymizedDetails AS details_included;",
+        "@DataThroughConfirmed AS data_through_confirmed,@IncludePseudonymizedDetails AS details_included,"
+        "N'2.0.0-rc.2' AS collector_release,N'18' AS tested_aria_major,N'NOT_DETECTED_FROM_DWH' AS aria_version_status,"
+        "CASE WHEN "+source_gaps()+" THEN N'EVENTS_UNAVAILABLE_CHECK_CAPABILITIES' ELSE N'READY' END AS collection_state;",
         "Capabilities":capabilities(),
         "ActivityCatalog":stage("Activity")+"SELECT DISTINCT ActivityCode AS activity_code,ActivityNameDEU AS activity_name,ActivityCategoryDEU AS activity_category FROM #Activity ORDER BY activity_code;",
         "EventDetails":event_sql()
@@ -255,6 +268,15 @@ def build():
                   Capabilities=["contract_version","source_name","column_name","is_required","available"],
                   ActivityCatalog=["activity_code","activity_name","activity_category"],
                   EventDetails=FIELDS)
+    if include_inventory:
+        try:
+            from .build_preflight_v2 import queries as inventory_queries, guarded
+        except ImportError:
+            from build_preflight_v2 import queries as inventory_queries, guarded
+        queries["ActivityCatalog"] = guarded(["Activity"],fields["ActivityCatalog"],queries["ActivityCatalog"])
+        for name, (sql, columns) in inventory_queries().items():
+            queries[name], fields[name] = sql, columns
+        queries["EventDetails"] = queries.pop("EventDetails")
     sql_dir = ROOT/"sql/v2"
     sql_dir.mkdir(parents=True,exist_ok=True)
     # Reuse the tested RDL table/parameter rendering layer with the v2 contract.
@@ -263,6 +285,9 @@ def build():
                          "ActivityCatalog":"02_Activities","EventDetails":"90_Events"}
     layout.CAPTIONS = {"Metadata":"Exportvertrag und Auswertungszeitraum","Capabilities":"Quellenabdeckung",
                        "ActivityCatalog":"Lokales Aktivitaetsinventar","EventDetails":"Lokale pseudonymisierte Ereignisse"}
+    for i, name in enumerate(n for n in queries if n not in layout.PAGE_NAMES):
+        layout.PAGE_NAMES[name] = str(i+3).zfill(2)+"_"+name
+        layout.CAPTIONS[name] = name
     layout.REPORT_PARAMETERS = list(PARAMETERS)
     datasets = []
     for name,sql in queries.items():
@@ -279,10 +304,11 @@ def build():
     from xml.sax.saxutils import escape
     for i,(name,(type_,default,prompt)) in enumerate(PARAMETERS.items()):
         end = f"<Prompt>{escape(prompt)}</Prompt>" if prompt else "<Hidden>true</Hidden>"
-        params.append(f'<ReportParameter Name="{name}"><DataType>{type_}</DataType><DefaultValue><Values><Value>{escape(default)}</Value></Values></DefaultValue>{end}</ReportParameter>')
+        optional = "<AllowBlank>true</AllowBlank>" if type_ == "String" and name in {"SiteLabel", "PeriodReason"} else ""
+        params.append(f'<ReportParameter Name="{name}"><DataType>{type_}</DataType>{optional}<DefaultValue><Values><Value>{escape(default)}</Value></Values></DefaultValue>{end}</ReportParameter>')
         cells.append(f"<CellDefinition><ColumnIndex>{i%4}</ColumnIndex><RowIndex>{i//4}</RowIndex><ParameterName>{name}</ParameterName></CellDefinition>")
-    items = [layout._textbox("Title","ARIA Throughput Collector 2.0 | Forschungs- und QM-Export",0,2,396,13,size=18,bold=True),
-             layout._textbox("Note","Standardjahr 2025. Abweichenden Zeitraum begruenden. Datenstand und Quellenumfang lokal bestaetigen. Ereignisse sind pseudonymisiert und bleiben am Standort; ausschliesslich gepruefte Aggregate weitergeben. Keine klinische Entscheidungsunterstuetzung.",16,2,396,20)]
+    items = [layout._textbox("Title","ARIA 18 | Full Collector 2.0 | Auswertung und Quellenpruefung",0,2,396,13,size=18,bold=True),
+             layout._textbox("Note","Standardjahr 2025. Vorlauf und Nachbeobachtung automatisch. Pseudonymisierte Auswertungsdaten: lokal oder mit lokaler Freigabe im geschuetzten Projektbereich verarbeiten, niemals auf GitHub. Keine klinische Entscheidungsunterstuetzung.",16,2,396,20)]
     top = 40
     for name in queries:
         table,top = layout._tablix(name,top)

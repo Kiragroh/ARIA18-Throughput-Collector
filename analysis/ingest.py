@@ -11,6 +11,7 @@ def load_export(path: Path):
                      "data_through","data_through_confirmed"}
         if events.empty or not meta_fields <= set(events):
             raise ValueError("Incomplete flat export metadata")
+        meta_fields |= {"site", "period_reason"} & set(events)
         meta_rows=events[sorted(meta_fields)].drop_duplicates()
         if len(meta_rows)!=1 or str(meta_rows.iloc[0].contract_version)!="2.0":
             raise ValueError("Mixed or unsupported flat export contract")
@@ -47,7 +48,7 @@ def load_export(path: Path):
         raise ValueError("Unsupported export contract; collect with RDL 2.0")
     events = pd.DataFrame(tables["90_Events"])
     if events.empty:
-        raise ValueError("No event details: enable local pseudonymized export")
+        raise ValueError("No event details: check collection_state, capabilities and export version")
     required = {"source","event_key","patient_key","event_start","event_end","status","machine","activity_code"}
     if not required <= set(events):
         raise ValueError("Incomplete event contract")

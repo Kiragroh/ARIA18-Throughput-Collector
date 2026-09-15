@@ -67,6 +67,22 @@ def test_flat_csv_export_preserves_metadata_and_iso_time(tmp_path):
     assert len(events)==1
 
 
+def test_watermark_can_be_confirmed_locally_without_rdl_checkbox():
+    from analysis.cli import watermark_confirmed
+    metadata={'data_through':'2026-04-01','data_through_confirmed':False}
+    assert not watermark_confirmed(metadata,Profile())
+    assert not watermark_confirmed(metadata,Profile(complete_through='2026-03-31'))
+    assert watermark_confirmed(metadata,Profile(complete_through='2026-04-01'))
+    assert not watermark_confirmed(dict(metadata,data_through='2026-05-01'),Profile(complete_through='2026-04-01'))
+    assert watermark_confirmed(dict(metadata,data_through_confirmed=True),Profile())
+
+
+def test_future_watermark_is_not_a_local_confirmation():
+    from datetime import date
+    with pytest.raises(ValueError,match='complete past date'):
+        Profile(complete_through=date.today().isoformat())
+
+
 def test_small_auxiliary_flow_cell_does_not_erase_unrelated_totals():
     from analysis import cli
     assert hasattr(cli,"suppress_flow")
