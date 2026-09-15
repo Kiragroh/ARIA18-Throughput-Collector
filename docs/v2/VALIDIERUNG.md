@@ -1,6 +1,20 @@
-# Pruefstatus 2.0.0-rc.2
+# Pruefstatus 2.0.0-rc.3
 
-## Aktueller kombinierter Report
+## Formular und Pakete rc.3
+
+- 74 automatisierte Tests bestanden, einschliesslich synthetischer Analyse
+  direkt aus einem entpackten Paket ausserhalb des Quellrepositories.
+- Beide ZIPs enthalten bytegleiche Durchfuehrungsdateien; Pruefsummen und
+  relative Dokumentationslinks getestet. Keine klinischen Daten beigepackt.
+- Rueckmeldung ausschliesslich JSON; Offline-Browserpruefung fuer Download,
+  Import, kleine Bildschirme und Pflicht zur gemeinsamen Einreichung mit Excel.
+- Praesentation: 21 Ansichten, keine horizontalen Ueberlaeufe, sieben Druckseiten.
+- Ergebnisbericht: Box-/Linienplots, Modelle, Perioden, Hell/Dunkel und
+  Vergroesserung mit synthetischen und geschuetzten lokalen Daten geprueft.
+- RDL unveraendert und SHA256-identisch zu rc.2. Rechenmethodik unveraendert.
+  Kein erneuter Export wegen des Formular- oder Paketupdates erforderlich.
+
+## Kombinierter Report rc.2 (weiterhin enthalten)
 
 - 70 automatisierte Tests: Kernmethodik, Parameter, integrierte Diagnoseabfragen,
   Quellenwaechter, wiederholte Abschlusszeitpunkte und minimales Downloadpaket.
