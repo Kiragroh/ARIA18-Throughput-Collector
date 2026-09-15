@@ -2,6 +2,11 @@
 
 ## Erweiterte Analyse rc.4
 
+- **Noch nicht veroeffentlicht:** Der kombinierte Excel-Export erreichte in zwei
+  temporaeren Tests das 900-s-Clientlimit, auch mit festen Detailzeilenhoehen.
+  Die Freigabe des Downloadpakets bleibt deshalb offen. SQL-Verarbeitung und
+  Excel-Rendering wurden nicht getrennt gemessen; der erfolgreiche Fast-CSV-Lauf
+  allein ist kein Nachweis fuer den kombinierten Excel-Weg.
 - 90 automatisierte Tests bestanden, einschliesslich Auswertung aus dem
   entpackten Gesamtpaket und Ausschluss klinischer Daten aus beiden ZIPs.
 - Beide lokalen Standortanalysen: 17 von 17 Diagrammen befuellt; Desktop/Mobil,
