@@ -2,11 +2,11 @@
 
 ## Ersttest ohne Python
 
-Das [kleine Standorttest-ZIP](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.2/ARIA-Performance_Standorttest.zip)
+Das [kleine Standorttest-ZIP](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Standorttest.zip)
 enthaelt eine RDL und START_HIER.html mit Anleitung, Rueckmeldeformular und
 Direktlink-Generator. Der Full Collector kann direkt laufen. Er enthaelt
-Auswertungsdaten und Prueftabellen; ein kurzes Formular kann ergaenzt werden,
-soweit verfuegbar. Detaildaten nur nach lokaler Freigabe im geschuetzten Projektbereich. [Ausfuehrungswege und Datenschutzgrenzen](../../kooperation/RDL_AUSFUEHREN.md).
+Auswertungsdaten und Prueftabellen. Fuer die Einreichung werden diese Exceldatei
+und die JSON aus dem kurzen Offline-Formular benoetigt. Detaildaten nur nach lokaler Freigabe im geschuetzten Projektbereich. [Ausfuehrungswege und Datenschutzgrenzen](../../kooperation/RDL_AUSFUEHREN.md).
 Das kleine Standortformular ist nicht das nachfolgende technische Zuordnungsprofil.
 
 ## So wenig Anpassung wie moeglich

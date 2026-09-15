@@ -1,9 +1,11 @@
 # RDL ausfuehren und Ergebnisse bereitstellen
 
-**[Standorttest-ZIP herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.2/ARIA-Performance_Standorttest.zip)**
+**[Gesamtpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Gesamtpaket.zip)** |
+**[Nur Durchfuehrung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Durchfuehrung.zip)**
 
-Entpacken und `START_HIER.html` oeffnen. Das kleine Paket enthaelt nur eine
-RDL, die Offline-Anleitung mit optionalem Formular, diese README und Pruefsummen.
+Entpacken und `Durchfuehrung/START_HIER.html` oeffnen. Beide Pakete enthalten
+dieselben Durchfuehrungsdateien: RDL, Offline-Anleitung mit JSON-Formular und
+Upload-Hinweise. Das Gesamtpaket ergaenzt den Ordner `Analyse` fuer Python.
 Fuer den Export sind weder Python noch ein ausgefuelltes Formular erforderlich.
 
 ## Die Einstellungen
@@ -22,7 +24,7 @@ Der Terminartenkatalog wird vollstaendig gelesen, unabhaengig vom Zeitraum.
 Vorlauf und Nachbeobachtung werden nicht als zusaetzliche Jahresfaelle gezaehlt.
 
 Der **Full Collector** ist Auswertung und Preflight in einem Report.
-Bei Unstimmigkeiten helfen die Zusatzabfragen gemeinsam mit dem optionalen
+Bei Unstimmigkeiten helfen die Zusatzabfragen gemeinsam mit dem kurzen
 Formular bei der Ergebnisanalyse und gezielten Korrektur.
 Ein Probelauf fuer Januar/Februar ist moeglich, danach fuer den Vergleich
 das vollstaendige Jahr exportieren.
@@ -84,16 +86,16 @@ werden nicht im Rueckmeldeformular gespeichert.
 
 ## Rueckgabe und Offline-Formular
 
-Soweit vorhanden: **Full Collector XLSX mit integrierten Prueftabellen** und optional eine
-kurze Rueckmeldung. Das Formular braucht kein Internet. Nur Standortkuerzel und
+Fuer die Auswertung werden **Full Collector XLSX mit integrierten Prueftabellen**
+und **Standortformular-JSON** benoetigt. Das Formular braucht kein Internet. Standortkuerzel und
 Auswertungszeitraum werden fuer die eindeutige Benennung benoetigt.
 Exportdatum und Datenstand stehen schon in der Exceldatei
 und muessen nicht nochmals eingegeben werden. Keine Datenschutz-Pflichtcheckbox.
 
-Download als JSON oder Text; alternativ Drucken/PDF. Falls das Klinikgeraet
-Downloads blockiert, genuegt eine normale Textdatei mit:
-Standortkuerzel, Zeitraum, Rueckkontakt und gegebenenfalls Besonderheiten.
-Das Formular ist niemals Voraussetzung fuer einen Reportlauf.
+In `START_HIER.html` ausfuellen und **JSON herunterladen** waehlen.
+JSON und Excel gemeinsam als ZIP einreichen, nicht das HTML selbst.
+Der Report laeuft unabhaengig vom Formular; fuer die Einreichung werden beide
+Dateien gebraucht. Keine PDF-/Text-Alternative und keine erneute Pflichtbestaetigung.
 
 Nuetzliche optionale Angaben:
 - ARIA-Version, soweit bekannt; aktuell gegen ARIA 18 geprueft.
