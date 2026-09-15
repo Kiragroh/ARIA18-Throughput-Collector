@@ -1,4 +1,15 @@
-# Pruefstatus 2.0.0-rc.4
+# Pruefstatus Paket 2.0.0-rc.5
+
+## Teilnahmeunterlagen rc.5
+
+- 95 automatisierte Tests bestanden (37,31 s), einschliesslich entpacktem
+  Analysepaket. Keine neue Live-Datenbankabfrage fuer dieses Formularupdate.
+- Offline-Browserpruefung: optionale Patientenzahl, unbekannt versus explizit
+  Null, keine negativen/gebrochenen Anzahlen, JSON-Export und Wiederimport.
+  Alte JSON-Dateien setzen fehlende Felder zurueck; Desktop/Mobil ohne Ueberlauf.
+- Praesentation: 21 Ansichten einschliesslich Assets, Navigation und Druck.
+- RDL und Analysecode unveraendert gegen rc.4. Bestehende Excel-Exporte bleiben
+  gueltig; nur das Formular muss fuer neue optionale Angaben erneut gespeichert werden.
 
 ## Erweiterte Analyse rc.4
 

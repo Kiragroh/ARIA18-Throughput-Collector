@@ -62,7 +62,7 @@ oder unterdrueckt, nicht als Null interpretiert.
 
 Echte Exporte nur auf geschuetztem Speicher verarbeiten. Auch die aggregierten
 Ausgaben vor Weitergabe lokal pruefen. Keine klinischen Daten auf GitHub.
-Pilotversion ohne klinische Freigabe; Paket, Rechenmethodik und RDL rc.4.
+Pilotversion ohne klinische Freigabe; Paket rc.5, Rechenmethodik und RDL rc.4.
 Patienten, Fraktionen, bestrahlte Plaene und aus erster Bestrahlung abgeleitete
 Neueinstellungen werden zusaetzlich ausgewiesen. Die Vorjahrespopulation und
 Planattribute erfordern einen rc.4-Export; alte Exporte werden als begrenzt markiert.

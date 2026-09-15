@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.0-rc.5 - 2026-09-16
+
+- Optionaler Plausibilitaetsabgleich im Offline-Formular: bekannte Patientenzahl
+  2025, Zaehleinheit, Quelle und Umfang. Unbekannt bleibt leer, nicht Null.
+- Beim Laden aelterer JSON-Dateien werden fehlende Formularfelder zurueckgesetzt;
+  keine uebernommenen Angaben eines zuvor geoeffneten Standorts.
+- Projektbanner im GitHub-README; beide Downloadpakete enthalten dasselbe Formular.
+- Nur Teilnahmeunterlagen/Paket aktualisiert. RDL und Rechenlogik bleiben rc.4;
+  bereits erzeugte rc.4-Exceldateien weiterverwenden, kein erneuter RDL-Import noetig.
+
 ## 2.0.0-rc.4 - 2026-09-16
 
 - Getrennte Slotueberlappung und Behandlungsdauer/Slotdauer, Workflow-Endanker korrigiert.
