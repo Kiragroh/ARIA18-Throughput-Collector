@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.0-rc.3 - 2026-09-15
+
+- Rueckmeldung im Offline-HTML ausschliesslich als JSON; Text-/PDF-Export entfernt.
+- Einreichung klar auf zwei Dateien begrenzt: Full-Collector-XLSX und Standortformular-JSON.
+- Keine zusaetzliche Dateibestaetigung; optionale Kontextfelder bleiben optional.
+- Zwei klare Downloads: Gesamtpaket mit Durchfuehrung/Analyse und kleineres Paket nur Durchfuehrung. Identische Durchfuehrungsdateien, keine klinischen Beispieldaten.
+- Report und Rechenmethodik unveraendert zu rc.2. Vorhandene rc.2-Exporte bleiben verwendbar; kein erneuter Reportlauf nur fuer dieses Formularupdate erforderlich.
+
 ## 2.0.0-rc.2 - 2026-09-15
 
 - Ein Full Collector fuer Auswertung und Preflight: neun Datensaetze einschliesslich Quellen-, Status-, Geraete-, Abschluss- und Versionsdiagnostik; Ereignisblaetter jahresweise.

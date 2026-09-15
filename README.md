@@ -8,17 +8,21 @@ Standortvergleiche ermöglichen, keine unbereinigten Ranglisten.
 
 ## Aktueller Stand
 
-**Version 2.0.0-rc.2** ist der aktuelle Pilot-/Releasekandidat zur Vorbereitung
+**Version 2.0.0-rc.3** ist der aktuelle Pilot-/Releasekandidat zur Vorbereitung
 eines Projekts der AG Digitalisierung. Technische Tests an einem Pilotstandort
 sind erfolgt; eine gemeinsame fachliche Multistandortabnahme steht noch aus.
 Die Software ist nicht klinisch freigegeben.
 
-**[Aktuelles Paket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/tag/v2.0.0-rc.2)**
+**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Gesamtpaket.zip)**
 | [Prüfstatus](docs/v2/VALIDIERUNG.md)
 | [Änderungen](CHANGELOG.md)
 
-**Für den ersten Standorttest: [kleines ZIP mit nur vier Dateien](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.2/ARIA-Performance_Standorttest.zip).**
-Eine RDL, `START_HIER.html` mit Anleitung und Formular, README und Prüfsummen.
+Zwei Ordner: **Durchfuehrung** mit RDL, Offline-Formular und Anleitung;
+**Analyse** mit Python-Skript, Standortprofilen, Methodik und synthetischem Probelauf.
+
+**[Nur Durchführung herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Durchfuehrung.zip)**:
+dieselben Durchführungsdateien ohne Analyse-Skripte. Start in beiden Paketen:
+`Durchfuehrung/START_HIER.html`. Für die Einreichung ist Python nicht nötig.
 
 Gemeinsamer Jahreszeitraum: **1. Januar bis 31. Dezember 2025**.
 Ein anderes möglichst aktuelles, vollständiges Jahr ist möglich; lokale
@@ -28,7 +32,7 @@ Besonderheiten können kurz erläutert werden. Für einen Probelauf reichen Janu
 
 Im **[Ordner kooperation](kooperation/README.md)** stehen die Projektidee,
 der Nutzen für Ihren Standort und alle Schritte zur Teilnahme: gemeinsamer
-Report, optionaler Begleitbogen, eindeutige Dateibenennung und Upload-Hinweise.
+Report, JSON-Standortformular, eindeutige Dateibenennung und Upload-Hinweise.
 
 Die **[kurze Präsentation](https://kiragroh.github.io/ARIA18-Throughput-Collector/)**
 erklärt den Einstieg und enthält QR-Codes zur Projektseite und zum Upload.
@@ -36,9 +40,11 @@ Für die erste Einreichung benötigen Sie noch keine Python-Installation.
 Der **Full Collector XLSX enthält Auswertungsdaten und integrierte
 Preflight-/Diagnoseabfragen**. Kein separater Preflight und kein Umschalten.
 Er kann direkt funktionieren; bei Unstimmigkeiten helfen die Prüftabellen
-zusammen mit dem optionalen Formular, lokale Konventionen zu klären und den
+zusammen mit dem kurzen Formular, lokale Konventionen zu klären und den
 Report zu verbessern. Nur Standort und Auswertungszeitraum werden angezeigt.
-Das Formular funktioniert offline; optionale Angaben dürfen leer bleiben.
+**Für die Einreichung brauchen wir die Full-Collector-Exceldatei und die JSON.**
+Das Formular funktioniert offline und bietet nur „JSON herunterladen“;
+optionale Angaben dürfen leer bleiben. Beide Dateien gemeinsam als ZIP einreichen.
 Pseudonymisierte Detaildateien nur mit lokaler Freigabe im geschützten
 Projektbereich verarbeiten, niemals auf GitHub veröffentlichen.
 [ARIA-Import, Report Builder und anonymisiertes Excel-URL-Beispiel für 2025](kooperation/RDL_AUSFUEHREN.md).
@@ -52,8 +58,7 @@ keine Namen, Original-IDs oder Freitextnotizen ergänzen.
 
 ## Einstieg am Standort
 
-1. **Gemeinsamer Report:** Den
-   [Full Collector](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.2/ARIA18_Throughput_Collector_2.0.rdl)
+1. **Gemeinsamer Report:** Den Full Collector aus dem Ordner `Durchfuehrung`
    importieren, mit der lokalen ARIA-DWH-Datenquelle verbinden und als Excel
    exportieren. Auswertungsdaten, Schema, Geräte, Terminarten, Statuswerte,
    Abschlussdiagnostik und Versionshinweise stehen in derselben Exceldatei.

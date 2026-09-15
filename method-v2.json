@@ -1,6 +1,6 @@
 {
   "method_version": "ARIA18-THROUGHPUT-2.0",
-  "release": "2.0.0-rc.2",
+  "release": "2.0.0-rc.3",
   "default_period_start": "2025-01-01",
   "default_period_end": "2025-12-31",
   "default_model": "activity",

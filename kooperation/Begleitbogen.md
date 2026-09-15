@@ -1,8 +1,9 @@
-# Optionaler Begleitbogen
+# Angaben im JSON-Standortformular
 
-Alternativ zum Offline-Formular: diese Angaben als Text oder PDF beilegen.
-Kein Begleitbogen ist Voraussetzung fuer den Reportlauf.
-Nur ausfuellen, was bekannt und fuer die Rueckfrage sinnvoll ist.
+Diese Uebersicht erklaert die Felder. Bitte in [START_HIER.html](START_HIER.html)
+ausfuellen und **JSON herunterladen**. Fuer die Einreichung werden diese JSON
+und die Full-Collector-Exceldatei benoetigt; keine separate Text-/PDF-Datei.
+Optionale Angaben koennen leer bleiben. Der Report laeuft auch vor dem Ausfuellen.
 
 - Einreichungs-ID: MUSTER-STR_Standorttest_20250101-20251231_R01
 - Vollstaendiger Klinikname (optional):

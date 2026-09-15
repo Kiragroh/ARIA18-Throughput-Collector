@@ -25,9 +25,10 @@ const fs = require('fs');
   if(state.overflow||state.line!==(dark?'#fff':'#000')||state.boxes===0)throw Error(name+': '+JSON.stringify(state));
  }
  await page.setViewportSize({width:1440,height:1000});
- const activity=await page.locator('#kpis').innerText();
+ const activity=await page.locator('#machines').innerText();
  await page.selectOption('#model','workflow');
- if(await page.locator('#kpis').innerText()===activity)throw Error('Model switch did not change values');
+ // Pooled KPIs may be suppressed for both models; compare the device table.
+ if(await page.locator('#machines').innerText()===activity)throw Error('Model switch did not change device values');
  await page.selectOption('#granularity','month');
  if(await page.locator('#period option').count()!==12)throw Error('Month range missing');
  await page.selectOption('#period','5');

@@ -8,11 +8,11 @@ danach gemeinsam die Ergebnisse. Es geht nicht um eine unbereinigte Rangliste.
 
 **[Kurze Praesentation im Browser](https://kiragroh.github.io/ARIA18-Throughput-Collector/)**
 | [Projekt und Analyseplan](https://github.com/Kiragroh/ARIA18-Throughput-Collector/blob/main/docs/v2/AG_PROJEKT.md)
-| [Downloadpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/tag/v2.0.0-rc.2)
+| [Gesamtpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Gesamtpaket.zip)
 
 Zum Weitergeben oder offline Oeffnen:
-[Praesentation als einzelne HTML-Datei](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.2/Kooperation_ARIA_Performance.html)
-| [Teilnahmeunterlagen als ZIP](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.2/ARIA-Performance_Kooperation.zip).
+[Praesentation als einzelne HTML-Datei](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/Kooperation_ARIA_Performance.html)
+| [Nur Durchfuehrung als ZIP](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Durchfuehrung.zip).
 
 ## Was Ihr Standort davon hat
 
@@ -31,15 +31,19 @@ keine klinische Entscheidungsunterstuetzung und keine Personalbewertung.
 
 ## Der kleinste erste Schritt
 
-**[Kleines Standorttest-ZIP herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.2/ARIA-Performance_Standorttest.zip)**:
-nur eine RDL, Anleitung mit ausfuellbarem Formular und Linkgenerator, README
-und Pruefsummen. Entpacken und `START_HIER.html` oeffnen. Kein Quellcodepaket.
+**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Gesamtpaket.zip)**:
+Ordner `Durchfuehrung` mit Report, Offline-Formular und Anleitung;
+Ordner `Analyse` mit optionaler Python-Auswertung und synthetischem Probelauf.
+Wer nur exportieren und einreichen moechte, nimmt
+**[Nur Durchfuehrung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Durchfuehrung.zip)**.
+Entpacken und `Durchfuehrung/START_HIER.html` oeffnen. Die Durchfuehrungsdateien
+sind in beiden Paketen identisch.
 
 Der Hauptreport kann bereits beim ersten Versuch laufen. **Integrierte Prueftabellen und
 Formular helfen trotzdem**, lokale Besonderheiten und Datenluecken richtig
 einzuordnen. Bitte die Exceldatei mit Auswertungsdaten und Prueftabellen hochladen:
-Full Collector XLSX und optional ein kurzes Standortformular. Das Formular
-ist optional und funktioniert offline; Angaben als Textdatei sind ebenfalls moeglich.
+**Full Collector XLSX und Standortformular-JSON werden beide benoetigt.**
+Das Formular funktioniert offline: ausfuellen, JSON herunterladen und zusammen mit der Exceldatei einreichen.
 
 1. **Zustaendigkeit klaeren:** Eine fachliche und eine ARIA-/Daten-Ansprechperson
    benennen; erforderliche lokale Freigaben vor dem Datenzugriff klaeren.
@@ -138,7 +142,7 @@ MUSTER-STR_Standorttest_20250101-20251231_R01.zip
   MUSTER-STR_Standorttest_20250101-20251231_R01_Standortformular.json
 ```
 
-Den optionalen Begleitbogen koennen Sie auch als Textdatei oder PDF beilegen.
+Der Begleitbogen wird ausschliesslich im Offline-HTML als JSON erstellt.
 **Einreichungs-ID, Klinik und dienstliche Rueckmeldeadresse** helfen bei Fragen.
 Exportdatum und Datenstand nicht erneut eingeben. Bei mehreren Personen dasselbe
 Kuerzel verwenden und die Revisionsnummer gemeinsam abstimmen.
@@ -152,9 +156,9 @@ oder eine andere Phase ist eine eigene Einreichung, kein Ersatz.
 Dieses Schema ermoeglicht die Zuordnung und Dublettenpruefung; das Uploadportal
 selbst prueft die Benennung und Doppeleinreichungen nicht automatisch.
 
-**Zum Einstieg:** Full Collector XLSX mit integrierten Prueftabellen und optionales
-Standortformular-JSON oder Text-Begleitbogen. Es enthaelt den Begleitbogen bereits;
-[Begleitbogen.md](Begleitbogen.md) bleibt eine Alternative ohne HTML-Formular.
+**Zum Einstieg:** Full Collector XLSX mit integrierten Prueftabellen und
+Standortformular-JSON. Beide Dateien werden fuer die Auswertung benoetigt.
+[Begleitbogen.md](Begleitbogen.md) erklaert die Angaben im JSON-Formular.
 **Spaeter:** lokal freigegebene aggregierte HTML-, CSV- und JSON-Ergebnisse.
 
 **Pseudonymisierte Full-Collector-Dateien:** nur lokal oder nach lokaler Freigabe
@@ -172,7 +176,7 @@ oder Pull Requests ablegen. Der Upload-Link ersetzt keine lokale Freigabe.
 
 ## Status
 
-Pilot-/Releasekandidat **2.0.0-rc.2**. Technischer Preflight, Jahresexport und
+Pilot-/Releasekandidat **2.0.0-rc.3**. Technischer Preflight, Jahresexport und
 lokale Python-Auswertung wurden an einem Pilotstandort erprobt. Eine gemeinsame
 fachliche Multistandortabnahme steht noch aus. Die direkte objektbasierte
 RTPlan-/CBCT-Referenzextraktion ist noch nicht implementiert; das wird nicht als

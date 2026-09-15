@@ -1,7 +1,8 @@
 # Geschuetzte Einreichung
 
-Soweit vorhanden: Full Collector XLSX mit integrierten Prueftabellen und eine kurze Rueckmeldung.
-Formular, Text oder PDF sind moeglich. Keine zusaetzliche Pflichtbestaetigung.
+Benoetigt werden Full Collector XLSX mit integrierten Prueftabellen und
+Standortformular-JSON. Im Offline-HTML ausfuellen, JSON herunterladen und beide
+Dateien gemeinsam als ZIP einreichen. Keine zusaetzliche Pflichtbestaetigung.
 
 - Ein ZIP mit Standortkuerzel, Auswertungszeitraum und Revision.
 - Eine dienstliche Rueckmeldeadresse beilegen, soweit noch nicht bekannt.
