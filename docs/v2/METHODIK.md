@@ -28,6 +28,37 @@ Aufklaerungsquote. Einige beginnen nach einer Aufklaerung aus dem Vorjahr oder o
 in der Quelle auffindbare Aufklaerung. Umgekehrt beginnt die Behandlung einer
 Aufklaerungskohorte eventuell erst im Folgejahr.
 
+## Getrennter Definitionsabgleich
+
+Die vorab festgelegte Aufklaerungskohorte bleibt dem **ersten abgeschlossenen
+Termin** zugeordnet. Eine zusaetzliche operative Sensitivitaetsauswertung ordnet
+den Pfad dem **letzten abgeschlossenen Termin** zu. Ausschliesslich offene
+Aufklaerungen werden darin nur bei nachfolgendem Behandlungsbeginn als abgeleitete
+Anwesenheit gezaehlt und separat von dokumentierten Abschluessen ausgewiesen.
+Das aendert weder den Status noch die Zahl abgeschlossener Termine. Auch der
+Kalendertag des Behandlungsbeginns gilt hier als passende Terminzuordnung.
+
+Der Abgleich stellt zwei Behandlungsdefinitionen nebeneinander:
+
+- Einzelne belegte Behandlungstage mit maximal 30 Tagen Abstand.
+- ARIA-Kursintervalle vom ersten bis letzten belegten Behandlungstag, danach
+  Zusammenfuehrung bei Ueberlappung oder maximal 30 Tagen Abstand. Ohne Kursreferenz
+  wird die Planreferenz verwendet. Ein solches Kursintervall kann eine laengere
+  interne Pause ueberbruecken; deshalb ist es nicht die automatische Hauptdefinition.
+
+Bestaetigte manuelle Therapien bleiben in beiden Varianten enthalten. Die Zahlen
+sind alternative Definitionen, keine addierbaren Patientengruppen. Kleine
+Teilgruppen und kleine Differenzen zwischen Varianten werden unterdrueckt.
+Ein identisches Ergebnis belegt noch keine identische oder vollstaendige Quelle.
+
+Der Quellfilter-Abgleich zaehlt **Ereigniszeilen**, nicht Patienten oder Fraktionen,
+und trennt Auswahlzeitraum und gesamten Kontext. Direkte Bildobjekte sind davon
+ausgenommen. Testnamenskennzeichen, lokales Kennungsformat und Ressourcenstatus
+werden mit dieser Vorrangfolge disjunkt gezaehlt. Nichtnumerische Kennungen sind
+nicht automatisch Testpatienten; der Filter muss zum Standort passen. Fehlende
+Flagspalten werden als nicht pruefbar gekennzeichnet. Bereits upstream ausgeschlossene
+Datensaetze koennen anhand dieses Exports nicht nachtraeglich inventarisiert werden.
+
 ## Zeitmodelle
 
 - **Aktivitaet (Standard):** dokumentierter Aktivitaetsbeginn bis dokumentiertes Ende.

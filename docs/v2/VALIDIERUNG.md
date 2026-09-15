@@ -1,5 +1,23 @@
 # Pruefstatus Paket 2.0.0-rc.5
 
+## Unveroeffentlichter Definitionsabgleich
+
+- 107 automatisierte Tests bestanden (44,27 s), einschliesslich entpacktem
+  Analysepaket. Zusaetzliche Faelle: Kurs-/Behandlungstaggrenzen, Jahreswechsel
+  der Aufklaerung, abgeleitete Anwesenheit, fehlende Kursreferenz, Stornos,
+  zukuenftige Therapie, Kleingruppen und disjunkte Quellfilter.
+- Reale aktualisierte Standortlieferung gegen bestehende Referenzfunktionen
+  auf identischen Eingangsereignissen geprueft. Definitionsunterschiede erklaeren
+  einen Teil, aber nicht alle Abweichungen zu aelteren lokalen Vergleichszahlen.
+- Zweiter Referenzstandort: vorhandener Export Januar/Februar 2025 in 9,73 s
+  eingelesen und mit beiden operativen Definitionen geprueft. Dort gleiche
+  aggregierte Ergebnisse beider Varianten. Keine neue Live-Datenbankabfrage.
+- Offline-Browserpruefung der neuen Tabellen auf Desktop/Mobil in Hell/Dunkel;
+  alle 17 Diagramme weiterhin befuellt, Monatswechsel und Vergroesserung sowie
+  Bildgebung fuer alle drei Zeitmodelle geprueft.
+- Nur zusaetzliche Diagnostik und Quellenhinweis korrigiert. Hauptkohorte,
+  Primaermetriken und RDL unveraendert. Noch kein neuer freigegebener Release.
+
 ## Teilnahmeunterlagen rc.5
 
 - 95 automatisierte Tests bestanden (37,31 s), einschliesslich entpacktem

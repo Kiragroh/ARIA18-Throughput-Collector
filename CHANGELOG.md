@@ -1,5 +1,16 @@
 # Changelog
 
+## Noch nicht veroeffentlicht
+
+- Getrennter Definitionsabgleich fuer operative Behandlungspfade: dokumentierte
+  und nur aus Behandlungsbeginn abgeleitete Anwesenheit, letzter statt erster
+  Aufklaerungstermin sowie Kursintervalle gegen belegte Behandlungstage.
+  Die vorab definierte Studienkohorte bleibt unveraendert.
+- Ausschlussgruende des lokalen Profils als Ereigniszeilen fuer Auswahl und
+  Gesamtkontext sichtbar; fehlende Quellflags werden nicht als geprueft behandelt.
+- Bildgebungsquellenhinweis folgt dem tatsaechlichen Export statt eines alten
+  festen Texts ohne direkte Bildobjekte. Keine Aenderung der RDL-Datei erforderlich.
+
 ## 2.0.0-rc.5 - 2026-09-16
 
 - Optionaler Plausibilitaetsabgleich im Offline-Formular: bekannte Patientenzahl

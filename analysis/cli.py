@@ -10,6 +10,7 @@ from .contracts import load_profile
 from .ingest import load_export, normalize_flow, eligible_events, resolve_treatment_devices
 from .population import summarize_population
 from .imaging_frequency import summarize_images
+from .reconciliation import reference_conventions, source_filter_audit
 from .throughput import prepare_visits, aggregate
 from .flow import summarize
 from .metrics import deduplicate
@@ -62,6 +63,7 @@ def analyze(path,profile):
     if any(c["is_required"] and not c["available"] for c in coverage):
         raise ValueError("Required source coverage is missing")
     notes = []
+    source_filters = source_filter_audit(events, profile)
     before_filter = len(events)
     events = eligible_events(events, profile)
     filtered_rows = before_filter-len(events)
@@ -84,6 +86,7 @@ def analyze(path,profile):
     flow=suppress_flow(flow,profile.minimum_patients)
     if any(v is None and raw_flow.get(k) is not None for k,v in flow.items()):
         notes.append("Kleine Teilgruppen und abhaengige Summen im Patientenfluss unterdrueckt.")
+    flow["reference_conventions"] = reference_conventions(flow_events, profile, data_through=metadata["data_through"])
     population = summarize_population(events, profile, metadata)
     if not population["comparison_available"]:
         notes.append("Vorjahr nicht vergleichbar: Dieser Export enthaelt keine vollstaendige Vorjahrespopulation. Neuer Gesamtexport erforderlich.")
@@ -110,7 +113,10 @@ def analyze(path,profile):
         quality[key] = "<5" if 0<value<profile.minimum_patients else value
     quality["unknown_activity_rows"] = "<5" if 0<len(unknown)<profile.minimum_patients else len(unknown)
     quality["source_coverage_confirmed"] = confirmed
-    quality["imaging_source"] = "DWH-FactTreatmentHistory; direkte Bildobjekte nicht enthalten"
+    quality["imaging_source"] = ("DWH.FactTreatmentHistory und DWH.FactPatientImage; direkte Bildobjekte separat ausgewertet"
+                                 if imaging["available"] else
+                                 "DWH.FactTreatmentHistory; direkte Bildobjekte nicht verfuegbar")
+    quality["source_filters"] = source_filters
     quality["profile_confirmed"] = profile.confirmed
     quality["record_timestamp_fallback_rows"]=record_fallback_count
     quality["future_observation_horizon_months"] = 12
