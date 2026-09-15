@@ -2,3 +2,10 @@ validation/local_smoke/
 validation/ssrs_http/
 __pycache__/
 *.pyc
+.pytest_cache/
+.test-tmp/
+.local/
+*.sqlite*
+exports/
+output/
+packages/

@@ -1,5 +1,27 @@
 # ARIA 18+ Throughput Collector
 
+## Version 2.0: AG-Pilot
+
+Der neue Stand liegt in [START 2.0](docs/v2/START.md).
+Standard ist **01.01.2025 bis 31.12.2025**. Ein anderes aktuelles,
+vollstaendiges Jahr bleibt mit dokumentierter Begruendung moeglich.
+
+- [Collector 2.0 RDL](dist/ARIA18_Throughput_Collector_2.0.rdl)
+- [Zuerst: Standort-Preflight](dist/ARIA18_Standort_Preflight_2.0.rdl)
+- [Preflight, Formular und minimale Standortanpassung](docs/v2/STANDORTTEST.md)
+- [Schneller CSV-Collector fuer Jahresdaten](dist/ARIA18_Throughput_Collector_Fast_2.0.rdl)
+- [AG-Projektskizze und Analyseplan](docs/v2/AG_PROJEKT.md)
+- [Methodik und Nenner](docs/v2/METHODIK.md)
+- [Standortprofil](profiles/site-template.json)
+- [Bildgebung: Quellenpruefung](docs/v2/IMAGING.md)
+- [Pruefstatus](docs/v2/VALIDIERUNG.md)
+
+Die Version 2.0 ist ein **Pilot-/Releasekandidat**, keine klinisch freigegebene
+Software. Der neue Ereignisvertrag ersetzt nicht stillschweigend die Definitionen
+von 1.x. Das folgende Kapitel beschreibt ausschliesslich den historischen 1.x-Stand.
+
+## Archiv: Version 1.x
+
 Portabler SSRS-Bericht mit eingebetteten SQL-Abfragen für standortübergreifende Durchsatz- und Klinikvergleiche in der Strahlentherapie. Ein Standort führt ihn einmal gegen seine lokale ARIA-DWH aus und exportiert die Ergebnisblätter als Excel. Die Ausgabe erfasst Zeitraum, aktive Geräte, Sitzungen, Patienten, Gerätetage, Betriebsfenster, Taktung, lange Lücken, Slotnutzung, Fallmix, Bildgebung, Patientenanmeldung, Workflowstatus und Datenqualität in einer methodisch einheitlichen Form.
 
 ## In drei Schritten
