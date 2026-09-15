@@ -1,0 +1,20 @@
+{
+  "method_version": "ARIA18-THROUGHPUT-2.0",
+  "release": "2.0.0-rc.1",
+  "default_period_start": "2025-01-01",
+  "default_period_end": "2025-12-31",
+  "default_model": "activity",
+  "default_gap_filter": "all_positive",
+  "alternative_gap_filter": "strictly_greater_than_30_minutes",
+  "clinical_maturity": "three_calendar_months_from_last_completed_counselling",
+  "treatment_episode_gap_days": 30,
+  "clinical_followup_upper_limit_days": null,
+  "default_context_lookback_years": 1,
+  "future_booked_observation_horizon_months": 12,
+  "pseudonym_hash": "SHA2_256",
+  "minimum_shareable_group_patients": 5,
+  "sql_access": "read_only_with_session_local_temp_tables",
+  "data_contract": "2.0",
+  "direct_imaging_adapter_status": "schema_preflight_and_classifier_only",
+  "formal_clinical_acceptance": false
+}

@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report MustUnderstand="df" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:df="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition/defaultfontfamily">
+  <Description>Klinikneutraler ARIA-18-Collector fuer Durchsatz- und Klinikvergleiche.</Description>
+  <df:DefaultFontFamily>Segoe UI</df:DefaultFontFamily>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DataSource1">
+      <DataSourceReference>/VarianTemplate/Data Sources/variandw</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>6a650bc3-bb2e-44a4-a993-ffea62af1b18</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="Metadata">
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@PeriodStart"><Value>=Parameters!PeriodStart.Value</Value></QueryParameter>
+          <QueryParameter Name="@PeriodEnd"><Value>=Parameters!PeriodEnd.Value</Value></QueryParameter>
+          <QueryParameter Name="@PeriodReason"><Value>=Parameters!PeriodReason.Value</Value></QueryParameter>
+          <QueryParameter Name="@ContextStart"><Value>=Parameters!ContextStart.Value</Value></QueryParameter>
+          <QueryParameter Name="@DataThrough"><Value>=Parameters!DataThrough.Value</Value></QueryParameter>
+          <QueryParameter Name="@DataThroughConfirmed"><Value>=Parameters!DataThroughConfirmed.Value</Value></QueryParameter>
+          <QueryParameter Name="@SiteLabel"><Value>=Parameters!SiteLabel.Value</Value></QueryParameter>
+          <QueryParameter Name="@IncludePseudonymizedDetails"><Value>=Parameters!IncludePseudonymizedDetails.Value</Value></QueryParameter>
+          <QueryParameter Name="@RunId"><Value>=Parameters!RunId.Value</Value></QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT N'2.0' AS contract_version,@RunId AS run_id,@SiteLabel AS site,@PeriodStart AS period_start,@PeriodEnd AS period_end,@PeriodReason AS period_reason,@ContextStart AS context_start,@DataThrough AS data_through,@DataThroughConfirmed AS data_through_confirmed,@IncludePseudonymizedDetails AS details_included;</CommandText>
+        <Timeout>600</Timeout><rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="contract_version">
+          <DataField>contract_version</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="run_id">
+          <DataField>run_id</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="site">
+          <DataField>site</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="period_start">
+          <DataField>period_start</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="period_end">
+          <DataField>period_end</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="period_reason">
+          <DataField>period_reason</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="context_start">
+          <DataField>context_start</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="data_through">
+          <DataField>data_through</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="data_through_confirmed">
+          <DataField>data_through_confirmed</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="details_included">
+          <DataField>details_included</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="Capabilities">
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>SELECT N'2.0' AS contract_version, source_name, column_name, is_required, CASE WHEN COL_LENGTH(source_name,column_name) IS NULL THEN 0 ELSE 1 END AS available FROM (VALUES (N'DWH.DimPatient',N'DimPatientID',1),
+(N'DWH.DimPatient',N'IsMOTestPatient',1),
+(N'DWH.DimMachine',N'DimMachineID',1),
+(N'DWH.DimMachine',N'MachineId',1),
+(N'DWH.FactTreatmentHistory',N'DimPatientID',1),
+(N'DWH.FactTreatmentHistory',N'DimCourseID',0),
+(N'DWH.FactTreatmentHistory',N'DimPlanID',0),
+(N'DWH.FactTreatmentHistory',N'DimFieldID',0),
+(N'DWH.FactTreatmentHistory',N'DimActualMachineID',0),
+(N'DWH.FactTreatmentHistory',N'DimPlanMachineID',0),
+(N'DWH.FactTreatmentHistory',N'TreatmentRecordDateTime',1),
+(N'DWH.FactTreatmentHistory',N'TreatmentStartTime',0),
+(N'DWH.FactTreatmentHistory',N'TreatmentEndTime',0),
+(N'DWH.FactTreatmentHistory',N'FractionNumber',0),
+(N'DWH.FactTreatmentHistory',N'IsImage',1),
+(N'DWH.FactTreatmentHistory',N'IsBrachy',1),
+(N'DWH.FactTreatmentHistory',N'DeliveredMU',0),
+(N'DWH.FactTreatmentHistory',N'FieldMUActual',0),
+(N'DWH.FactTreatmentHistory',N'DoseDelivered',0),
+(N'DWH.DimActivityTransaction',N'DimActivityTransactionID',1),
+(N'DWH.DimActivityTransaction',N'DimPatientID',1),
+(N'DWH.DimActivityTransaction',N'DimActivityID',1),
+(N'DWH.DimActivityTransaction',N'AppointmentDateTime',1),
+(N'DWH.DimActivityTransaction',N'ScheduledEndTime',0),
+(N'DWH.DimActivityTransaction',N'ActivityStartDateTime',0),
+(N'DWH.DimActivityTransaction',N'ActivityEndDateTime',0),
+(N'DWH.DimActivityTransaction',N'AppointmentStatus',1),
+(N'DWH.DimActivityTransaction',N'AppointmentResourceStatus',0),
+(N'DWH.DimActivityTransaction',N'IsScheduled',0),
+(N'DWH.DimActivityTransaction',N'ctrResourceSer',0),
+(N'DWH.DimActivityTransaction',N'DimResourceID',0),
+(N'DWH.DimActivity',N'DimActivityID',1),
+(N'DWH.DimActivity',N'ActivityCode',1),
+(N'DWH.DimActivity',N'ActivityNameDEU',0),
+(N'DWH.DimActivity',N'ActivityCategoryDEU',0),
+(N'DWH.vv_ResourceInfo',N'ctrResourceSer',0),
+(N'DWH.vv_ResourceInfo',N'ResourceId',0),
+(N'DWH.InSightiveResourceMachine',N'DimResourceID',0),
+(N'DWH.InSightiveResourceMachine',N'MachineId',0),
+(N'DWH.DimActivityTransactionHistory',N'DimActivityTransactionID',0),
+(N'DWH.DimActivityTransactionHistory',N'ScheduledActivityHstryDateTime',0),
+(N'DWH.DimActivityTransactionHistory',N'ScheduledActivityCode',0)) v(source_name,column_name,is_required);</CommandText>
+        <Timeout>600</Timeout><rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="contract_version">
+          <DataField>contract_version</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="source_name">
+          <DataField>source_name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="column_name">
+          <DataField>column_name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="is_required">
+          <DataField>is_required</DataField>
+          <rd:TypeName>System.Int64</rd:TypeName>
+        </Field>
+        <Field Name="available">
+          <DataField>available</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="ActivityCatalog">
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@ContextStart"><Value>=Parameters!ContextStart.Value</Value></QueryParameter>
+          <QueryParameter Name="@DataThrough"><Value>=Parameters!DataThrough.Value</Value></QueryParameter>
+        </QueryParameters>
+        <CommandText>CREATE TABLE #Activity ([DimActivityID] bigint NULL, [ActivityCode] nvarchar(255) NULL, [ActivityNameDEU] nvarchar(1000) NULL, [ActivityCategoryDEU] nvarchar(1000) NULL);
+IF COL_LENGTH(N'DWH.DimActivity',N'DimActivityID') IS NULL THROW 51001, N'Required source unavailable: DWH.DimActivity.DimActivityID', 1;
+IF COL_LENGTH(N'DWH.DimActivity',N'ActivityCode') IS NULL THROW 51001, N'Required source unavailable: DWH.DimActivity.ActivityCode', 1;
+IF OBJECT_ID(N'DWH.DimActivity') IS NOT NULL
+BEGIN
+DECLARE @sql_Activity nvarchar(max) = N'INSERT INTO #Activity SELECT ' + N'TRY_CONVERT(bigint, s.[DimActivityID])' + N', ' + N'TRY_CONVERT(nvarchar(255), s.[ActivityCode])' + N', ' + CASE WHEN COL_LENGTH(N'DWH.DimActivity',N'ActivityNameDEU') IS NOT NULL THEN N'TRY_CONVERT(nvarchar(1000), s.[ActivityNameDEU])' ELSE N'CAST(NULL AS nvarchar(1000))' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.DimActivity',N'ActivityCategoryDEU') IS NOT NULL THEN N'TRY_CONVERT(nvarchar(1000), s.[ActivityCategoryDEU])' ELSE N'CAST(NULL AS nvarchar(1000))' END + N' FROM DWH.DimActivity s';
+EXEC sys.sp_executesql @sql_Activity, N'@context date,@through date', @context= @ContextStart, @through= @DataThrough;
+END;
+SELECT DISTINCT ActivityCode AS activity_code,ActivityNameDEU AS activity_name,ActivityCategoryDEU AS activity_category FROM #Activity ORDER BY activity_code;</CommandText>
+        <Timeout>600</Timeout><rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="activity_code">
+          <DataField>activity_code</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="activity_name">
+          <DataField>activity_name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="activity_category">
+          <DataField>activity_category</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="EventDetails">
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@PeriodStart"><Value>=Parameters!PeriodStart.Value</Value></QueryParameter>
+          <QueryParameter Name="@PeriodEnd"><Value>=Parameters!PeriodEnd.Value</Value></QueryParameter>
+          <QueryParameter Name="@PeriodReason"><Value>=Parameters!PeriodReason.Value</Value></QueryParameter>
+          <QueryParameter Name="@ContextStart"><Value>=Parameters!ContextStart.Value</Value></QueryParameter>
+          <QueryParameter Name="@DataThrough"><Value>=Parameters!DataThrough.Value</Value></QueryParameter>
+          <QueryParameter Name="@IncludePseudonymizedDetails"><Value>=Parameters!IncludePseudonymizedDetails.Value</Value></QueryParameter>
+          <QueryParameter Name="@RunId"><Value>=Parameters!RunId.Value</Value></QueryParameter>
+          <QueryParameter Name="@ExportSalt"><Value>=Parameters!ExportSalt.Value</Value></QueryParameter>
+        </QueryParameters>
+        <CommandText>
+SET NOCOUNT ON;
+SET @PeriodStart=CAST(@PeriodStart AS date);
+SET @PeriodEnd=CAST(@PeriodEnd AS date);
+SET @ContextStart=CAST(@ContextStart AS date);
+SET @DataThrough=CAST(@DataThrough AS date);
+IF CAST(@PeriodStart AS date) &gt; CAST(@PeriodEnd AS date) OR @ContextStart &gt; @PeriodStart
+  OR @DataThrough &lt; @PeriodEnd OR @DataThrough &gt;= CAST(GETDATE() AS date)
+  THROW 51000, N'Invalid period/context/data watermark. Use complete past dates.', 1;
+IF DATEDIFF(day,@ContextStart,@DataThrough)&gt;1827
+  THROW 51000, N'Context larger than five years: split extraction.', 1;
+IF (CAST(@PeriodStart AS date)&lt;&gt;'20250101' OR CAST(@PeriodEnd AS date)&lt;&gt;'20251231')
+ AND (LEN(LTRIM(RTRIM(@PeriodReason)))=0 OR @PeriodReason=N'Standardjahr 2025')
+  THROW 51000, N'Differing period requires a reason.', 1;
+IF @IncludePseudonymizedDetails=0
+BEGIN
+ SELECT CAST(NULL AS nvarchar(255)) AS [contract_version],CAST(NULL AS nvarchar(255)) AS [run_id],CAST(NULL AS nvarchar(255)) AS [source],CAST(NULL AS nvarchar(255)) AS [event_key],CAST(NULL AS nvarchar(255)) AS [patient_key],CAST(NULL AS nvarchar(255)) AS [course_key],CAST(NULL AS nvarchar(255)) AS [plan_key],CAST(NULL AS nvarchar(255)) AS [machine],CAST(NULL AS datetime2) AS [event_start],CAST(NULL AS datetime2) AS [event_end],CAST(NULL AS nvarchar(255)) AS [fraction],CAST(NULL AS nvarchar(255)) AS [activity_code],CAST(NULL AS nvarchar(255)) AS [status],CAST(NULL AS nvarchar(255)) AS [is_brachy],CAST(NULL AS datetime2) AS [activity_start],CAST(NULL AS datetime2) AS [activity_end],CAST(NULL AS datetime2) AS [completed],CAST(NULL AS nvarchar(255)) AS [time_source],CAST(NULL AS nvarchar(255)) AS [completion_candidates],CAST(NULL AS nvarchar(255)) AS [source_rows] WHERE 1=0;
+ RETURN;
+END;
+IF COL_LENGTH(N'DWH.DimActivityTransaction',N'DimPatientID') IS NULL THROW 51001,N'Missing cohort source',1;
+IF COL_LENGTH(N'DWH.DimActivityTransaction',N'AppointmentDateTime') IS NULL THROW 51001,N'Missing cohort source',1;
+IF COL_LENGTH(N'DWH.FactTreatmentHistory',N'DimPatientID') IS NULL THROW 51001,N'Missing cohort source',1;
+IF COL_LENGTH(N'DWH.FactTreatmentHistory',N'TreatmentRecordDateTime') IS NULL THROW 51001,N'Missing cohort source',1;
+CREATE TABLE #Cohort(patient_id bigint NOT NULL PRIMARY KEY);
+DECLARE @cohort_sql nvarchar(max)=N'
+ INSERT INTO #Cohort
+ SELECT DimPatientID FROM DWH.DimActivityTransaction
+ WHERE AppointmentDateTime&gt;=@start AND AppointmentDateTime&lt;DATEADD(day,1,@end) AND DimPatientID&gt;0
+ UNION
+ SELECT DimPatientID FROM DWH.FactTreatmentHistory
+ WHERE TreatmentRecordDateTime&gt;=@start AND TreatmentRecordDateTime&lt;DATEADD(day,1,@end) AND DimPatientID&gt;0';
+EXEC sys.sp_executesql @cohort_sql,N'@start date,@end date',@start=@PeriodStart,@end=@PeriodEnd;
+CREATE TABLE #Patient ([DimPatientID] bigint NULL, [IsMOTestPatient] int NULL);
+IF COL_LENGTH(N'DWH.DimPatient',N'DimPatientID') IS NULL THROW 51001, N'Required source unavailable: DWH.DimPatient.DimPatientID', 1;
+IF COL_LENGTH(N'DWH.DimPatient',N'IsMOTestPatient') IS NULL THROW 51001, N'Required source unavailable: DWH.DimPatient.IsMOTestPatient', 1;
+IF OBJECT_ID(N'DWH.DimPatient') IS NOT NULL
+BEGIN
+DECLARE @sql_Patient nvarchar(max) = N'INSERT INTO #Patient SELECT ' + N'TRY_CONVERT(bigint, s.[DimPatientID])' + N', ' + N'TRY_CONVERT(int, s.[IsMOTestPatient])' + N' FROM DWH.DimPatient s';
+EXEC sys.sp_executesql @sql_Patient, N'@context date,@through date', @context= @ContextStart, @through= @DataThrough;
+END;
+CREATE TABLE #Machine ([DimMachineID] bigint NULL, [MachineId] nvarchar(255) NULL);
+IF COL_LENGTH(N'DWH.DimMachine',N'DimMachineID') IS NULL THROW 51001, N'Required source unavailable: DWH.DimMachine.DimMachineID', 1;
+IF COL_LENGTH(N'DWH.DimMachine',N'MachineId') IS NULL THROW 51001, N'Required source unavailable: DWH.DimMachine.MachineId', 1;
+IF OBJECT_ID(N'DWH.DimMachine') IS NOT NULL
+BEGIN
+DECLARE @sql_Machine nvarchar(max) = N'INSERT INTO #Machine SELECT ' + N'TRY_CONVERT(bigint, s.[DimMachineID])' + N', ' + N'TRY_CONVERT(nvarchar(255), s.[MachineId])' + N' FROM DWH.DimMachine s';
+EXEC sys.sp_executesql @sql_Machine, N'@context date,@through date', @context= @ContextStart, @through= @DataThrough;
+END;
+CREATE TABLE #Treatment ([DimPatientID] bigint NULL, [DimCourseID] bigint NULL, [DimPlanID] bigint NULL, [DimFieldID] bigint NULL, [DimActualMachineID] bigint NULL, [DimPlanMachineID] bigint NULL, [TreatmentRecordDateTime] datetime2 NULL, [TreatmentStartTime] datetime2 NULL, [TreatmentEndTime] datetime2 NULL, [FractionNumber] int NULL, [IsImage] int NULL, [IsBrachy] int NULL, [DeliveredMU] float NULL, [FieldMUActual] float NULL, [DoseDelivered] float NULL);
+IF COL_LENGTH(N'DWH.FactTreatmentHistory',N'DimPatientID') IS NULL THROW 51001, N'Required source unavailable: DWH.FactTreatmentHistory.DimPatientID', 1;
+IF COL_LENGTH(N'DWH.FactTreatmentHistory',N'TreatmentRecordDateTime') IS NULL THROW 51001, N'Required source unavailable: DWH.FactTreatmentHistory.TreatmentRecordDateTime', 1;
+IF COL_LENGTH(N'DWH.FactTreatmentHistory',N'IsImage') IS NULL THROW 51001, N'Required source unavailable: DWH.FactTreatmentHistory.IsImage', 1;
+IF COL_LENGTH(N'DWH.FactTreatmentHistory',N'IsBrachy') IS NULL THROW 51001, N'Required source unavailable: DWH.FactTreatmentHistory.IsBrachy', 1;
+IF OBJECT_ID(N'DWH.FactTreatmentHistory') IS NOT NULL
+BEGIN
+DECLARE @sql_Treatment nvarchar(max) = N'INSERT INTO #Treatment SELECT ' + N'TRY_CONVERT(bigint, s.[DimPatientID])' + N', ' + CASE WHEN COL_LENGTH(N'DWH.FactTreatmentHistory',N'DimCourseID') IS NOT NULL THEN N'TRY_CONVERT(bigint, s.[DimCourseID])' ELSE N'CAST(NULL AS bigint)' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.FactTreatmentHistory',N'DimPlanID') IS NOT NULL THEN N'TRY_CONVERT(bigint, s.[DimPlanID])' ELSE N'CAST(NULL AS bigint)' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.FactTreatmentHistory',N'DimFieldID') IS NOT NULL THEN N'TRY_CONVERT(bigint, s.[DimFieldID])' ELSE N'CAST(NULL AS bigint)' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.FactTreatmentHistory',N'DimActualMachineID') IS NOT NULL THEN N'TRY_CONVERT(bigint, s.[DimActualMachineID])' ELSE N'CAST(NULL AS bigint)' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.FactTreatmentHistory',N'DimPlanMachineID') IS NOT NULL THEN N'TRY_CONVERT(bigint, s.[DimPlanMachineID])' ELSE N'CAST(NULL AS bigint)' END + N', ' + N'TRY_CONVERT(datetime2, s.[TreatmentRecordDateTime])' + N', ' + CASE WHEN COL_LENGTH(N'DWH.FactTreatmentHistory',N'TreatmentStartTime') IS NOT NULL THEN N'TRY_CONVERT(datetime2, s.[TreatmentStartTime])' ELSE N'CAST(NULL AS datetime2)' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.FactTreatmentHistory',N'TreatmentEndTime') IS NOT NULL THEN N'TRY_CONVERT(datetime2, s.[TreatmentEndTime])' ELSE N'CAST(NULL AS datetime2)' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.FactTreatmentHistory',N'FractionNumber') IS NOT NULL THEN N'TRY_CONVERT(int, s.[FractionNumber])' ELSE N'CAST(NULL AS int)' END + N', ' + N'TRY_CONVERT(int, s.[IsImage])' + N', ' + N'TRY_CONVERT(int, s.[IsBrachy])' + N', ' + CASE WHEN COL_LENGTH(N'DWH.FactTreatmentHistory',N'DeliveredMU') IS NOT NULL THEN N'TRY_CONVERT(float, s.[DeliveredMU])' ELSE N'CAST(NULL AS float)' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.FactTreatmentHistory',N'FieldMUActual') IS NOT NULL THEN N'TRY_CONVERT(float, s.[FieldMUActual])' ELSE N'CAST(NULL AS float)' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.FactTreatmentHistory',N'DoseDelivered') IS NOT NULL THEN N'TRY_CONVERT(float, s.[DoseDelivered])' ELSE N'CAST(NULL AS float)' END + N' FROM DWH.FactTreatmentHistory s WHERE s.TreatmentRecordDateTime &gt;= @context AND s.TreatmentRecordDateTime &lt; DATEADD(day,1,@through) AND EXISTS(SELECT 1 FROM #Cohort c WHERE c.patient_id=s.DimPatientID)';
+EXEC sys.sp_executesql @sql_Treatment, N'@context date,@through date', @context= @ContextStart, @through= @DataThrough;
+END;
+CREATE TABLE #Appointment ([DimActivityTransactionID] bigint NULL, [DimPatientID] bigint NULL, [DimActivityID] bigint NULL, [AppointmentDateTime] datetime2 NULL, [ScheduledEndTime] datetime2 NULL, [ActivityStartDateTime] datetime2 NULL, [ActivityEndDateTime] datetime2 NULL, [AppointmentStatus] nvarchar(255) NULL, [AppointmentResourceStatus] nvarchar(255) NULL, [IsScheduled] nvarchar(50) NULL, [ctrResourceSer] bigint NULL, [DimResourceID] bigint NULL);
+IF COL_LENGTH(N'DWH.DimActivityTransaction',N'DimActivityTransactionID') IS NULL THROW 51001, N'Required source unavailable: DWH.DimActivityTransaction.DimActivityTransactionID', 1;
+IF COL_LENGTH(N'DWH.DimActivityTransaction',N'DimPatientID') IS NULL THROW 51001, N'Required source unavailable: DWH.DimActivityTransaction.DimPatientID', 1;
+IF COL_LENGTH(N'DWH.DimActivityTransaction',N'DimActivityID') IS NULL THROW 51001, N'Required source unavailable: DWH.DimActivityTransaction.DimActivityID', 1;
+IF COL_LENGTH(N'DWH.DimActivityTransaction',N'AppointmentDateTime') IS NULL THROW 51001, N'Required source unavailable: DWH.DimActivityTransaction.AppointmentDateTime', 1;
+IF COL_LENGTH(N'DWH.DimActivityTransaction',N'AppointmentStatus') IS NULL THROW 51001, N'Required source unavailable: DWH.DimActivityTransaction.AppointmentStatus', 1;
+IF OBJECT_ID(N'DWH.DimActivityTransaction') IS NOT NULL
+BEGIN
+DECLARE @sql_Appointment nvarchar(max) = N'INSERT INTO #Appointment SELECT ' + N'TRY_CONVERT(bigint, s.[DimActivityTransactionID])' + N', ' + N'TRY_CONVERT(bigint, s.[DimPatientID])' + N', ' + N'TRY_CONVERT(bigint, s.[DimActivityID])' + N', ' + N'TRY_CONVERT(datetime2, s.[AppointmentDateTime])' + N', ' + CASE WHEN COL_LENGTH(N'DWH.DimActivityTransaction',N'ScheduledEndTime') IS NOT NULL THEN N'TRY_CONVERT(datetime2, s.[ScheduledEndTime])' ELSE N'CAST(NULL AS datetime2)' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.DimActivityTransaction',N'ActivityStartDateTime') IS NOT NULL THEN N'TRY_CONVERT(datetime2, s.[ActivityStartDateTime])' ELSE N'CAST(NULL AS datetime2)' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.DimActivityTransaction',N'ActivityEndDateTime') IS NOT NULL THEN N'TRY_CONVERT(datetime2, s.[ActivityEndDateTime])' ELSE N'CAST(NULL AS datetime2)' END + N', ' + N'TRY_CONVERT(nvarchar(255), s.[AppointmentStatus])' + N', ' + CASE WHEN COL_LENGTH(N'DWH.DimActivityTransaction',N'AppointmentResourceStatus') IS NOT NULL THEN N'TRY_CONVERT(nvarchar(255), s.[AppointmentResourceStatus])' ELSE N'CAST(NULL AS nvarchar(255))' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.DimActivityTransaction',N'IsScheduled') IS NOT NULL THEN N'TRY_CONVERT(nvarchar(50), s.[IsScheduled])' ELSE N'CAST(NULL AS nvarchar(50))' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.DimActivityTransaction',N'ctrResourceSer') IS NOT NULL THEN N'TRY_CONVERT(bigint, s.[ctrResourceSer])' ELSE N'CAST(NULL AS bigint)' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.DimActivityTransaction',N'DimResourceID') IS NOT NULL THEN N'TRY_CONVERT(bigint, s.[DimResourceID])' ELSE N'CAST(NULL AS bigint)' END + N' FROM DWH.DimActivityTransaction s WHERE s.AppointmentDateTime &gt;= @context AND s.AppointmentDateTime &lt; DATEADD(month,12,DATEADD(day,1,@through)) AND (COALESCE(s.DimPatientID,0)&lt;=0 OR EXISTS(SELECT 1 FROM #Cohort c WHERE c.patient_id=s.DimPatientID))';
+EXEC sys.sp_executesql @sql_Appointment, N'@context date,@through date', @context= @ContextStart, @through= @DataThrough;
+END;
+CREATE INDEX ix_appointment_id ON #Appointment(DimActivityTransactionID);
+CREATE TABLE #Activity ([DimActivityID] bigint NULL, [ActivityCode] nvarchar(255) NULL, [ActivityNameDEU] nvarchar(1000) NULL, [ActivityCategoryDEU] nvarchar(1000) NULL);
+IF COL_LENGTH(N'DWH.DimActivity',N'DimActivityID') IS NULL THROW 51001, N'Required source unavailable: DWH.DimActivity.DimActivityID', 1;
+IF COL_LENGTH(N'DWH.DimActivity',N'ActivityCode') IS NULL THROW 51001, N'Required source unavailable: DWH.DimActivity.ActivityCode', 1;
+IF OBJECT_ID(N'DWH.DimActivity') IS NOT NULL
+BEGIN
+DECLARE @sql_Activity nvarchar(max) = N'INSERT INTO #Activity SELECT ' + N'TRY_CONVERT(bigint, s.[DimActivityID])' + N', ' + N'TRY_CONVERT(nvarchar(255), s.[ActivityCode])' + N', ' + CASE WHEN COL_LENGTH(N'DWH.DimActivity',N'ActivityNameDEU') IS NOT NULL THEN N'TRY_CONVERT(nvarchar(1000), s.[ActivityNameDEU])' ELSE N'CAST(NULL AS nvarchar(1000))' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.DimActivity',N'ActivityCategoryDEU') IS NOT NULL THEN N'TRY_CONVERT(nvarchar(1000), s.[ActivityCategoryDEU])' ELSE N'CAST(NULL AS nvarchar(1000))' END + N' FROM DWH.DimActivity s';
+EXEC sys.sp_executesql @sql_Activity, N'@context date,@through date', @context= @ContextStart, @through= @DataThrough;
+END;
+CREATE TABLE #Resource ([ctrResourceSer] bigint NULL, [ResourceId] nvarchar(255) NULL);
+
+IF OBJECT_ID(N'DWH.vv_ResourceInfo') IS NOT NULL
+BEGIN
+DECLARE @sql_Resource nvarchar(max) = N'INSERT INTO #Resource SELECT ' + CASE WHEN COL_LENGTH(N'DWH.vv_ResourceInfo',N'ctrResourceSer') IS NOT NULL THEN N'TRY_CONVERT(bigint, s.[ctrResourceSer])' ELSE N'CAST(NULL AS bigint)' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.vv_ResourceInfo',N'ResourceId') IS NOT NULL THEN N'TRY_CONVERT(nvarchar(255), s.[ResourceId])' ELSE N'CAST(NULL AS nvarchar(255))' END + N' FROM DWH.vv_ResourceInfo s';
+EXEC sys.sp_executesql @sql_Resource, N'@context date,@through date', @context= @ContextStart, @through= @DataThrough;
+END;
+CREATE TABLE #ResourceMachine ([DimResourceID] bigint NULL, [MachineId] nvarchar(255) NULL);
+
+IF OBJECT_ID(N'DWH.InSightiveResourceMachine') IS NOT NULL
+BEGIN
+DECLARE @sql_ResourceMachine nvarchar(max) = N'INSERT INTO #ResourceMachine SELECT ' + CASE WHEN COL_LENGTH(N'DWH.InSightiveResourceMachine',N'DimResourceID') IS NOT NULL THEN N'TRY_CONVERT(bigint, s.[DimResourceID])' ELSE N'CAST(NULL AS bigint)' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.InSightiveResourceMachine',N'MachineId') IS NOT NULL THEN N'TRY_CONVERT(nvarchar(255), s.[MachineId])' ELSE N'CAST(NULL AS nvarchar(255))' END + N' FROM DWH.InSightiveResourceMachine s';
+EXEC sys.sp_executesql @sql_ResourceMachine, N'@context date,@through date', @context= @ContextStart, @through= @DataThrough;
+END;
+CREATE TABLE #History ([DimActivityTransactionID] bigint NULL, [ScheduledActivityHstryDateTime] datetime2 NULL, [ScheduledActivityCode] nvarchar(255) NULL);
+
+IF OBJECT_ID(N'DWH.DimActivityTransactionHistory') IS NOT NULL AND COL_LENGTH(N'DWH.DimActivityTransactionHistory',N'DimActivityTransactionID') IS NOT NULL AND COL_LENGTH(N'DWH.DimActivityTransactionHistory',N'ScheduledActivityHstryDateTime') IS NOT NULL AND COL_LENGTH(N'DWH.DimActivityTransactionHistory',N'ScheduledActivityCode') IS NOT NULL
+BEGIN
+DECLARE @sql_History nvarchar(max) = N'INSERT INTO #History SELECT ' + CASE WHEN COL_LENGTH(N'DWH.DimActivityTransactionHistory',N'DimActivityTransactionID') IS NOT NULL THEN N'TRY_CONVERT(bigint, s.[DimActivityTransactionID])' ELSE N'CAST(NULL AS bigint)' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.DimActivityTransactionHistory',N'ScheduledActivityHstryDateTime') IS NOT NULL THEN N'TRY_CONVERT(datetime2, s.[ScheduledActivityHstryDateTime])' ELSE N'CAST(NULL AS datetime2)' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.DimActivityTransactionHistory',N'ScheduledActivityCode') IS NOT NULL THEN N'TRY_CONVERT(nvarchar(255), s.[ScheduledActivityCode])' ELSE N'CAST(NULL AS nvarchar(255))' END + N' FROM DWH.DimActivityTransactionHistory s WHERE EXISTS(SELECT 1 FROM #Appointment a WHERE a.DimActivityTransactionID=s.DimActivityTransactionID) AND s.ScheduledActivityHstryDateTime &gt;= @context AND s.ScheduledActivityHstryDateTime &lt; DATEADD(day,2,@through)';
+EXEC sys.sp_executesql @sql_History, N'@context date,@through date', @context= @ContextStart, @through= @DataThrough;
+END;
+
+IF COL_LENGTH(N'DWH.FactTreatmentHistory',N'DeliveredMU') IS NULL
+ AND COL_LENGTH(N'DWH.FactTreatmentHistory',N'FieldMUActual') IS NULL
+ AND COL_LENGTH(N'DWH.FactTreatmentHistory',N'DoseDelivered') IS NULL
+ THROW 51001, N'No delivery evidence column available', 1;
+CREATE INDEX ix_history_id ON #History(DimActivityTransactionID,ScheduledActivityHstryDateTime);
+CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
+;WITH resource_map AS (
+ SELECT DISTINCT a.DimActivityTransactionID, m.MachineId
+ FROM #Appointment a
+ JOIN #Resource r ON r.ctrResourceSer=a.ctrResourceSer
+ JOIN #Machine m ON m.MachineId=r.ResourceId
+ UNION
+ SELECT DISTINCT a.DimActivityTransactionID, m.MachineId
+ FROM #Appointment a
+ JOIN #ResourceMachine r ON r.DimResourceID=a.DimResourceID
+ JOIN #Machine m ON m.MachineId=r.MachineId
+), appointment_devices AS (
+ SELECT a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,
+ CASE WHEN COUNT(DISTINCT r.MachineId)=1 THEN MIN(r.MachineId)
+      WHEN COUNT(DISTINCT r.MachineId)&gt;1 THEN N'AMBIGUOUS_DEVICE' ELSE N'' END AS machine
+ FROM #Appointment a LEFT JOIN resource_map r ON r.DimActivityTransactionID=a.DimActivityTransactionID
+ GROUP BY a.DimPatientID,a.DimActivityID,a.AppointmentDateTime
+), events AS (
+ SELECT
+ CASE WHEN t.IsImage=1 THEN N'imaging' ELSE N'delivery' END AS source,
+ CONCAT(N'T:',t.DimPatientID,N':',t.DimCourseID,N':',t.DimPlanID,N':',t.DimFieldID,N':',
+        COALESCE(t.DimActualMachineID,t.DimPlanMachineID),N':',t.FractionNumber,N':',t.IsImage,N':',
+        CONVERT(nvarchar(33),t.TreatmentRecordDateTime,126),N':',
+        CONVERT(nvarchar(33),t.TreatmentStartTime,126)) AS identity_key,
+ t.DimPatientID,t.DimCourseID,t.DimPlanID,COALESCE(am.MachineId,pm.MachineId,N'') AS machine,
+ COALESCE(t.TreatmentStartTime,t.TreatmentRecordDateTime) AS event_start,
+ t.TreatmentEndTime AS event_end,t.FractionNumber AS fraction,
+ CAST(N'' AS nvarchar(255)) AS activity_code,CAST(N'delivered' AS nvarchar(255)) AS status,
+ t.IsBrachy AS is_brachy,CAST(NULL AS datetime2) AS activity_start,
+ CAST(NULL AS datetime2) AS activity_end,CAST(NULL AS datetime2) AS completed,
+ CASE WHEN t.TreatmentStartTime IS NOT NULL THEN N'measured' ELSE N'record_fallback' END AS time_source,
+ CAST(NULL AS int) AS completion_candidates
+ FROM #Treatment t JOIN #Patient p ON p.DimPatientID=t.DimPatientID AND p.IsMOTestPatient=0
+ LEFT JOIN #Machine am ON am.DimMachineID=t.DimActualMachineID
+ LEFT JOIN #Machine pm ON pm.DimMachineID=t.DimPlanMachineID
+ WHERE t.DimPatientID&gt;0 AND (t.IsImage=1 OR COALESCE(t.DeliveredMU,0)&gt;0
+                           OR COALESCE(t.FieldMUActual,0)&gt;0 OR COALESCE(t.DoseDelivered,0)&gt;0)
+ UNION ALL
+ SELECT N'appointment',
+ CONCAT(N'A:',a.DimPatientID,N':',a.DimActivityID,N':',CONVERT(nvarchar(33),a.AppointmentDateTime,126)),
+ a.DimPatientID,CAST(NULL AS bigint),CAST(NULL AS bigint),COALESCE(r.machine,N''),
+ a.AppointmentDateTime,a.ScheduledEndTime,CAST(NULL AS int),act.ActivityCode,
+ a.AppointmentStatus,0,
+ a.ActivityStartDateTime,a.ActivityEndDateTime,
+ CASE WHEN h.candidate_count=1 THEN h.completed END,N'calendar',h.candidate_count
+ FROM #Appointment a JOIN #Activity act ON act.DimActivityID=a.DimActivityID
+ LEFT JOIN #Patient p ON p.DimPatientID=a.DimPatientID
+ LEFT JOIN appointment_devices r ON (r.DimPatientID=a.DimPatientID OR (r.DimPatientID IS NULL AND a.DimPatientID IS NULL))
+  AND r.DimActivityID=a.DimActivityID AND r.AppointmentDateTime=a.AppointmentDateTime
+ OUTER APPLY (
+  SELECT MIN(h.ScheduledActivityHstryDateTime) AS completed,COUNT(DISTINCT h.ScheduledActivityHstryDateTime) AS candidate_count
+  FROM #History h WHERE h.DimActivityTransactionID=a.DimActivityTransactionID
+   AND UPPER(h.ScheduledActivityCode) IN (N'COMPLETED',N'MANUALLY COMPLETED',N'COMPLTFINISH')
+   AND h.ScheduledActivityHstryDateTime &gt;= COALESCE(a.ActivityStartDateTime,a.AppointmentDateTime)
+   AND h.ScheduledActivityHstryDateTime &lt; DATEADD(hour,12,a.AppointmentDateTime)
+ ) h
+ WHERE ((a.DimPatientID&gt;0 AND p.IsMOTestPatient=0) OR (COALESCE(a.DimPatientID,0)&lt;=0
+   AND a.AppointmentDateTime&gt;=@PeriodStart AND a.AppointmentDateTime&lt;DATEADD(day,1,@PeriodEnd)))
+  AND COALESCE(a.IsScheduled,N'Y')=N'Y'
+  AND COALESCE(a.AppointmentResourceStatus,N'')&lt;&gt;N'Deleted'
+  AND COALESCE(a.AppointmentStatus,N'')&lt;&gt;N'Deleted'
+), keyed_events AS (
+ SELECT *, CASE WHEN source=N'appointment' THEN identity_key ELSE
+  CONCAT(source,N':',DimPatientID,N':',DimCourseID,N':',DimPlanID,N':',machine,N':',
+         CONVERT(nvarchar(10),event_start,23),N':',fraction,N':',time_source) END AS compact_key
+ FROM events
+), grouped_events AS (
+ SELECT source,compact_key AS identity_key,DimPatientID,DimCourseID,DimPlanID,machine,
+ MIN(event_start) AS event_start,MAX(event_end) AS event_end,fraction,activity_code,status,is_brachy,
+ MIN(activity_start) AS activity_start,MAX(activity_end) AS activity_end,
+ CASE WHEN COUNT(DISTINCT completed)&lt;=1 THEN MIN(completed) END AS completed,
+ time_source,MAX(completion_candidates) AS completion_candidates,COUNT_BIG(*) AS source_rows
+ FROM keyed_events
+ GROUP BY source,compact_key,DimPatientID,DimCourseID,DimPlanID,machine,fraction,activity_code,status,is_brachy,time_source
+)
+SELECT N'2.0' AS contract_version,@RunId AS run_id,source,
+ CONVERT(varchar(64),HASHBYTES('SHA2_256',CONCAT(@ExportSalt,N':E:',identity_key)),2) AS event_key,
+ CASE WHEN DimPatientID&gt;0 THEN CONVERT(varchar(64),HASHBYTES('SHA2_256',CONCAT(@ExportSalt,N':P:',DimPatientID)),2) END AS patient_key,
+ CASE WHEN DimCourseID IS NOT NULL THEN CONVERT(varchar(64),HASHBYTES('SHA2_256',CONCAT(@ExportSalt,N':C:',DimCourseID)),2) END AS course_key,
+ CASE WHEN DimPlanID IS NOT NULL THEN CONVERT(varchar(64),HASHBYTES('SHA2_256',CONCAT(@ExportSalt,N':L:',DimPlanID)),2) END AS plan_key,
+ machine,event_start,event_end,fraction,activity_code,status,is_brachy,activity_start,activity_end,
+ completed,time_source,completion_candidates,source_rows
+FROM grouped_events
+ORDER BY event_start,source;
+</CommandText>
+        <Timeout>600</Timeout><rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="contract_version">
+          <DataField>contract_version</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="run_id">
+          <DataField>run_id</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="source">
+          <DataField>source</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="event_key">
+          <DataField>event_key</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="patient_key">
+          <DataField>patient_key</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="course_key">
+          <DataField>course_key</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="plan_key">
+          <DataField>plan_key</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="machine">
+          <DataField>machine</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="event_start">
+          <DataField>event_start</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="event_end">
+          <DataField>event_end</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="fraction">
+          <DataField>fraction</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="activity_code">
+          <DataField>activity_code</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="status">
+          <DataField>status</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="is_brachy">
+          <DataField>is_brachy</DataField>
+          <rd:TypeName>System.Int64</rd:TypeName>
+        </Field>
+        <Field Name="activity_start">
+          <DataField>activity_start</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="activity_end">
+          <DataField>activity_end</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="completed">
+          <DataField>completed</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="time_source">
+          <DataField>time_source</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="completion_candidates">
+          <DataField>completion_candidates</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="source_rows">
+          <DataField>source_rows</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Textbox Name="Title">
+            <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
+            <Paragraphs><Paragraph><TextRuns><TextRun><Value>ARIA Throughput Collector 2.0 | Forschungs- und QM-Export</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>18pt</FontSize><FontWeight>Bold</FontWeight><Color>#10243E</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs>
+            <Top>0.00mm</Top><Left>2.00mm</Left><Height>13.00mm</Height><Width>396.00mm</Width>
+            <Style><Border><Color>#C9D4E0</Color><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+          </Textbox>
+          <Textbox Name="Note">
+            <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
+            <Paragraphs><Paragraph><TextRuns><TextRun><Value>Standardjahr 2025. Abweichenden Zeitraum begruenden. Datenstand und Quellenumfang lokal bestaetigen. Ereignisse sind pseudonymisiert und bleiben am Standort; ausschliesslich gepruefte Aggregate weitergeben. Keine klinische Entscheidungsunterstuetzung.</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>9pt</FontSize><FontWeight>Normal</FontWeight><Color>#10243E</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs>
+            <Top>16.00mm</Top><Left>2.00mm</Left><Height>20.00mm</Height><Width>396.00mm</Width>
+            <Style><Border><Color>#C9D4E0</Color><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+          </Textbox>
+          <Tablix Name="Tablix_Metadata">
+            <TablixBody><TablixColumns><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn></TablixColumns><TablixRows>
+              <TablixRow><Height>8mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="Metadata_Caption"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Exportvertrag und Auswertungszeitraum</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox><ColSpan>10</ColSpan></CellContents></TablixCell><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /></TablixCells></TablixRow>
+              <TablixRow><Height>6mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="Metadata_H_0"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>contract_version</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_H_1"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>run_id</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_H_2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>site</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_H_3"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>period_start</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_H_4"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>period_end</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_H_5"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>period_reason</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_H_6"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>context_start</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_H_7"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>data_through</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_H_8"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>data_through_confirmed</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_H_9"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>details_included</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow>
+              <TablixRow><Height>6mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="Metadata_D_0"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!contract_version.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_D_1"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!run_id.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_D_2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!site.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_D_3"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!period_start.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_D_4"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!period_end.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_D_5"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!period_reason.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_D_6"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!context_start.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_D_7"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!data_through.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_D_8"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!data_through_confirmed.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Metadata_D_9"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!details_included.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow>
+            </TablixRows></TablixBody>
+            <TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy>
+            <TablixRowHierarchy><TablixMembers><TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember><TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember><TablixMember><Group Name="Metadata_Details" /></TablixMember></TablixMembers></TablixRowHierarchy>
+            <DataSetName>Metadata</DataSetName>
+            <PageBreak><BreakLocation>Start</BreakLocation></PageBreak><PageName>00_Metadata</PageName>
+            <Top>40.00mm</Top><Left>2mm</Left><Height>22.00mm</Height><Width>320.00mm</Width>
+            <Style><Border><Style>None</Style></Border></Style>
+          </Tablix>
+          <Tablix Name="Tablix_Capabilities">
+            <TablixBody><TablixColumns><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn></TablixColumns><TablixRows>
+              <TablixRow><Height>8mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="Capabilities_Caption"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Quellenabdeckung</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox><ColSpan>5</ColSpan></CellContents></TablixCell><TablixCell /><TablixCell /><TablixCell /><TablixCell /></TablixCells></TablixRow>
+              <TablixRow><Height>6mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="Capabilities_H_0"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>contract_version</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Capabilities_H_1"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>source_name</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Capabilities_H_2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>column_name</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Capabilities_H_3"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>is_required</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Capabilities_H_4"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>available</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow>
+              <TablixRow><Height>6mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="Capabilities_D_0"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!contract_version.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Capabilities_D_1"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!source_name.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Capabilities_D_2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!column_name.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Capabilities_D_3"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!is_required.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Capabilities_D_4"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!available.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow>
+            </TablixRows></TablixBody>
+            <TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy>
+            <TablixRowHierarchy><TablixMembers><TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember><TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember><TablixMember><Group Name="Capabilities_Details" /></TablixMember></TablixMembers></TablixRowHierarchy>
+            <DataSetName>Capabilities</DataSetName>
+            <PageBreak><BreakLocation>Start</BreakLocation></PageBreak><PageName>01_Capabilities</PageName>
+            <Top>80.00mm</Top><Left>2mm</Left><Height>22.00mm</Height><Width>160.00mm</Width>
+            <Style><Border><Style>None</Style></Border></Style>
+          </Tablix>
+          <Tablix Name="Tablix_ActivityCatalog">
+            <TablixBody><TablixColumns><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn></TablixColumns><TablixRows>
+              <TablixRow><Height>8mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="ActivityCatalog_Caption"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Lokales Aktivitaetsinventar</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox><ColSpan>3</ColSpan></CellContents></TablixCell><TablixCell /><TablixCell /></TablixCells></TablixRow>
+              <TablixRow><Height>6mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="ActivityCatalog_H_0"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>activity_code</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ActivityCatalog_H_1"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>activity_name</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ActivityCatalog_H_2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>activity_category</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow>
+              <TablixRow><Height>6mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="ActivityCatalog_D_0"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!activity_code.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ActivityCatalog_D_1"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!activity_name.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ActivityCatalog_D_2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!activity_category.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow>
+            </TablixRows></TablixBody>
+            <TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy>
+            <TablixRowHierarchy><TablixMembers><TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember><TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember><TablixMember><Group Name="ActivityCatalog_Details" /></TablixMember></TablixMembers></TablixRowHierarchy>
+            <DataSetName>ActivityCatalog</DataSetName>
+            <PageBreak><BreakLocation>Start</BreakLocation></PageBreak><PageName>02_Activities</PageName>
+            <Top>120.00mm</Top><Left>2mm</Left><Height>22.00mm</Height><Width>96.00mm</Width>
+            <Style><Border><Style>None</Style></Border></Style>
+          </Tablix>
+          <Tablix Name="Tablix_EventDetails">
+            <TablixBody><TablixColumns><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn><TablixColumn><Width>19.800mm</Width></TablixColumn></TablixColumns><TablixRows>
+              <TablixRow><Height>8mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="EventDetails_Caption"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>Lokale pseudonymisierte Ereignisse</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox><ColSpan>20</ColSpan></CellContents></TablixCell><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /><TablixCell /></TablixCells></TablixRow>
+              <TablixRow><Height>6mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="EventDetails_H_0"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>contract_version</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_1"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>run_id</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>source</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_3"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>event_key</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_4"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>patient_key</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_5"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>course_key</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_6"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>plan_key</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_7"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>machine</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_8"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>event_start</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_9"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>event_end</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_10"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>fraction</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_11"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>activity_code</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_12"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>status</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_13"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>is_brachy</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_14"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>activity_start</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_15"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>activity_end</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_16"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>completed</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_17"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>time_source</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_18"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>completion_candidates</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_H_19"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>source_rows</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow>
+              <TablixRow><Height>6mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="EventDetails_D_0"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!contract_version.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_1"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!run_id.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!source.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_3"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!event_key.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_4"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!patient_key.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_5"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!course_key.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_6"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!plan_key.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_7"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!machine.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_8"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!event_start.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_9"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!event_end.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_10"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!fraction.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_11"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!activity_code.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_12"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!status.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_13"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!is_brachy.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_14"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!activity_start.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_15"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!activity_end.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_16"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!completed.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_17"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!time_source.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_18"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!completion_candidates.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="EventDetails_D_19"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!source_rows.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow>
+            </TablixRows></TablixBody>
+            <TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy>
+            <TablixRowHierarchy><TablixMembers><TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember><TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember><TablixMember><Group Name="EventDetails_Year"><GroupExpressions><GroupExpression>=Year(Fields!event_start.Value)</GroupExpression></GroupExpressions><PageBreak><BreakLocation>Between</BreakLocation></PageBreak><PageName>="90_Events_" &amp; Year(Fields!event_start.Value)</PageName></Group><TablixMembers><TablixMember><Group Name="EventDetails_Details" /></TablixMember></TablixMembers></TablixMember></TablixMembers></TablixRowHierarchy>
+            <DataSetName>EventDetails</DataSetName>
+            <PageBreak><BreakLocation>Start</BreakLocation></PageBreak>
+            <Top>160.00mm</Top><Left>2mm</Left><Height>22.00mm</Height><Width>396.00mm</Width>
+            <Visibility><Hidden>=Not(Parameters!IncludePseudonymizedDetails.Value)</Hidden></Visibility><Style><Border><Style>None</Style></Border></Style>
+          </Tablix>
+        </ReportItems>
+        <Height>200.0mm</Height>
+        <Style />
+      </Body>
+      <Width>400mm</Width>
+      <Page>
+        <PageHeader>
+          <Height>8mm</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+          <Textbox Name="Header">
+            <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
+            <Paragraphs><Paragraph><TextRuns><TextRun><Value>ARIA Throughput | 2.0</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize><FontWeight>Normal</FontWeight><Color>#10243E</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs>
+            <Top>0.00mm</Top><Left>2.00mm</Left><Height>7.00mm</Height><Width>396.00mm</Width>
+            <Style><Border><Color>#C9D4E0</Color><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+          </Textbox>
+          </ReportItems>
+          <Style />
+        </PageHeader>
+        <PageFooter>
+          <Height>8mm</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+          <Textbox Name="Footer">
+            <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
+            <Paragraphs><Paragraph><TextRuns><TextRun><Value>Lokaler Forschungsdatensatz | Nicht zur direkten Weitergabe</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize><FontWeight>Normal</FontWeight><Color>#10243E</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs>
+            <Top>0.00mm</Top><Left>2.00mm</Left><Height>7.00mm</Height><Width>396.00mm</Width>
+            <Style><Border><Color>#C9D4E0</Color><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+          </Textbox>
+          </ReportItems>
+          <Style />
+        </PageFooter>
+        <PageHeight>297mm</PageHeight>
+        <PageWidth>420mm</PageWidth>
+        <LeftMargin>10mm</LeftMargin>
+        <RightMargin>10mm</RightMargin>
+        <TopMargin>10mm</TopMargin>
+        <BottomMargin>10mm</BottomMargin>
+        <ColumnSpacing>0mm</ColumnSpacing>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+<ReportParameter Name="PeriodStart"><DataType>DateTime</DataType><DefaultValue><Values><Value>=DateSerial(2025, 1, 1)</Value></Values></DefaultValue><Prompt>Auswertung von</Prompt></ReportParameter>
+<ReportParameter Name="PeriodEnd"><DataType>DateTime</DataType><DefaultValue><Values><Value>=DateSerial(2025, 12, 31)</Value></Values></DefaultValue><Prompt>Auswertung bis</Prompt></ReportParameter>
+<ReportParameter Name="PeriodReason"><DataType>String</DataType><DefaultValue><Values><Value>Standardjahr 2025</Value></Values></DefaultValue><Prompt>Grund bei abweichendem Zeitraum</Prompt></ReportParameter>
+<ReportParameter Name="ContextStart"><DataType>DateTime</DataType><DefaultValue><Values><Value>=DateAdd("yyyy", -1, Parameters!PeriodStart.Value)</Value></Values></DefaultValue><Prompt>Kontext ab</Prompt></ReportParameter>
+<ReportParameter Name="DataThrough"><DataType>DateTime</DataType><DefaultValue><Values><Value>=Today().AddDays(-1)</Value></Values></DefaultValue><Prompt>Datenstand bis</Prompt></ReportParameter>
+<ReportParameter Name="DataThroughConfirmed"><DataType>Boolean</DataType><DefaultValue><Values><Value>false</Value></Values></DefaultValue><Prompt>Vollstaendigkeit bis Datenstand lokal bestaetigt</Prompt></ReportParameter>
+<ReportParameter Name="SiteLabel"><DataType>String</DataType><DefaultValue><Values><Value>Standort</Value></Values></DefaultValue><Prompt>Neutraler Standortname</Prompt></ReportParameter>
+<ReportParameter Name="IncludePseudonymizedDetails"><DataType>Boolean</DataType><DefaultValue><Values><Value>false</Value></Values></DefaultValue><Prompt>Lokale pseudonymisierte Ereignisse exportieren</Prompt></ReportParameter>
+<ReportParameter Name="RunId"><DataType>String</DataType><DefaultValue><Values><Value>=System.Guid.NewGuid().ToString("N")</Value></Values></DefaultValue><Hidden>true</Hidden></ReportParameter>
+<ReportParameter Name="ExportSalt"><DataType>String</DataType><DefaultValue><Values><Value>=System.Guid.NewGuid().ToString("N")</Value></Values></DefaultValue><Hidden>true</Hidden></ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>4</NumberOfColumns>
+      <NumberOfRows>3</NumberOfRows>
+      <CellDefinitions>
+<CellDefinition><ColumnIndex>0</ColumnIndex><RowIndex>0</RowIndex><ParameterName>PeriodStart</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>1</ColumnIndex><RowIndex>0</RowIndex><ParameterName>PeriodEnd</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>2</ColumnIndex><RowIndex>0</RowIndex><ParameterName>PeriodReason</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>3</ColumnIndex><RowIndex>0</RowIndex><ParameterName>ContextStart</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>0</ColumnIndex><RowIndex>1</RowIndex><ParameterName>DataThrough</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>1</ColumnIndex><RowIndex>1</RowIndex><ParameterName>DataThroughConfirmed</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>2</ColumnIndex><RowIndex>1</RowIndex><ParameterName>SiteLabel</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>3</ColumnIndex><RowIndex>1</RowIndex><ParameterName>IncludePseudonymizedDetails</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>0</ColumnIndex><RowIndex>2</RowIndex><ParameterName>RunId</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>1</ColumnIndex><RowIndex>2</RowIndex><ParameterName>ExportSalt</ParameterName></CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>de-DE</Language>
+  <rd:ReportUnitType>Mm</rd:ReportUnitType>
+  <rd:ReportID>a1a5210f-7e8a-459e-84f7-ec4f27228a30</rd:ReportID>
+  <CustomProperties>
+    <CustomProperty><Name>ProductVersion</Name><Value>Aura 2.0</Value></CustomProperty>
+    <CustomProperty><Name>ReportLanguage</Name><Value>DEU</Value></CustomProperty>
+    <CustomProperty><Name>ReportName</Name><Value>ARIA18_Throughput_Collector_2.0</Value></CustomProperty>
+    <CustomProperty><Name>CategoryName</Name><Value>Datenbank-Service</Value></CustomProperty>
+    <CustomProperty><Name>IsRealTime</Name><Value>false</Value></CustomProperty>
+    <CustomProperty><Name>IsActive</Name><Value>true</Value></CustomProperty>
+    <CustomProperty><Name>IsTemplate</Name><Value>false</Value></CustomProperty>
+  </CustomProperties>
+</Report>

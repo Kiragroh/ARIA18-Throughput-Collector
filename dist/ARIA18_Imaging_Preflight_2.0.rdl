@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:df="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition/defaultfontfamily" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" MustUnderstand="df">
+  <Description>Klinikneutraler ARIA-18-Collector fuer Durchsatz- und Klinikvergleiche.</Description>
+  <df:DefaultFontFamily>Segoe UI</df:DefaultFontFamily>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DataSource1">
+      <DataSourceReference>/VarianTemplate/Data Sources/VARIAN</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>6a650bc3-bb2e-44a4-a993-ffea62af1b18</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets><DataSet Name="ImageSchema"><Query><DataSourceName>DataSource1</DataSourceName><CommandText>SELECT s.name AS schema_name,t.name AS table_name,c.name AS column_name,ty.name AS data_type
+FROM sys.tables t JOIN sys.schemas s ON s.schema_id=t.schema_id
+JOIN sys.columns c ON c.object_id=t.object_id JOIN sys.types ty ON ty.user_type_id=c.user_type_id
+WHERE t.name IN ('Image','ImageSlice','Slice','SliceRT','Series','Study','Radiation','Resource','RTPlan','Patient')
+OR t.name LIKE '%DICOM%' ORDER BY t.name,c.column_id</CommandText><Timeout>60</Timeout></Query><Fields><Field Name="schema_name"><DataField>schema_name</DataField></Field><Field Name="table_name"><DataField>table_name</DataField></Field><Field Name="column_name"><DataField>column_name</DataField></Field><Field Name="data_type"><DataField>data_type</DataField></Field></Fields></DataSet><DataSet Name="ImageRelations"><Query><DataSourceName>DataSource1</DataSourceName><CommandText>SELECT OBJECT_NAME(f.parent_object_id) AS source_table,COL_NAME(f.parent_object_id,f.parent_column_id) AS source_column,
+OBJECT_NAME(f.referenced_object_id) AS target_table,COL_NAME(f.referenced_object_id,f.referenced_column_id) AS target_column
+FROM sys.foreign_key_columns f
+WHERE OBJECT_NAME(f.parent_object_id) IN ('Image','ImageSlice','Slice','SliceRT','Series','Study','Radiation','RTPlan')
+ORDER BY source_table,source_column</CommandText><Timeout>60</Timeout></Query><Fields><Field Name="source_table"><DataField>source_table</DataField></Field><Field Name="source_column"><DataField>source_column</DataField></Field><Field Name="target_table"><DataField>target_table</DataField></Field><Field Name="target_column"><DataField>target_column</DataField></Field></Fields></DataSet></DataSets><ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems><Tablix Name="Tablix_ImageSchema">
+            <TablixBody><TablixColumns><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn></TablixColumns><TablixRows>
+              <TablixRow><Height>8mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="ImageSchema_Caption"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>ImageSchema</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox><ColSpan>4</ColSpan></CellContents></TablixCell><TablixCell /><TablixCell /><TablixCell /></TablixCells></TablixRow>
+              <TablixRow><Height>6mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="ImageSchema_H_0"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>schema_name</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ImageSchema_H_1"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>table_name</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ImageSchema_H_2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>column_name</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ImageSchema_H_3"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>data_type</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow>
+              <TablixRow><Height>6mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="ImageSchema_D_0"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!schema_name.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ImageSchema_D_1"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!table_name.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ImageSchema_D_2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!column_name.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ImageSchema_D_3"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!data_type.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow>
+            </TablixRows></TablixBody>
+            <TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy>
+            <TablixRowHierarchy><TablixMembers><TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember><TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember><TablixMember><Group Name="ImageSchema_Details" /></TablixMember></TablixMembers></TablixRowHierarchy>
+            <DataSetName>ImageSchema</DataSetName>
+            <PageBreak><BreakLocation>Start</BreakLocation></PageBreak><PageName>ImageSchema</PageName>
+            <Top>0.00mm</Top><Left>2mm</Left><Height>22.00mm</Height><Width>128.00mm</Width>
+            <Style><Border><Style>None</Style></Border></Style>
+          </Tablix><Tablix Name="Tablix_ImageRelations">
+            <TablixBody><TablixColumns><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn><TablixColumn><Width>32.000mm</Width></TablixColumn></TablixColumns><TablixRows>
+              <TablixRow><Height>8mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="ImageRelations_Caption"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>ImageRelations</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox><ColSpan>4</ColSpan></CellContents></TablixCell><TablixCell /><TablixCell /><TablixCell /></TablixCells></TablixRow>
+              <TablixRow><Height>6mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="ImageRelations_H_0"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>source_table</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ImageRelations_H_1"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>source_column</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ImageRelations_H_2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>target_table</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ImageRelations_H_3"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>target_column</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6.5pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#123A63</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow>
+              <TablixRow><Height>6mm</Height><TablixCells><TablixCell><CellContents><Textbox Name="ImageRelations_D_0"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!source_table.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ImageRelations_D_1"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!source_column.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ImageRelations_D_2"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!target_table.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="ImageRelations_D_3"><CanGrow>true</CanGrow><KeepTogether>true</KeepTogether><Paragraphs><Paragraph><TextRuns><TextRun><Value>=Fields!target_column.Value</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>6pt</FontSize><FontWeight>Normal</FontWeight><Color>#172A3A</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs><Style><Border><Color>#D7E0E8</Color><Style>Solid</Style></Border><BackgroundColor>#FFFFFF</BackgroundColor><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>1pt</PaddingTop><PaddingBottom>1pt</PaddingBottom></Style></Textbox></CellContents></TablixCell></TablixCells></TablixRow>
+            </TablixRows></TablixBody>
+            <TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy>
+            <TablixRowHierarchy><TablixMembers><TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember><TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember><TablixMember><Group Name="ImageRelations_Details" /></TablixMember></TablixMembers></TablixRowHierarchy>
+            <DataSetName>ImageRelations</DataSetName>
+            <PageBreak><BreakLocation>Start</BreakLocation></PageBreak><PageName>ImageRelations</PageName>
+            <Top>40.00mm</Top><Left>2mm</Left><Height>22.00mm</Height><Width>128.00mm</Width>
+            <Style><Border><Style>None</Style></Border></Style>
+          </Tablix></ReportItems><Height>200.0mm</Height>
+        <Style />
+      </Body>
+      <Width>400mm</Width>
+      <Page>
+        <PageHeader>
+          <Height>8mm</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+          <Textbox Name="Header">
+            <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
+            <Paragraphs><Paragraph><TextRuns><TextRun><Value>ARIA Throughput | 2.0</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize><FontWeight>Normal</FontWeight><Color>#10243E</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs>
+            <Top>0.00mm</Top><Left>2.00mm</Left><Height>7.00mm</Height><Width>396.00mm</Width>
+            <Style><Border><Color>#C9D4E0</Color><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+          </Textbox>
+          </ReportItems>
+          <Style />
+        </PageHeader>
+        <PageFooter>
+          <Height>8mm</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+          <Textbox Name="Footer">
+            <CanGrow>true</CanGrow><KeepTogether>true</KeepTogether>
+            <Paragraphs><Paragraph><TextRuns><TextRun><Value>Lokaler Forschungsdatensatz | Nicht zur direkten Weitergabe</Value><Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize><FontWeight>Normal</FontWeight><Color>#10243E</Color></Style></TextRun></TextRuns><Style /></Paragraph></Paragraphs>
+            <Top>0.00mm</Top><Left>2.00mm</Left><Height>7.00mm</Height><Width>396.00mm</Width>
+            <Style><Border><Color>#C9D4E0</Color><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+          </Textbox>
+          </ReportItems>
+          <Style />
+        </PageFooter>
+        <PageHeight>297mm</PageHeight>
+        <PageWidth>420mm</PageWidth>
+        <LeftMargin>10mm</LeftMargin>
+        <RightMargin>10mm</RightMargin>
+        <TopMargin>10mm</TopMargin>
+        <BottomMargin>10mm</BottomMargin>
+        <ColumnSpacing>0mm</ColumnSpacing>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+<ReportParameter Name="PeriodStart"><DataType>DateTime</DataType><DefaultValue><Values><Value>=DateSerial(2025, 1, 1)</Value></Values></DefaultValue><Prompt>Auswertung von</Prompt></ReportParameter>
+<ReportParameter Name="PeriodEnd"><DataType>DateTime</DataType><DefaultValue><Values><Value>=DateSerial(2025, 12, 31)</Value></Values></DefaultValue><Prompt>Auswertung bis</Prompt></ReportParameter>
+<ReportParameter Name="PeriodReason"><DataType>String</DataType><DefaultValue><Values><Value>Standardjahr 2025</Value></Values></DefaultValue><Prompt>Grund bei abweichendem Zeitraum</Prompt></ReportParameter>
+<ReportParameter Name="ContextStart"><DataType>DateTime</DataType><DefaultValue><Values><Value>=DateAdd("yyyy", -1, Parameters!PeriodStart.Value)</Value></Values></DefaultValue><Prompt>Kontext ab</Prompt></ReportParameter>
+<ReportParameter Name="DataThrough"><DataType>DateTime</DataType><DefaultValue><Values><Value>=Today().AddDays(-1)</Value></Values></DefaultValue><Prompt>Datenstand bis</Prompt></ReportParameter>
+<ReportParameter Name="DataThroughConfirmed"><DataType>Boolean</DataType><DefaultValue><Values><Value>false</Value></Values></DefaultValue><Prompt>Vollstaendigkeit bis Datenstand lokal bestaetigt</Prompt></ReportParameter>
+<ReportParameter Name="SiteLabel"><DataType>String</DataType><DefaultValue><Values><Value>Standort</Value></Values></DefaultValue><Prompt>Neutraler Standortname</Prompt></ReportParameter>
+<ReportParameter Name="IncludePseudonymizedDetails"><DataType>Boolean</DataType><DefaultValue><Values><Value>false</Value></Values></DefaultValue><Prompt>Lokale pseudonymisierte Ereignisse exportieren</Prompt></ReportParameter>
+<ReportParameter Name="RunId"><DataType>String</DataType><DefaultValue><Values><Value>=System.Guid.NewGuid().ToString("N")</Value></Values></DefaultValue><Hidden>true</Hidden></ReportParameter>
+<ReportParameter Name="ExportSalt"><DataType>String</DataType><DefaultValue><Values><Value>=System.Guid.NewGuid().ToString("N")</Value></Values></DefaultValue><Hidden>true</Hidden></ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>4</NumberOfColumns>
+      <NumberOfRows>3</NumberOfRows>
+      <CellDefinitions>
+<CellDefinition><ColumnIndex>0</ColumnIndex><RowIndex>0</RowIndex><ParameterName>PeriodStart</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>1</ColumnIndex><RowIndex>0</RowIndex><ParameterName>PeriodEnd</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>2</ColumnIndex><RowIndex>0</RowIndex><ParameterName>PeriodReason</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>3</ColumnIndex><RowIndex>0</RowIndex><ParameterName>ContextStart</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>0</ColumnIndex><RowIndex>1</RowIndex><ParameterName>DataThrough</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>1</ColumnIndex><RowIndex>1</RowIndex><ParameterName>DataThroughConfirmed</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>2</ColumnIndex><RowIndex>1</RowIndex><ParameterName>SiteLabel</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>3</ColumnIndex><RowIndex>1</RowIndex><ParameterName>IncludePseudonymizedDetails</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>0</ColumnIndex><RowIndex>2</RowIndex><ParameterName>RunId</ParameterName></CellDefinition>
+<CellDefinition><ColumnIndex>1</ColumnIndex><RowIndex>2</RowIndex><ParameterName>ExportSalt</ParameterName></CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <Language>de-DE</Language>
+  <rd:ReportUnitType>Mm</rd:ReportUnitType>
+  <rd:ReportID>a1a5210f-7e8a-459e-84f7-ec4f27228a30</rd:ReportID>
+  <CustomProperties>
+    <CustomProperty><Name>ProductVersion</Name><Value>Aura 2.0</Value></CustomProperty>
+    <CustomProperty><Name>ReportLanguage</Name><Value>DEU</Value></CustomProperty>
+    <CustomProperty><Name>ReportName</Name><Value>ARIA18_Imaging_Preflight_2.0</Value></CustomProperty>
+    <CustomProperty><Name>CategoryName</Name><Value>Datenbank-Service</Value></CustomProperty>
+    <CustomProperty><Name>IsRealTime</Name><Value>false</Value></CustomProperty>
+    <CustomProperty><Name>IsActive</Name><Value>true</Value></CustomProperty>
+    <CustomProperty><Name>IsTemplate</Name><Value>false</Value></CustomProperty>
+  </CustomProperties>
+</Report>

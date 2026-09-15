@@ -1,0 +1,14 @@
+{
+  "site": "Synthetischer Demonstrationsstandort",
+  "confirmed": true,
+  "sources_complete": true,
+  "activity_codes": {
+    "CONS": "counselling",
+    "RETURN": "observation",
+    "TX": "treatment_external",
+    "BRACHY": "treatment_brachy",
+    "LEGACY": "treatment_legacy",
+    "BREAK": "block"
+  },
+  "machines": {"M1": "Geraet 1", "M2": "Geraet 2", "M3": "Geraet 3", "M4": "Geraet 4"}
+}

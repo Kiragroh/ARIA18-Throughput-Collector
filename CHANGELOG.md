@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.0.0-rc.1 - 2026-09-15
+
+- Standalone AG-Pilot mit Standardjahr 2025 und begruendeter Periodenabweichung.
+- Neuer Ereignisvertrag, optionalen schemaabhaengigen Zeitankern und expliziter
+  Datenstands-/Quellenbestaetigung; keine numerische Patienten-ID-Konvention.
+- Aktivitaet als Standard, Workflow/Imaging-Beam getrennt, Ersatzintervalle sichtbar.
+- Patientenbesuche statt Planwechsel; vereinigte Zeitintervalle, echte Slotueberlappung,
+  freie Stunden und relativer Anteil am beobachteten Tagesfenster.
+- Lokale bestaetigte Aktivitaetszuordnung fuer Brachy und historische Therapiegeraete.
+- Aufklaerungsketten, drei Kalendermonate Reife, weitere Beobachtung und separate Stornos.
+- Offline-HTML mit gruppierten Boxplots, Gesamtmedian, Modell-/Periodenwechsel und
+  vergroesserbaren Diagrammen; aggregierte CSV/JSON und inhaltsbasierter SQLite-Cache.
+- Bildgebungsfeedback in Quellenpruefung und getrennte semantische Klassifikation
+  aufgenommen. Direkte DICOM-RTPlan-Referenzen bleiben ein gesonderter Validierungspunkt.
+- Rein lesende temporaere SSRS-Ausfuehrung, synthetische Regressionen und Browserpruefung.
+- 1.x bleibt reproduzierbar; dessen alte Methodendatei gilt nur fuer den Legacy-Builder.
+
 ## 1.1.0 - 2026-08-18
 
 - Patientenanmeldung sowie Pending-/In-Progress- und Completed-Zeitpunkte aus dem ARIA-Terminworkflow ergänzt

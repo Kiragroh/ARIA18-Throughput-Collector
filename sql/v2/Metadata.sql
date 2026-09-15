@@ -1,0 +1,1 @@
+SELECT N'2.0' AS contract_version,@RunId AS run_id,@SiteLabel AS site,@PeriodStart AS period_start,@PeriodEnd AS period_end,@PeriodReason AS period_reason,@ContextStart AS context_start,@DataThrough AS data_through,@DataThroughConfirmed AS data_through_confirmed,@IncludePseudonymizedDetails AS details_included;

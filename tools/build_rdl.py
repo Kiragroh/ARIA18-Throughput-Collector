@@ -176,10 +176,11 @@ def _tablix(name: str, top: float) -> tuple[str, float]:
     )
     col_members = "".join("<TablixMember />" for _ in fields)
     hidden = ""
-    if name in {"SessionDetails", "AppointmentDetails"}:
+    if name in {"SessionDetails", "AppointmentDetails", "EventDetails"}:
         hidden = "<Visibility><Hidden>=Not(Parameters!IncludePseudonymizedDetails.Value)</Hidden></Visibility>"
-    if name in {"SessionDetails", "AppointmentDetails"}:
-        year_group = f'''<TablixMember><Group Name="{name}_Year"><GroupExpressions><GroupExpression>=Year(Fields!service_date.Value)</GroupExpression></GroupExpressions><PageBreak><BreakLocation>Between</BreakLocation></PageBreak><PageName>="{page_name}_" &amp; Year(Fields!service_date.Value)</PageName></Group><TablixMembers><TablixMember><Group Name="{name}_Details" /></TablixMember></TablixMembers></TablixMember>'''
+    if name in {"SessionDetails", "AppointmentDetails", "EventDetails"}:
+        date_field = "event_start" if name == "EventDetails" else "service_date"
+        year_group = f'''<TablixMember><Group Name="{name}_Year"><GroupExpressions><GroupExpression>=Year(Fields!{date_field}.Value)</GroupExpression></GroupExpressions><PageBreak><BreakLocation>Between</BreakLocation></PageBreak><PageName>="{page_name}_" &amp; Year(Fields!{date_field}.Value)</PageName></Group><TablixMembers><TablixMember><Group Name="{name}_Details" /></TablixMember></TablixMembers></TablixMember>'''
         row_members = f"<TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember><TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember>{year_group}"
         outer_page_name = ""
     else:

@@ -1,0 +1,15 @@
+{
+  "start": "2025-01-01",
+  "end": "2025-12-31",
+  "site": "Standort",
+  "period_reason": "",
+  "model": "activity",
+  "minimum_patients": 5,
+  "confirmed": false,
+  "sources_complete": false,
+  "timezone": "Europe/Berlin",
+  "activity_codes": {},
+  "machines": {},
+  "opening_hours": {},
+  "opening_hours_confirmed": false
+}
