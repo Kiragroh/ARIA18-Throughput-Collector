@@ -1,5 +1,10 @@
 # Vor dem Upload
 
+Die eingereichten Dateien sind ausschliesslich fuer Maximilian Grohmann
+freigegeben. Er erhaelt Upload-Benachrichtigungen und nutzt die dienstliche
+Kontaktadresse im Begleitbogen fuer Rueckfragen. Andere Teilnehmende erhalten
+keinen Zugriff auf Ihre Einreichung.
+
 - [ ] Es handelt sich um den **Standort-Preflight**, nicht um einen Collector mit Ereignisdetails.
 - [ ] Alle Tabellenblaetter wurden kontrolliert, auch ausgeblendete oder zusaetzliche Blaetter.
 - [ ] Keine Patienten-, Fall- oder Planidentifikatoren, auch keine Hash-Schluessel.
