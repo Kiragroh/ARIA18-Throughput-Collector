@@ -121,7 +121,7 @@ def test_models_change_intervals_and_unmatched_appointments_survive():
     assert result["audit"]["relevant_slots"] == 2
     assert result["audit"]["matched_slots"] == 1
     assert result["visits"]["activity"].iloc[0].duration == 14
-    assert result["visits"]["workflow"].iloc[0].duration == 13
+    assert result["visits"]["workflow"].iloc[0].duration == 12
     assert result["visits"]["technical"].iloc[0].duration == 7
 
 

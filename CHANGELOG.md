@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.0.0-rc.4 - 2026-09-16
+
+- Getrennte Slotueberlappung und Behandlungsdauer/Slotdauer, Workflow-Endanker korrigiert.
+- Q1-/Periodenpool bleibt fuer auswertbare Geraete sichtbar; kleine Gruppen sind nicht im Pool.
+- Fehlende/mehrdeutige Therapietermingeräte werden nur anhand eindeutiger tatsaechlicher R&V-Behandlung zugeordnet.
+- Klinikprofil mit Patienten, technischen Fraktionen, manuellen Therapien, bestrahlten Plaenen und Plan-Neueinstellungen.
+- Plansoll und erster/letzter Behandlungstag im Export; mehr als sieben beobachtete Tage Pause beenden unvollstaendige Plaene analytisch.
+- Getrennte Plan-/30-Tage-Episodenlogik; keine erfundenen Planreferenzen fuer manuelle Therapien.
+- Vollstaendige Vorjahreskohorte, Quellenflags und Aktivitaetsbezeichnungen im neuen RDL.
+- Populations-/Episodenverlaeufe, Vorjahreslegenden, belegtes Tagesfenster und vergroesserbare Diagramme.
+- Bisherige Exporte bleiben lesbar, fehlende Vorjahres-/Planinformationen werden kenntlich gemacht.
+- Monatliche Excel-Ereignisblaetter statt sehr grosser Jahresblaetter; vollstaendiger Datenumfang erhalten.
+- Optionale DWH-Bildobjekte, getrennte Typen und Zuordnung zu eindeutigen Tagesbesuchen.
+- Bildobjektfrequenzen und Behandlungszeiten deskriptiv; datierte Geraeteausstattung statt Geschwindigkeitsvermutung.
+
 ## 2.0.0-rc.3 - 2026-09-15
 
 - Rueckmeldung im Offline-HTML ausschliesslich als JSON; Text-/PDF-Export entfernt.

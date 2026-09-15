@@ -21,7 +21,7 @@ def prepare_visits(events, profile):
     rows["fraction"] = rows.fraction.fillna(0)
     rows["status"] = rows.status.map(profile.classify_status)
     rows["date"] = rows.event_start.dt.strftime("%Y-%m-%d")
-    rows["kind"] = rows.activity_code.map(profile.activity_codes).fillna("unknown")
+    rows["kind"] = profile.classify_activities(rows)
     relevant=rows.source.eq("delivery") | rows.kind.str.startswith("treatment")
     audit["unmapped_device_rows"]=int((relevant & ~rows.machine.isin(profile.machines)).sum())
     rows = rows[rows.machine.isin(profile.machines)].copy()
@@ -120,7 +120,8 @@ def prepare_visits(events, profile):
         act_end = a.activity_end if pd.notna(a.activity_end) else technical_end
         record("activity",act_start,act_end,base,
                pd.isna(a.activity_start) or pd.isna(a.activity_end))
-        record("workflow",technical_start,a.completed,base)
+        workflow_end = a.activity_end if pd.notna(a.activity_end) else a.completed
+        record("workflow",technical_start,workflow_end,base, pd.isna(a.activity_end))
         record("technical",technical_start,technical_end,base)
     for s in sessions:
         if s["visit"] in consumed:
@@ -165,20 +166,25 @@ def aggregate(prepared, profile):
                            (frame.date <= min(profile.end,str(period.end_time.date())))]
                 expected={key:n for key,n in prepared["expected"].items()
                           if max(profile.start,str(period.start_time.date()))<=key[1]<=min(profile.end,str(period.end_time.date()))}
-                for machine in sorted(set(df.machine)|{key[0] for key in expected},key=natural_key)+["ALL"]:
-                    group = df if machine == "ALL" else df[df.machine.eq(machine)]
+                visible = set(df.groupby("machine").patient_key.nunique().loc[lambda n: n >= profile.minimum_patients].index)
+                devices = set(df.machine)|{key[0] for key in expected}
+                for machine in sorted(devices,key=natural_key)+["ALL"]:
+                    group = df[df.machine.isin(visible)] if machine == "ALL" else df[df.machine.eq(machine)]
                     slot = prepared["slots"]
                     slot = slot[(slot.date >= max(profile.start,str(period.start_time.date()))) &
                                 (slot.date <= min(profile.end,str(period.end_time.date())))]
                     if machine != "ALL":
                         slot = slot[slot.machine.eq(machine)]
+                    else:
+                        slot = slot[slot.machine.isin(visible)]
                     patients = set(group.patient_key)
                     suppressed = len(patients)<profile.minimum_patients
                     measured_slot_patients = set(group.loc[group.booked.notna(),"patient_key"])
                     safe_slots = len(measured_slot_patients)>=profile.minimum_patients
                     days,cycles,changes = [],[],[]
                     cycle_patients=set()
-                    expected_group={key:n for key,n in expected.items() if machine=='ALL' or key[0]==machine}
+                    expected_group={key:n for key,n in expected.items()
+                                    if (key[0] in visible if machine=='ALL' else key[0]==machine)}
                     for (device,day),d in group.groupby(["machine","date"]):
                         # A missing visit interval is unknown occupancy, not idle time.
                         if len(d)<expected_group.get((device,day),len(d)):
@@ -224,10 +230,13 @@ def aggregate(prepared, profile):
                                match_pct=100*slot.matched.mean() if len(slot) else None,
                                measurable_slots=int(group.booked.notna().sum()),
                                slot_coverage_pct=100*group.overlap.sum()/booked if booked>0 and safe_slots else None,
+                               duration_ratio_pct=100*group.loc[group.booked.notna(),"duration"].sum()/booked if booked>0 and safe_slots else None,
+                               slotted_duration_mean=group.loc[group.booked.notna(),"duration"].mean() if safe_slots else None,
                                booked_mean=group.booked.mean() if safe_slots else None,
                                duration_mean=group.duration.mean(),fallback_intervals=int(group.fallback.sum()),
                                free_hours=free/60,free_gt30_hours=gt30/60,window_hours=window/60,
                                free_pct=100*free/window if window else None,
+                               occupied_pct=100*(window-free)/window if window else None,
                                free_gt30_pct=100*gt30/window if window else None,
                                free_mean_hours=free/60/len(days) if days else None,
                                free_gt30_mean_hours=gt30/60/len(days) if days else None,
@@ -240,7 +249,7 @@ def aggregate(prepared, profile):
                                 if days and all(d["nominal_hours"] is not None for d in days) else None)
                     if not safe_free:
                         for key in kpi:
-                            if key.startswith(('free_','window_','nominal_')) or key in {'exact30_gaps','overlap_minutes'}:
+                            if key.startswith(('free_','window_','nominal_')) or key in {'exact30_gaps','overlap_minutes','occupied_pct'}:
                                 kpi[key]=None
                     if suppressed:
                         kpi = {key:None for key in kpi}
@@ -250,20 +259,17 @@ def aggregate(prepared, profile):
                         "duration":distribution(group.duration,patients,profile.minimum_patients),
                         "booked":distribution(group.booked,measured_slot_patients,profile.minimum_patients),
                         "slot_coverage":distribution(100*group.overlap/group.booked,measured_slot_patients,profile.minimum_patients),
+                        "duration_ratio":distribution(100*group.duration/group.booked,measured_slot_patients,profile.minimum_patients),
                         "cycle":distribution(cycles,cycle_patients,profile.minimum_patients),
                         "change":distribution(changes,cycle_patients,profile.minimum_patients),
                         "free":distribution([d["free_minutes"]/60 for d in days],free_patients,profile.minimum_patients),
                         "free_gt30":distribution([d["free_gt30_minutes"]/60 for d in days],free_patients,profile.minimum_patients),
                         "free_pct":distribution([100*d["free_minutes"]/d["window_minutes"] for d in days if d["window_minutes"]],free_patients,profile.minimum_patients),
+                        "occupied_pct":distribution([100*d["occupied_minutes"]/d["window_minutes"] for d in days if d["window_minutes"]],free_patients,profile.minimum_patients),
                         "free_gt30_pct":distribution([100*d["free_gt30_minutes"]/d["window_minutes"] for d in days if d["window_minutes"]],free_patients,profile.minimum_patients),
                     }
-                    groups.append(dict(machine=machine,suppressed=suppressed,kpi=kpi,distributions=group_distributions))
-                # Complementary suppression prevents deriving a small device via the pooled total.
-                if any(g["suppressed"] for g in groups if g["machine"]!="ALL"):
-                    groups[-1]["kpi"] = {k:None for k in groups[-1]["kpi"]}
-                    groups[-1]["distributions"] = {k:distribution([],set(),profile.minimum_patients)
-                                                   for k in groups[-1]["distributions"]}
-                    groups[-1]["suppressed"] = True
+                    groups.append(dict(machine=machine,suppressed=suppressed,kpi=kpi,distributions=group_distributions,
+                                       pool_excludes_suppressed=machine=="ALL" and bool(devices-visible)))
                 result[granularity][model].append(dict(
                     label=str(period),start=str(period.start_time.date()),end=str(period.end_time.date()),
                     partial=str(period.start_time.date())<profile.start or str(period.end_time.date())>profile.end,

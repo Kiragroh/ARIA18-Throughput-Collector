@@ -9,6 +9,10 @@
 | Terminmatch | Eindeutig 1:1 zugeordnete Besuche | Relevante nicht stornierte Therapieslots; unzugeordnete Slots bleiben erhalten |
 | Messabdeckung | Slots mit plausiblem Intervall im gewaehlten Modell | Alle relevanten Slots; niedrige Abdeckung nicht als gute Effizienz auslegen |
 | Slotabdeckung | Summe tatsaechlicher Ueberlappung mit zugeordnetem Kalenderslot | Summe genau dieser gebuchten Dauern; gewichtet, 0 bis 100 Prozent |
+| Dauer / Slot | Summe gemessener Dauern mit gueltigem Slot | Summe derselben Slotdauern; ignoriert Zeitverschiebung, kann >100 Prozent sein |
+| Patienten | Eindeutige Personen mit technischer oder bestaetigter manueller Behandlung | Nicht ueber Geraete oder Zeitabschnitte addieren |
+| Bestrahlte Plaene | Eindeutige technische Plaene mit Bestrahlung im Zeitraum | Brachy-/historische Termine ohne Planreferenz sind keine erfundenen Plaene |
+| Neueinstellungen (Plaene) | Erste tatsaechliche Bestrahlung des Plans | Fraktion 1 oder erster Behandlungstag aus Planquelle; unabhaengig von Terminbezeichnungen |
 | Gebucht | Tatsächlich im Kalender stehende Endzeit minus Beginn | Kein nachtraeglich angenommener Standardtermin |
 | Freie Stunden | Summe positiver Luecken der Intervallvereinigung | Beobachtetes Geraetetagesfenster zwischen erstem Beginn und letztem Ende |
 | Freier Anteil | Freie Stunden | Stunden dieses beobachteten Fensters, nicht nominelle Verfuegbarkeit |
@@ -30,7 +34,8 @@ Aufklaerungskohorte eventuell erst im Folgejahr.
   Fehlende einzelne Anker koennen durch zugeordnete technische Anker ersetzt
   werden. Anzahl dieser Ersatzintervalle bleibt separat sichtbar.
 - **Workflow:** erstes plausibles Imaging vor Beam, sonst erster Beam, bis
-  dokumentiertem Abschluss. Fehlender Abschluss wird nicht durch die Slotzeit ersetzt.
+  dokumentiertem Aktivitaetsende, ersatzweise eindeutigem Abschlussanker aus der
+  Historie. Fehlender Abschluss wird nicht durch die Slotzeit ersetzt.
 - **Imaging/Beam:** derselbe Beginn bis letztes technisches Ende. Ein
   Behandlungsrecord-Zeitstempel ohne technischen Beginn ist nur Behandlungsevidenz,
   keine gemessene technische Dauer.
@@ -69,6 +74,16 @@ zusammengefuehrt. Natuerlicher Terminschluessel: Person + exakter Aktivitaetscod
 Kalenderbeginn; bei patientenlosen Blocks zusaetzlich Geraet. Unterschiedliche
 Status-/Zeitversionen ohne eindeutige Reihenfolge bleiben Konfliktfaelle und
 werden nicht durch eine willkuerlich bevorzugte Zeile geloest.
+Die reine Anzahl zugeordneter Quell-/Ressourcenzeilen ist kein klinischer Konflikt.
+Eine leere oder mehrdeutige Ressourcenabbildung darf fuer externe Therapietermine
+aus genau einem technisch belegten Tagesgeraet derselben Person aufgeloest werden.
+Die Zahl dieser Zuordnungen bleibt sichtbar. Bei mehreren tatsaechlichen Geraeten
+bleibt die Zuordnung ungeklaert. Brachy und historische Therapien werden dadurch
+nicht einem LINAC zugeschlagen.
+Exakte Aktivitaetsnamen koennen im Profil mehrdeutige Aktivitaetscodes uebersteuern.
+Testnamen und nichtklinische Kennungen werden nur anhand nicht-identifizierender
+Quellflags geprueft. Die numerische Kennungsregel ist standortabhaengig, nicht
+universell. Namen/Kennungen verlassen die quellseitige Klassifikation nicht.
 
 Technische Feldzeilen werden fuer den Export nach Plan/Geraet/Tag/Fraktion
 verdichtet; `source_rows` bleibt erhalten. Viele Feldzeilen sind nicht automatisch
@@ -79,6 +94,22 @@ scheinbar exakten Besuchszahlen behaupten.
 Kontext wird vor und nach dem Auswertungsjahr eingelesen. Der Exporttag wird
 niemals kuenstlich als Behandlungsende gesetzt. Eine Episode wird erst nach
 beobachteten 30 behandlungsfreien Tagen als abgeschlossen gewertet.
+
+Ab rc.4 umfasst die Exportkohorte auch ausschliesslich im Vorjahr behandelte
+Personen. Alte Exporte ohne diesen Nachweis duerfen keinen vollstaendigen
+Vorjahresvergleich anzeigen. Die optionalen Planfelder stammen aus
+DimPlan.NoFractionsPlanned/FirstDayOfTreatment/LastDayOfTreatment, ersatzweise
+FactTreatmentHistory.FractionsPlanned. Aktuelle Planattribute sind keine
+historische Version der damaligen Verordnung.
+
+Planebene und Episode sind getrennt: Erreichte Sollfraktionen bedeuten
+vollstaendig bestrahlt. Ein unvollstaendiger Plan ohne Fortsetzung fuer **mehr
+als sieben beobachtete Tage** gilt analytisch als beendet, nicht als klinisch
+abgeschlossen. Ohne Soll bleibt der Zustand "Soll unbekannt". Bei zu kurzer
+Nachbeobachtung bleibt das Ende offen. Eine spaetere Fortsetzung desselben Plans
+wird als Pause/Fortsetzung ausgewiesen, nicht als neue Neueinstellung.
+Der letzte belegte Behandlungstag bleibt das Enddatum. Die 30-Tage-Regel fuer
+modalitaetsuebergreifende Episoden aendert sich dadurch nicht.
 
 Reife einer Aufklaerungskette: letzte abgeschlossene Aufklaerung plus drei
 Kalendermonate bis zum bestaetigten Datenstand. Wiederholte Wiedervorstellungen
@@ -94,13 +125,43 @@ nicht der Mittelwert von vier Geraetemedianen. Die Linie liegt hinter den Boxen
 und ist schwarz im hellen, weiss im dunklen Modus.
 
 Keine patientenbezogenen Einzelpunkte in HTML/JSON. Kleine Geraetegruppen werden
-unterdrueckt, gegebenenfalls auch der gepoolte Wert als Differenzschutz. Kleine
+unterdrueckt und aus dem gepoolten Wert entfernt, damit sie nicht als Differenz
+rekonstruiert werden koennen. Der verbleibende Pool wird als Teilmenge markiert. Kleine
 Teilgruppen im Patientenfluss unterdruecken die betroffenen Werte sowie direkt
 abhaengige Summen und Quoten. Unabhaengige Kennzahlen bleiben erhalten.
 Mehrere sich ueberlappende Auswertungen erfordern weiterhin eine lokale
 Datenschutzpruefung. Fehlend ist nicht Null.
 
-## Technische Grundlagen
+## Bildobjektfrequenz und Ausstattung
+
+Der optionale Adapter liest `DWH.FactPatientImage` fuer den ausgewaehlten
+Zeitraum. Er dedupliziert nach Bildobjektidentitaet, ersatzweise nach belegbarer
+Quellidentitaet. Originalkennungen und Bildnamen werden nicht exportiert.
+Referenzbilder werden separat erkannt und nicht als Aufnahmefrequenz gezaehlt.
+CBCT, kV/MV-2D, explizit bezeichnete ExacTrac-Objekte und unbekannte Typen bleiben
+getrennt. Diese Bildnamenklassifikation ist vorlaeufig, keine DICOM-Verifikation.
+
+Ein ExacTrac-Stereopaar kann zwei Bildobjekte sein. Objektzahl ist daher nicht
+gleich Zahl der Aufnahmevorgaenge. Die Verknuepfung mit der Behandlungsdauer
+erfolgt nur bei genau einem messbaren Besuch pro Person/Geraet/Tag. Mehrere
+Besuche werden nicht willkuerlich zugeordnet. Nenner sind messbare Besuche im
+gleichen Zeitmodell und derselben Ausstattungsepoche. Ein Besuch kann mehrere
+Bildarten aufweisen; diese Gruppen sind nicht addierbar. `ExposureTime` ist
+keine vollstaendige Prozesszeit, `ImageCreationDate` nicht sicher Akquisitionszeit.
+
+Im lokalen Profil kann `equipment_periods` datierte Angaben aufnehmen:
+
+```json
+{"machine":"LOKALER_GERAETECODE","start":"2025-01-01","end":"2025-12-31",
+ "model":"Halcyon","cbct_system":"HyperSight","cbct_modality":"kv","confirmed":true}
+```
+
+Dies ist ein Beispiel, keine automatische Standortannahme. Bei Umbauten werden
+nicht ueberlappende Epochen verwendet. Fehlende Angaben bleiben unbekannt;
+aus einer kurzen Bildzeit wird weder HyperSight noch eine andere Hardware
+abgeleitet. Vergleiche sind deskriptiv, nicht fallmixadjustiert oder kausal.
+
+## Technische Grenzen
 
 SSRS-Abfragezeit und Berichtslaufzeit sind getrennte Grenzen; der Ereignisexport
 hat einen begrenzten Abfrage-Timeout. Siehe

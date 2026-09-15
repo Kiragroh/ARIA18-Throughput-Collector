@@ -42,6 +42,15 @@ footer{padding:18px 0;color:var(--muted);font-size:12px}
 <label>Detailzeitraum<select id="period"></select></label>
 </div>
 <div id="notes" class="notes"></div>
+<section><h2>Klinikprofil und erfasste Behandlungen</h2><div id="population-kpis" class="kpis"></div>
+<p id="population-period"></p>
+<details class="definitions"><summary>Patienten, Fraktionen, Plaene und Neueinstellungen</summary>
+<p>Patienten sind eindeutige Personen mit Behandlungsnachweis, nicht die Summe der Geraetepatienten. Technische Fraktionen werden pro Person, Plan, Fraktionsnummer, Geraet und Tag dedupliziert. Zusaetzlich zaehlen bestaetigte manuell abgeschlossene Therapietermine, etwa Tomotherapy oder Brachytherapie. Ein Termin mit technischem Nachweis am selben Geraetetag wird nicht nochmals addiert. Technische und manuelle Nachweise bleiben getrennt.</p>
+<p>Neueinstellung (Planbeginn): erste tatsaechliche Bestrahlung eines Plans, belegt durch Fraktion 1 oder den exportierten ersten Behandlungstag. Kein Terminname erforderlich. Boost-/Folgeplaene koennen neue Planbeginne innerhalb derselben Behandlungsepisode sein. Ohne technische Planreferenz werden keine Plaene erfunden; manuelle Therapien fliessen in Patienten, Termine und Episoden ein.</p>
+<p>Planende: Sollfraktionen erreicht = vollstaendig bestrahlt. Bei nicht erreichtem Soll und mehr als sieben beobachteten Tagen ohne Fortsetzung gilt der Plan analytisch als beendet, aber nicht als vollstaendig abgeschlossen. Fehlt das Soll, wird das separat ausgewiesen. Enddatum ist die letzte Bestrahlung, nie das Ende des Auswertungsfensters. Spaetere Fortsetzungen bleiben derselbe Plan. Behandlungsepisoden verbinden weiterhin Therapien mit hoechstens 30 Tagen Pause.</p>
+<p>Die Geraetezeilen beziehen sich auf den gesamten Exportzeitraum. Die Kacheln und Verlaufsmarkierung folgen dem Detailzeitraum oben. Eindeutige Patienten- und Planzahlen sind ueber Zeitabschnitte und Geraete nicht addierbar. Ein fehlender Vorjahresverlauf bedeutet unvollstaendige Vorjahrespopulation im Export, nicht Null Behandlungen.</p>
+</details><div class="table-wrap"><table id="population-devices"></table></div>
+<div class="table-wrap"><table id="plan-states"></table></div></section>
 <section>
 <div class="section-head"><h2>Geraete und Zeitnutzung</h2><span id="active" class="badge"></span></div>
 <div id="kpis" class="kpis"></div>
@@ -49,9 +58,11 @@ footer{padding:18px 0;color:var(--muted);font-size:12px}
 <details class="definitions"><summary>Definitionen und Nenner</summary>
 <p>Aktivitaet: dokumentierter Beginn bis dokumentiertes Ende. Fehlt ein Anker, wird eine zugeordnete technische Zeit verwendet und als Ersatz ausgewiesen. Workflow: erstes plausibles Imaging vor dem Beam, sonst Beam, bis dokumentiertem Abschluss. Imaging/Beam endet am letzten technischen Ende. Ohne passenden Zeitnachweis bleibt der Wert leer.</p>
 <p>Slotabdeckung = Summe der Ueberlappungen von gemessenen Besuchen und ihren Kalenderslots / Summe genau dieser gebuchten Slotdauern. Kein Ersatz fuer die Terminmatchquote: zugeordnete Besuche / relevante, nicht stornierte Therapieslots. Die Messabdeckung zeigt, fuer wie viele Slots ein Zeitintervall vorliegt.</p>
+<p>Dauer / Slot = Summe gemessener Behandlungsdauern / Summe der zugehoerigen Slotdauern. Anders als die Slotabdeckung ignoriert diese Kennzahl zeitliche Verschiebungen und kann ueber 100 Prozent liegen. Slotmittel und Dauer im Slot verwenden dieselbe messbare Teilmenge; Dauer aller Besuche schliesst auch technische Ersatzintervalle ohne Slot ein. Durchsatz wird nur fuer die konfigurierten technisch angebundenen Geraete ausgewertet.</p>
 <p>Freie Zeit: positive Luecken der vereinigten Behandlungsintervalle je Geraetetag. Nenner ist das beobachtete Fenster vom ersten Beginn bis zum letzten Ende, nicht die nominelle Oeffnungszeit. Ueberlappungen sind keine negativen Pausen. Bei &gt;30 Minuten zaehlt die ganze Luecke, nicht nur der Anteil oberhalb 30.</p>
 <p>Luecken, Takt und Wechsel werden nur fuer vollstaendig messbare Geraetetage berechnet: Alle im Export erkannten relevanten Termine und zusaetzlichen technischen Besuche brauchen ein plausibles Intervall im gewaehlten Modell. Fehlende Behandlungsintervalle werden nicht als freie Zeit gezaehlt. Die Ergebnisse dieser Teilmenge werden nicht auf das ganze Jahr hochgerechnet.</p>
 <p>Box: 25./50./75. Perzentil; Whisker bis zum aeussersten Wert innerhalb 1,5 Interquartilabstaenden. Keine Einzelfallpunkte. Gestrichelte Linie: gepoolter Median aller angezeigten Geraete, nicht Mittelwert der Geraetemediane. Bei freier Zeit ist eine Beobachtung ein Geraetetag, sonst ein Besuch beziehungsweise zugeordnetes Slotintervall.</p>
+<p>Eine kleine, nicht freigebbare Geraetegruppe wird auch aus dem Gesamtwert entfernt. Die verbleibenden Geraete bleiben auswertbar; die Kacheln sind dann ausdruecklich keine vollstaendige Kliniksummen.</p>
 <p>Takt: Beginn bis zum naechsten Beginn eines anderen Patienten am selben Geraetetag. Wechsel: bisher spaetestes Ende bis zum naechsten Beginn, bei Ueberlappung Null. Technische Plaene derselben Person werden innerhalb der konfigurierten Besuchstoleranz zusammengefasst. Nicht belegte Daten und kleine Gruppen bleiben leer.</p>
 </details>
 <div class="table-wrap"><table id="machines"></table></div>
@@ -63,7 +74,13 @@ footer{padding:18px 0;color:var(--muted);font-size:12px}
 <p>Mehrere abgeschlossene Aufklaerungen vor demselben folgenden Behandlungsbeginn bilden eine Aufklaerungsepisode. Nach der letzten Behandlung beginnt die Zuordnung neu. Der erste abgeschlossene Termin bestimmt die Kohorte; die letzte Aufklaerung bestimmt die erforderliche Nachbeobachtung.</p>
 <p>Reife Kohorte: mindestens drei Kalendermonate Nachbeobachtung. Die Suche nach Behandlung oder Wiedervorstellungen endet nicht nach drei Monaten. Reife Episoden = Behandlungsbeginn + weitere Beobachtung + ohne gefundenen Beginn. Letzteres ist keine No-show- oder Verlustdiagnose. Bei unbestaetigtem Quellenumfang wird keine negative Quote ausgegeben.</p>
 <p>Stornoquote: stornierte/abgebrochene Aufklaerungstermine geteilt durch alle eindeutigen registrierten Aufklaerungstermine des Zeitraums. Spaetere Kontakte werden getrennt gezaehlt. Offene Termine mit spaeterer Behandlung werden als gestuetzte Anwesenheitsannahme separat gezaehlt und nicht nachtraeglich auf abgeschlossen gesetzt.</p>
-</details><div class="table-wrap"><table id="flowtable"></table></div></section>
+</details><div class="table-wrap"><table id="flowtable"></table></div><div class="table-wrap"><table id="flow-periods"></table></div></section>
+<section><h2>Bildobjekte und zugeordnete Behandlungszeiten</h2><p id="imaging-state"></p>
+<details class="definitions"><summary>Bildgebung, Zaehleinheit und Geraeteausstattung</summary>
+<p>Die Zusatzquelle zaehlt deduplizierte Bildobjekte, nicht Bestrahlungsfelder oder automatisch Aufnahmevorgaenge. Ein ExacTrac-Stereopaar kann zwei Bildobjekte enthalten. Bildnamen/-typen liefern eine vorlaeufige Klassifikation; nicht unterscheidbare CBCT-, 2D- und sonstige Objekte bleiben separat. Fehlender Nachweis bedeutet nicht, dass keine Bildgebung stattgefunden hat.</p>
+<p>Die Zuordnung verwendet nur einen eindeutigen messbaren Besuch derselben Person am selben Geraet und Tag. Mehrere Besuche bleiben ohne Zuordnung. Nenner: messbare Besuche im oben gewaehlten Zeitmodell und in derselben Ausstattungsepoche. Verschiedene Bildarten koennen zum selben Besuch gehoeren und sind nicht addierbar. Bild-Erstellungszeit ist nicht automatisch Aufnahmezeit.</p>
+<p>ExposureTime wird getrennt von der gesamten Behandlungsdauer gezeigt; sie umfasst nicht verlaesslich Positionierung, Rekonstruktion oder Matching. HyperSight, konventionelle Systeme und Umbauzeitpunkte stammen nur aus datierten Standortangaben, nie aus einer geschaetzten Geschwindigkeit. Unterschiede sind deskriptiv und nicht um Indikation, Fraktionsart oder andere Fallmixfaktoren bereinigt.</p>
+</details><div class="table-wrap"><table id="imaging-table"></table></div></section>
 <section><h2>Datenqualitaet und Abdeckung</h2><div class="table-wrap"><table id="quality"></table></div>
 <details><summary>Grenzen der Bildgebung</summary><p>Der Basisexport nutzt DWH-Behandlungshistorie. Fehlendes Imaging, insbesondere bei adaptiven Systemen, ist kein Nachweis fehlender Bildgebung. Direkte Bildobjekte, Aufnahmezeit, Planreferenz und Aufnahmegeraet muessen standortbezogen gesondert validiert werden. Externes Imaging darf nicht automatisch dem Plangeraet zugerechnet werden.</p></details></section>
 <footer id="footer"></footer>
@@ -73,8 +90,16 @@ footer{padding:18px 0;color:var(--muted);font-size:12px}
 const DATA=__REPORT_DATA__;
 const $=id=>document.getElementById(id);
 const fmt=(v,unit='')=>v==null?'--':new Intl.NumberFormat('de-DE',{maximumFractionDigits:1}).format(v)+unit;
-const colors=['#287db6','#239866','#d65d74','#c78b15','#865cb3','#357e84'];
-const specs=[['slot_coverage','Slotabdeckung im Verlauf','%'],['duration','Behandlungsdauer','min'],['cycle','Patiententakt','min'],['change','Patientenwechsel','min'],['free','Freie Geraetezeit','h'],['free_pct','Anteil freie Geraetezeit','%']];
+const colors=['#287db6','#239866','#d65d74','#c78b15','#865cb3','#357e84','#a45586','#76821f','#70584a','#397bd1'];
+const machineNames=[...new Set([...(DATA.population?.devices||[]).map(d=>d.machine),...Object.values(DATA.periods).flatMap(models=>Object.values(models).flatMap(ps=>ps.flatMap(p=>p.groups.map(g=>g.machine))))])].filter(n=>n!=='ALL').sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+const machineColor=name=>colors[machineNames.indexOf(name)%colors.length];
+const specs=[['slot_coverage','Slotabdeckung im Verlauf','%'],['duration','Behandlungsdauer','min'],['duration_ratio','Behandlungsdauer / Slotdauer','%'],['cycle','Patiententakt','min'],['change','Patientenwechsel','min'],['free','Freie Geraetezeit','h'],['free_pct','Anteil freie Geraetezeit','%'],
+ ['pop_patients','Behandelte Patienten','Patienten'],['pop_fractions','Fraktionen und manuelle Therapietermine','Anzahl'],
+ ['pop_treated_plans','Bestrahlte Plaene','Plaene'],['pop_new_plans','Neueinstellungen: erste Planbestrahlung','Plaene'],
+ ['pop_patients_per_day','Patienten je Behandlungstag','Patienten / Tag'],['pop_fractions_per_day','Fraktionen je Behandlungstag','Fraktionen / Tag'],
+ ['flow_treatment_starts','Begonnene Behandlungsepisoden','Episoden'],['flow_counselling_episodes','Aufklaerungsepisoden','Episoden'],
+ ['flow_treatment_ends','Beendete Behandlungsepisoden (30 Tage nachbeobachtet)','Episoden'],
+ ['occupied_pct','Belegter Anteil des beobachteten Tagesfensters','%']];
 let activeIndex=0, activeStart=DATA.start, plotSpecs=new Map();
 $('subtitle').textContent=DATA.site+' | '+DATA.start+' bis '+DATA.end+' | Datenstand '+DATA.data_through;
 $('notes').textContent=DATA.notes.join(' ');
@@ -93,24 +118,57 @@ function controls(){
 function showNumbers(){
  const p=periods()[activeIndex];if(!p)return;
  activeStart=p.start;
+ const imageRows=DATA.imaging?.periods?.[$('granularity').value]?.[$('model').value]?.[activeIndex]?.groups||[];
+ $('imaging-state').textContent=DATA.imaging?.available?'DWH-Bildobjekte | '+p.label+' | Vorlaeufige Klassifikation anhand von Bildnamen/-typen.':'Bildobjektquelle in diesem Export nicht enthalten oder nicht verfuegbar. Neuer Export erforderlich; keine Nullwerte angenommen.';
+ const imageLabels={kv_cbct:'kV-CBCT',mv_cbct:'MV-CBCT',cbct_unknown:'CBCT, Energie unklar',exactrac_2d:'ExacTrac 2D',kv_2d:'kV 2D',mv_2d:'MV 2D',unknown_2d:'2D, Typ unklar',unknown:'Nicht klassifiziert'};
+ table('imaging-table',['Geraet','Bildart','Ausstattung','Bildobjekte','Messbare Besuche (Nenner)','Besuche mit Nachweis','Objekte / 100 Besuche','ExposureTime Median','Behandlungsdauer Median','Behandlungsdauer Q1 / Q3'],imageRows.map(g=>[g.machine,imageLabels[g.kind]||g.kind,g.equipment,fmt(g.objects),fmt(g.denominator_visits),fmt(g.visits_with_objects_pct,' %'),fmt(g.objects_per_100_visits),fmt(g.exposure_seconds.median,' s'),fmt(g.visit_duration_minutes.median,' min'),fmt(g.visit_duration_minutes.q1)+' / '+fmt(g.visit_duration_minutes.q3)+' min']));
  const all=p.groups.find(g=>g.machine==='ALL')?.kpi||{}, large=$('gap').value==='gt30';
+ const partial=p.groups.find(g=>g.machine==='ALL')?.pool_excludes_suppressed;
  $('active').textContent=p.label+(p.partial?' | vorlaeufig/teilweise':'');
  $('daycoverage').textContent='Geraetetage fuer Luecken/Takt: '+fmt(all.complete_device_days)+' vollstaendig messbar; '+fmt(all.incomplete_device_days)+' wegen fehlender Intervalle nicht ausgewertet. Messabdeckung aller erkannten Besuche: '+fmt(all.measured_visits_pct,' %.');
+ if(partial)$('daycoverage').textContent+=' Gesamtwerte nur fuer auswertbare Geraete; kleine Geraetegruppen sind nicht enthalten.';
  $('kpis').innerHTML=kpi('Slotabdeckung',all.slot_coverage_pct,' %')+kpi('Messbare Slots',all.measurable_slots)+kpi('Freie Zeit gesamt',large?all.free_gt30_hours:all.free_hours,' h')+kpi('Freie Zeit je Geraetetag',large?all.free_gt30_mean_hours:all.free_mean_hours,' h')+kpi('Anteil am Tagesfenster',large?all.free_gt30_pct:all.free_pct,' %')+kpi('Tagesfenster je Geraetetag',all.window_mean_hours,' h');
- table('machines',['Geraet','Besuche','Slots','Terminmatch','Messbare Slots','Slotabdeckung','Gebucht im Mittel','Dauer im Mittel','Ersatzintervalle','Freie Zeit','Tagesfenster'],p.groups.filter(g=>g.machine!=='ALL').map(g=>{const k=g.kpi;return [g.machine,fmt(k.visits),fmt(k.relevant_slots),fmt(k.match_pct,'%'),fmt(k.measurable_slots),fmt(k.slot_coverage_pct,'%'),fmt(k.booked_mean,' min'),fmt(k.duration_mean,' min'),fmt(k.fallback_intervals),fmt(large?k.free_gt30_hours:k.free_hours,' h'),fmt(k.window_hours,' h')]}));
+ table('machines',['Geraet','Besuche','Slots','Terminmatch','Messbare Slots','Slotabdeckung','Dauer / Slot','Gebucht im Mittel','Dauer im Slot','Dauer aller Besuche','Ersatzintervalle','Freie Zeit','Tagesfenster'],p.groups.filter(g=>g.machine!=='ALL').map(g=>{const k=g.kpi;return [g.machine,fmt(k.visits),fmt(k.relevant_slots),fmt(k.match_pct,'%'),fmt(k.measurable_slots),fmt(k.slot_coverage_pct,'%'),fmt(k.duration_ratio_pct,'%'),fmt(k.booked_mean,' min'),fmt(k.slotted_duration_mean,' min'),fmt(k.duration_mean,' min'),fmt(k.fallback_intervals),fmt(large?k.free_gt30_hours:k.free_hours,' h'),fmt(k.window_hours,' h')]}));
+ const pop=DATA.population?.periods[$('granularity').value]?.[activeIndex]?.current||{};
+ $('population-period').textContent=p.label+' | Alle erfassten Therapieformen; unabhaengig vom Durchsatz-Zeitmodell.';
+ $('population-kpis').innerHTML=kpi('Eindeutige Patienten',pop.patients)+kpi('Fraktionen / Therapietermine',pop.fractions)+kpi('Bestrahlte Plaene',pop.treated_plans)+kpi('Neueinstellungen (Plaene)',pop.new_plans)+kpi('Patienten je Behandlungstag',pop.patients_per_day)+kpi('Fraktionen je Behandlungstag',pop.fractions_per_day);
+ table('population-devices',['Geraet / Modalitaet (Gesamtzeitraum)','Patienten','Technische Fraktionen','Manuelle Therapietermine','Bestrahlte Plaene','Erster Tag','Letzter Tag'],(DATA.population?.devices||[]).map(d=>[d.machine,fmt(d.patients),fmt(d.technical_fractions),fmt(d.manual_fractions),fmt(d.treated_plans),d.first_day||'--',d.last_day||'--']));
+ table('plan-states',['Planstatus im Detailzeitraum','Anzahl'],[
+ ['Soll erreicht: vollstaendig bestrahlt',fmt(pop.plan_ends_complete)],
+ ['Soll nicht erreicht: mehr als 7 Tage ohne Fortsetzung',fmt(pop.plan_ends_incomplete)],
+ ['Mehr als 7 Tage ohne Fortsetzung, Soll oder frueherer Kontext unbekannt',fmt(pop.plan_ends_target_unknown)],
+ ['Bestrahlte Plaene mit noch offener Nachbeobachtung',fmt(pop.plan_open_followup)],
+ ['Bestrahlte Plaene mit Fortsetzung nach mehr als 7 Tagen Pause',fmt(pop.plans_resumed_after_gap)]]);
+ table('flow-periods',['Zeitraum','Aufklaerungen registriert','Abgeschlossen','Offen','Storniert','Aufklaerungsepisoden','Behandlungsbeginne'],(DATA.flow.periods?.[$('granularity').value]||[]).map(r=>[r.label,...['registered_counselling_appointments','completed_counselling_appointments','open_counselling_appointments','cancelled_counselling_appointments','counselling_episodes','treatment_starts'].map(k=>fmt(r.values[k]))]));
 }
 function chartConfig(metric,title,unit){
+ if(metric.startsWith('pop_')||metric.startsWith('flow_'))return populationChartConfig(metric,title,unit);
  const ps=periods(), dark=document.documentElement.dataset.theme==='dark', names=[...new Set(ps.flatMap(p=>p.groups.map(g=>g.machine)).filter(n=>n!=='ALL'))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
  const m=$('gap').value==='gt30'&&metric.startsWith('free')?metric.replace('free','free_gt30'):metric;
  const dist=(p,name)=>p.groups.find(g=>g.machine===name)?.distributions[m]||{};
  const xs=ps.map((_,i)=>i), traces=[{type:'scatter',mode:'lines+markers',x:xs,y:ps.map(p=>dist(p,'ALL').median),name:'Gesamtmedian (gepoolt)',line:{color:dark?'#fff':'#000',dash:'dash',width:2.5},marker:{size:5},hovertemplate:'Gesamtmedian: %{y:.1f} '+unit+'<extra></extra>',zorder:0,connectgaps:false}];
  names.forEach((name,i)=>{
-  const ds=ps.map(p=>dist(p,name)),x=xs.map(v=>v+(i-(names.length-1)/2)*0.17),color=colors[i%colors.length];
+  const ds=ps.map(p=>dist(p,name)),x=xs.map(v=>v+(i-(names.length-1)/2)*0.17),color=machineColor(name);
   if($('view').value==='box')traces.push({type:'box',name,x,q1:ds.map(d=>d.q1),median:ds.map(d=>d.median),q3:ds.map(d=>d.q3),lowerfence:ds.map(d=>d.low),upperfence:ds.map(d=>d.high),boxpoints:false,width:0.14,fillcolor:color+'99',line:{color,width:1.6},zorder:1,customdata:ds.map(d=>d.n),hovertemplate:name+'<br>n=%{customdata}<br>Median %{median:.1f} '+unit+'<extra></extra>'});
   else traces.push({type:'scatter',mode:'lines+markers',name,x:xs,y:ds.map(d=>d.median),line:{color,width:2},connectgaps:false,zorder:1});
  });
  const style=getComputedStyle(document.documentElement),layout={paper_bgcolor:style.getPropertyValue('--bg'),plot_bgcolor:style.getPropertyValue('--bg'),font:{family:'Segoe UI, sans-serif',color:style.getPropertyValue('--ink'),size:12},margin:{l:58,r:18,t:16,b:94},xaxis:{tickvals:xs,ticktext:ps.map(p=>p.label),range:[-0.7,ps.length-0.3],fixedrange:true,tickangle:ps.length>8?-40:0},yaxis:{title:{text:unit},rangemode:'tozero',gridcolor:style.getPropertyValue('--border')},showlegend:true,legend:{orientation:'h',y:-0.27,x:0},shapes:[{type:'rect',xref:'x',yref:'paper',x0:activeIndex-0.48,x1:activeIndex+0.48,y0:0,y1:1,line:{color:style.getPropertyValue('--accent'),width:1},fillcolor:dark?'rgba(85,204,211,0.09)':'rgba(8,127,140,0.07)',layer:'below'}]};
  return {traces,layout,title};
+}
+function populationChartConfig(metric,title,unit){
+ const base=chartConfig('duration',title,unit), flow=metric.startsWith('flow_'), key=metric.replace(/^(pop_|flow_)/,'');
+ const gran=$('granularity').value, ps=periods(), xs=ps.map((_,i)=>i);
+ const rows=flow?(DATA.flow.periods?.[gran]||[]):(DATA.population?.periods[gran]||[]);
+ const values=rows.map(r=>flow?r.values[key]:r.current[key]);
+ const previous=flow?(DATA.flow.previous_periods?.[gran]||[]).map(r=>r.values[key]):rows.map(r=>r.previous?.[key]??null);
+ const traces=[];
+ if(!flow&&!key.endsWith('_per_day')){
+  const names=[...new Set(rows.flatMap(r=>r.devices.map(d=>d.machine)))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+  names.forEach(name=>traces.push({type:'bar',name,x:xs,y:rows.map(r=>r.devices.find(d=>d.machine===name)?.[key]??null),marker:{color:machineColor(name)}}));
+ }
+ traces.push({type:'scatter',mode:'lines+markers',name:'Gesamt (eindeutig)',x:xs,y:values,line:{color:document.documentElement.dataset.theme==='dark'?'#fff':'#000',width:2.5},connectgaps:false});
+ if(previous.some(v=>v!=null))traces.push({type:'scatter',mode:'lines',name:'Vorjahr (gesamt)',x:xs,y:previous,line:{color:'#8a9197',dash:'dash',width:2},connectgaps:false});
+ return {...base,traces,layout:{...base.layout,barmode:'group'}};
 }
 function plot(id,config){Plotly.react(id,config.traces,config.layout,{responsive:true,displaylogo:false,displayModeBar:false});const el=$(id);el.removeAllListeners?.('plotly_click');el.on('plotly_click',ev=>{const x=Math.round(ev.points[0].x);if(x>=0&&x<periods().length){activeIndex=x;$('period').value=String(x);update()}});plotSpecs.set(id,config)}
 function update(){showNumbers();specs.forEach(([metric,title,unit],i)=>plot('plot'+i,chartConfig(metric,title,unit)))}
@@ -129,6 +187,7 @@ const extra={mature_episodes:'Reife Aufklaerungsepisoden',matched_mature:'Davon 
 table('flowtable',['Kennzahl (gesamter Exportzeitraum)','Anzahl'],Object.entries(extra).map(([k,l])=>[l,fmt(DATA.flow[k])]));
 const qualityLabels={raw_rows:'Exportzeilen einschliesslich Kontext',raw_source_rows:'Urspruengliche Quellzeilen einschliesslich Kontext',exact_duplicates:'Identische Exportdubletten',natural_duplicates:'Weitere doppelte Termine',conflicting_keys:'Konfliktfaelle ohne eindeutige Version',missing_keys:'Fehlende Ereignisschluessel',relevant_slots:'Therapieslots im gesamten Kontext',matched_slots:'Davon zugeordnet',ambiguous_matches:'Zeitlich mehrdeutige Zuordnungen',technical_plan_fractions:'Technische Plan-Fraktionen im Kontext',technical_visits:'Technische Besuche im Kontext',multiple_plan_visits:'Besuche mit mehreren Plaenen',activity_invalid_intervals:'Unplausible Aktivitaetsintervalle',workflow_invalid_intervals:'Unplausible Workflowintervalle',technical_invalid_intervals:'Unplausible technische Intervalle',unknown_activity_rows:'Nicht zugeordnete Aktivitaetszeilen',source_coverage_confirmed:'Quellenumfang und Datenstand bestaetigt',profile_confirmed:'Standortprofil bestaetigt',imaging_source:'Bildgebungsquelle',requested_days:'Kalendertage im gewaehlten Zeitraum',future_observation_horizon_months:'Suchhorizont zukuenftiger Buchungen (Monate)',technical_identity_incomplete_rows:'Technische Zeilen ohne Plan-/Fraktionsidentitaet'};
 Object.assign(qualityLabels,{unmapped_device_rows:'Therapiezeilen ohne bestaetigte Geraetezuordnung',slots_missing_calendar_end:'Therapieslots ohne Kalenderende',slots_missing_activity_start:'Therapieslots ohne Aktivitaetsstart',slots_missing_activity_end:'Therapieslots ohne Aktivitaetsende',slots_missing_completion_history:'Therapieslots ohne eindeutigen Abschlussanker',record_timestamp_fallback_rows:'Technische Zeilen nur mit Erfassungsdatum (nicht zur Zeitmessung)'});
+Object.assign(qualityLabels,{inferred_device_appointments:'Termingeraet aus eindeutigem tatsaechlichem Tagesgeraet aufgeloest',excluded_source_flag_rows:'Durch Quellflags ausgeschlossene Zeilen',technical_rows_without_fraction:'Technische Nachweise ohne zaehlbare Fraktionsidentitaet',plans_without_confirmed_start:'Plaene ohne bestaetigten ersten Behandlungstag',plans_without_target:'Plaene ohne auswertbares Fraktionssoll'});
 table('quality',['Pruefung','Ergebnis'],Object.entries(DATA.quality).map(([k,v])=>[qualityLabels[k]||k,typeof v==='number'?fmt(v):typeof v==='boolean'?(v?'Ja':'Nein'):String(v??'--')]));
 controls();update();
 </script></body></html>

@@ -25,7 +25,9 @@ def deduplicate(frame):
             if "machine" in appointments:
                 natural=natural.where(parts.patient_key.ne(""),natural+"|"+appointments.machine.fillna(""))
             appointments["event_key"]="natural:"+natural
-            unique=appointments.drop_duplicates()
+            semantic = [c for c in appointments if c not in {
+                "source_rows", "run_id", "contract_version", "completion_candidates", "machine_inferred"}]
+            unique=appointments.drop_duplicates(subset=semantic)
             audit["natural_duplicates"]=len(appointments)-len(unique)
             clean=pd.concat([rest,unique],ignore_index=True)
     if "event_key" not in clean:

@@ -7,7 +7,9 @@ from pathlib import Path
 import pandas as pd
 from . import VERSION, cache
 from .contracts import load_profile
-from .ingest import load_export, normalize_flow
+from .ingest import load_export, normalize_flow, eligible_events, resolve_treatment_devices
+from .population import summarize_population
+from .imaging_frequency import summarize_images
 from .throughput import prepare_visits, aggregate
 from .flow import summarize
 from .metrics import deduplicate
@@ -34,7 +36,7 @@ def suppress_flow(flow,minimum):
          "cancelled_counselling_appointments","other_counselling_appointments",
          "registered_counselling_appointments","cancellation_pct"},
         {"mature_episodes","matched_mature","observation_mature","unresolved_mature","unresolved_pct",
-         "counselling_episodes","provisional"},
+         "provisional"},
     ]
     # Counts of repeated visits plus their episode total can expose a tiny remainder.
     if "multiple_counselling" in hidden:
@@ -60,10 +62,13 @@ def analyze(path,profile):
     if any(c["is_required"] and not c["available"] for c in coverage):
         raise ValueError("Required source coverage is missing")
     notes = []
+    before_filter = len(events)
+    events = eligible_events(events, profile)
+    filtered_rows = before_filter-len(events)
+    events = resolve_treatment_devices(events, profile)
     if (profile.start, profile.end) != ("2025-01-01", "2025-12-31") and not profile.period_reason.strip():
         notes.append("Abweichender Zeitraum ohne Zusatzkommentar; separat vom Standardjahr 2025 vergleichen.")
-    unknown = events[events.source.eq("appointment") &
-                     ~events.activity_code.isin(profile.activity_codes)]
+    unknown = events[events.source.eq("appointment") & profile.classify_activities(events).eq("unknown")]
     if not unknown.empty:
         notes.append("Nicht zugeordnete Aktivitaeten: Standortprofil vor fachlicher Auswertung vervollstaendigen.")
     if not profile.confirmed:
@@ -79,6 +84,18 @@ def analyze(path,profile):
     flow=suppress_flow(flow,profile.minimum_patients)
     if any(v is None and raw_flow.get(k) is not None for k,v in flow.items()):
         notes.append("Kleine Teilgruppen und abhaengige Summen im Patientenfluss unterdrueckt.")
+    population = summarize_population(events, profile, metadata)
+    if not population["comparison_available"]:
+        notes.append("Vorjahr nicht vergleichbar: Dieser Export enthaelt keine vollstaendige Vorjahrespopulation. Neuer Gesamtexport erforderlich.")
+    if "patient_class" not in events or "planned_fractions" not in events:
+        notes.append("Alter Export: Testpatienten-/Ressourcenflags und Plansoll sind nicht vollstaendig pruefbar. Planenden ohne Soll bleiben separat.")
+    if population["comparison_available"]:
+        from dataclasses import replace
+        previous = replace(profile,
+            start=str((pd.Timestamp(profile.start)-pd.DateOffset(years=1)).date()),
+            end=str((pd.Timestamp(profile.end)-pd.DateOffset(years=1)).date()))
+        flow["previous_periods"] = summarize(flow_events, previous, data_through=metadata["data_through"],
+            context_start=metadata["context_start"], sources_complete=confirmed)["periods"]
     measurements = events.copy()
     record_fallback_count=0
     if "time_source" in measurements:
@@ -86,6 +103,7 @@ def analyze(path,profile):
         record_fallback_count=int(bad_time.sum())
         measurements.loc[bad_time,["event_start","event_end"]] = None
     prepared = prepare_visits(measurements,profile)
+    imaging = summarize_images(events, prepared, profile, metadata)
     periods = aggregate(prepared,profile)
     quality = {}
     for key,value in prepared["audit"].items():
@@ -96,6 +114,9 @@ def analyze(path,profile):
     quality["profile_confirmed"] = profile.confirmed
     quality["record_timestamp_fallback_rows"]=record_fallback_count
     quality["future_observation_horizon_months"] = 12
+    quality["excluded_source_flag_rows"] = filtered_rows
+    quality["inferred_device_appointments"] = int(events.machine_inferred.sum())
+    quality.update(population.pop("quality"))
     if "source_rows" in events:
         quality["raw_source_rows"] = int(pd.to_numeric(events.source_rows,errors="coerce").sum())
     else:
@@ -106,7 +127,7 @@ def analyze(path,profile):
     return dict(version=VERSION,site=profile.site,start=profile.start,end=profile.end,
                 period_reason=profile.period_reason,data_through=str(pd.Timestamp(metadata["data_through"]).date()),
                 periods=periods,flow=flow,quality=quality,notes=notes,default_model=profile.model,
-                coverage=coverage)
+                coverage=coverage,population=population,imaging=imaging)
 
 
 def export_outputs(data,output):

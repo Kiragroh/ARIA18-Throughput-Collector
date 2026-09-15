@@ -4,7 +4,8 @@ import xml.etree.ElementTree as ET
 import build_rdl as layout
 from build_collector_v2 import build,NS,FIELDS,event_sql
 
-META=["period_start","period_end","context_start","data_through","data_through_confirmed","site","period_reason"]
+META=["period_start","period_end","context_start","data_through","data_through_confirmed","site","period_reason",
+      "comparison_population_complete","collector_release"]
 
 
 def create():
@@ -23,9 +24,12 @@ def create():
                           "machine,CONVERT(nvarchar(33),event_start,126) AS event_start,CONVERT(nvarchar(33),event_end,126) AS event_end,fraction")
     select=select.replace("is_brachy,activity_start,activity_end,\n completed,",
                           "is_brachy,CONVERT(nvarchar(33),activity_start,126) AS activity_start,CONVERT(nvarchar(33),activity_end,126) AS activity_end,\n CONVERT(nvarchar(33),completed,126) AS completed,")
+    for field in ("milestone_time", "plan_first_treatment", "plan_last_treatment"):
+        select=select.replace(field, f"CONVERT(nvarchar(33),{field},126) AS {field}")
     metadata=(",CONVERT(nvarchar(10),@PeriodStart,23) AS period_start,CONVERT(nvarchar(10),@PeriodEnd,23) AS period_end,"
               "CONVERT(nvarchar(10),@ContextStart,23) AS context_start,CONVERT(nvarchar(10),@DataThrough,23) AS data_through,"
-              "@DataThroughConfirmed AS data_through_confirmed,@SiteLabel AS site,@PeriodReason AS period_reason")
+              "@DataThroughConfirmed AS data_through_confirmed,@SiteLabel AS site,@PeriodReason AS period_reason,"
+              "1 AS comparison_population_complete,N'2.0.0-rc.4' AS collector_release")
     select=select.replace("\nFROM grouped_events",metadata+"\nFROM grouped_events")
     # Keep the empty-result schema identical to the enabled detail export.
     before=before.replace(" WHERE 1=0;",","+",".join(f"CAST(NULL AS nvarchar(255)) AS [{f}]" for f in META)+" WHERE 1=0;")

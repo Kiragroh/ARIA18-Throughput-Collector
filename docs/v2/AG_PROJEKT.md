@@ -75,6 +75,22 @@ gepruefter Faelle, Fehlerklassen, Korrekturen und offene Einschraenkungen erfass
 
 ## Analyse und Interpretation
 
+Geplant sind vier bis sechs Standorte. Vor gemeinsamer Analyse werden
+Methodenstand, Beobachtungsjahr, Zeitmodell, Quellenumfang, Brachy/manuelle
+Therapien, Geraetewechsel und Bildgebungsnachweise je Standort dokumentiert.
+Primaer getrennte Standortwerte mit Nennern, keine Rangliste und keine
+Addition von Standortmedianen zu einem vermeintlichen Gesamtmedian.
+Patienten-/Plananzahlen sind ueber Perioden nicht addierbar. Wiederholte
+Fraktionen derselben Person und Messungen desselben Geraets sind abhaengig;
+sie duerfen fuer Inferenz nicht als unabhaengige Klinikbeobachtungen gelten.
+
+Bildgebungsfrequenzen und Behandlungszeiten nach Bildgebungsmuster sowie
+datierter Ausstattung (z. B. Halcyon mit/ohne HyperSight) sind explorativ.
+Fehlende ExacTrac-/CBCT-Quellen werden als Datenluecke, nicht als Nullnutzung
+behandelt. Kleine Fallzahlen, lokale Klassifikation und fehlende Fallmixdaten
+begrenzen den Vergleich; eine spaetere Publikation muss diese Einschraenkungen
+und die lokal geprueften Positiv-/Negativfaelle transparent ausweisen.
+
 Deskriptiv beginnen; keine unadjustierten Ranglisten. Median/Quartile und
 Nenner/Messabdeckung gemeinsam zeigen. Sensitivitaeten: Aktivitaet vs Workflow vs
 Imaging/Beam; alle Luecken vs >30 Minuten; Besuchstoleranz 0/5/10 Minuten;

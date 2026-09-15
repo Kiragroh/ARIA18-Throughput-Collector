@@ -8,19 +8,19 @@ Standortvergleiche ermöglichen, keine unbereinigten Ranglisten.
 
 ## Aktueller Stand
 
-**Version 2.0.0-rc.3** ist der aktuelle Pilot-/Releasekandidat zur Vorbereitung
+**Version 2.0.0-rc.4** ist der aktuelle Pilot-/Releasekandidat zur Vorbereitung
 eines Projekts der AG Digitalisierung. Technische Tests an einem Pilotstandort
 sind erfolgt; eine gemeinsame fachliche Multistandortabnahme steht noch aus.
 Die Software ist nicht klinisch freigegeben.
 
-**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Gesamtpaket.zip)**
+**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.4/ARIA-Performance_Gesamtpaket.zip)**
 | [Prüfstatus](docs/v2/VALIDIERUNG.md)
 | [Änderungen](CHANGELOG.md)
 
 Zwei Ordner: **Durchfuehrung** mit RDL, Offline-Formular und Anleitung;
 **Analyse** mit Python-Skript, Standortprofilen, Methodik und synthetischem Probelauf.
 
-**[Nur Durchführung herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.3/ARIA-Performance_Durchfuehrung.zip)**:
+**[Nur Durchführung herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.4/ARIA-Performance_Durchfuehrung.zip)**:
 dieselben Durchführungsdateien ohne Analyse-Skripte. Start in beiden Paketen:
 `Durchfuehrung/START_HIER.html`. Für die Einreichung ist Python nicht nötig.
 

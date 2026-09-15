@@ -15,7 +15,7 @@ def test_v2_rdl_contract_and_default_year():
     assert {"DataThrough","ContextStart","PeriodReason"} <= parameters.keys()
     assert set(d.get("Name") for d in root.findall("r:DataSets/r:DataSet",NS)) == {
         "Metadata","Capabilities","ActivityCatalog","EventDetails","AppointmentInventory",
-        "MachineInventory","HistoryStatusInventory","CompletionDiagnostics","VersionInfo"}
+        "MachineInventory","HistoryStatusInventory","CompletionDiagnostics","VersionInfo","ImageObjects"}
     assert root.find(".//r:Query/r:Timeout",NS) is not None
 
 
@@ -46,8 +46,15 @@ def test_sql_has_no_direct_identifiers_or_silent_schema_failures():
     text = path.read_text(encoding="utf-8")
     assert "sp_executesql" in text and "THROW" in text
     assert "IsMOTestPatient" in text
-    for forbidden in ("PatientFullName","PatientId","ResourceFullName","PatientDateOfBirth","NOLOCK"):
+    for forbidden in ("PatientFullName","ResourceFullName","PatientDateOfBirth","NOLOCK"):
         assert forbidden not in text
+    # PatientId/last name may only classify source rows inside the query, never be exported.
+    root = ET.fromstring(text)
+    for field in root.findall(".//r:Fields/r:Field",NS):
+        assert field.get("Name") not in {"PatientId","PatientLastName","DimPatientID"}
+    from tools.build_collector_v2 import event_sql
+    final = event_sql().rsplit("\nSELECT N'2.0' AS contract_version",1)[1]
+    assert "PatientId" not in final and "PatientLastName" not in final
     assert "2025" in text
 
 
@@ -65,6 +72,20 @@ def test_context_is_limited_to_actual_period_cohort_before_loading_history():
     sql=event_sql()
     assert "#Cohort" in sql
     assert sql.index("CREATE INDEX ix_appointment_id")<sql.index("INSERT INTO #History")
+
+
+def test_excel_event_cells_do_not_measure_multiline_hashes():
+    from tools.build_collector_v2 import build
+    root=ET.parse(build()).getroot()
+    details=[box for box in root.findall(".//r:Textbox",NS)
+             if box.get("Name","").startswith("EventDetails_D_")]
+    assert details
+    assert all(box.findtext("r:CanGrow",namespaces=NS)=="false" for box in details)
+    assert all(box.findtext(".//r:Value",namespaces=NS).startswith("=Fields!") for box in details)
+    group = root.find(".//r:Group[@Name='EventDetails_Month']", NS)
+    assert group is not None
+    assert 'yyyy_MM' in group.findtext("r:PageName", namespaces=NS)
+    assert group.findtext("r:PageBreak/r:BreakLocation", namespaces=NS) == "Between"
 
 
 def test_preflight_has_no_patient_detail_dataset_and_valid_table_links():

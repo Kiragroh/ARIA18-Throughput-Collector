@@ -15,7 +15,7 @@ def summarize(events, profile, *, data_through, context_start, sources_complete=
                open_with_treatment=0, cancelled_with_later_contact=0,
                unmatched_treatment_episodes=0, left_boundary_chains=0,
                unresolved_pct=None, cancellation_pct=None, sources_complete=bool(sources_complete),
-               duplicates=audit, series=[])
+               duplicates=audit, series=[], periods={})
     if events.empty:
         return out
     start, end = pd.Timestamp(profile.start), pd.Timestamp(profile.end)+pd.Timedelta(days=1)
@@ -23,6 +23,11 @@ def summarize(events, profile, *, data_through, context_start, sources_complete=
     context = pd.Timestamp(context_start) if context_start else pd.NaT
     events["event_start"] = pd.to_datetime(events.event_start, errors="coerce",format="mixed")
     events["event_end"] = pd.to_datetime(events.event_end, errors="coerce",format="mixed").fillna(events.event_start)
+    if "milestone_time" in events:
+        milestone = pd.to_datetime(events.milestone_time, errors="coerce",format="mixed")
+        appointment = events.source.eq("appointment") & milestone.notna()
+        events.loc[appointment, "event_start"] = milestone[appointment]
+        events.loc[appointment, "event_end"] = milestone[appointment]
     events["status"] = events.status.map(profile.classify_status)
     # Future appointments can document observation, but never delivered treatment.
     tx = events[events.kind.str.startswith("treatment") & events.status.eq("completed")]
@@ -39,15 +44,20 @@ def summarize(events, profile, *, data_through, context_start, sources_complete=
             else:
                 existing.append([a,b])
     daily = defaultdict(lambda: defaultdict(int))
-    for eps in episodes.values():
+    people = defaultdict(lambda: defaultdict(set))
+    def count(when, field, patient):
+        day = str(when.date())
+        daily[day][field] += 1
+        people[day][field].add(patient)
+    for patient, eps in episodes.items():
         for a,b in eps:
             if start <= a < end:
                 out["treatment_episodes"] += 1
-                daily[str(a.date())]["treatment_starts"] += 1
+                count(a, "treatment_starts", patient)
             # A quiet 30-day interval must be observed beyond the last delivery.
             if start <= b < end and pd.notna(through) and b.normalize()+pd.Timedelta(days=30) <= through:
                 out["completed_treatment_episodes"] += 1
-                daily[str(b.date())]["treatment_ends"] += 1
+                count(b, "treatment_ends", patient)
     matched_episode_keys = set()
     for patient, group in events.groupby("patient_key"):
         eps = episodes[patient]
@@ -59,11 +69,13 @@ def summarize(events, profile, *, data_through, context_start, sources_complete=
                 continue
             if start <= t < end:
                 out["registered_counselling_appointments"] += 1
+                count(t, "registered_counselling_appointments", patient)
                 col = {"completed":"completed_counselling_appointments",
                        "open":"open_counselling_appointments","cancelled":"cancelled_counselling_appointments",
                        "other":"other_counselling_appointments"}.get(row.status)
                 if col:
                     out[col] += 1
+                    count(t, col, patient)
                 if row.status == "cancelled":
                     later = group[(group.event_start > t) &
                                   group.kind.isin(["counselling","observation"]) &
@@ -90,8 +102,8 @@ def summarize(events, profile, *, data_through, context_start, sources_complete=
             if not start <= first < end:
                 continue
             out["counselling_episodes"] += 1
-            out["multiple_counselling"] += int(len(completed) > 1)
-            daily[str(first.date())]["counselling_episodes"] += 1
+            out["multiple_counselling"] += int(len(completed) > 1 and next_episode is not None)
+            count(first, "counselling_episodes", patient)
             left = pd.isna(context) or first.normalize() < context+pd.Timedelta(days=30)
             out["left_boundary_chains"] += int(left)
             mature = pd.notna(through) and last.normalize()+pd.DateOffset(months=3) <= through and not left
@@ -114,5 +126,22 @@ def summarize(events, profile, *, data_through, context_start, sources_complete=
         out["unresolved_pct"] = 100*out["unresolved_mature"]/out["mature_episodes"]
     if out["registered_counselling_appointments"]:
         out["cancellation_pct"] = 100*out["cancelled_counselling_appointments"]/out["registered_counselling_appointments"]
-    out["series"] = [dict(date=day, **dict(values)) for day,values in sorted(daily.items())]
+    fields = ["treatment_starts", "treatment_ends", "counselling_episodes",
+              "registered_counselling_appointments", "completed_counselling_appointments",
+              "cancelled_counselling_appointments", "open_counselling_appointments"]
+    for granularity, freq in [("week", "W-SUN"), ("month", "M"), ("quarter", "Q"), ("year", "Y")]:
+        periods = []
+        for period in pd.period_range(profile.start, profile.end, freq=freq):
+            dates = [day for day in daily if period.start_time <= pd.Timestamp(day) <= period.end_time]
+            values = {}
+            for field in fields:
+                total = sum(daily[day].get(field, 0) for day in dates)
+                patients = set().union(*(people[day].get(field, set()) for day in dates))
+                values[field] = total if total == 0 or len(patients) >= profile.minimum_patients else None
+            if any(values[f] is None for f in fields if f.endswith("_appointments")):
+                values["registered_counselling_appointments"] = None
+            periods.append(dict(label=str(period), start=str(period.start_time.date()), values=values))
+        out["periods"][granularity] = periods
+    out["series"] = [dict(date=day, **{k:(v if len(people[day][k])>=profile.minimum_patients else None)
+                                     for k,v in values.items()}) for day,values in sorted(daily.items())]
     return out
