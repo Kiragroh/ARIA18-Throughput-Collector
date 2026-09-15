@@ -15,7 +15,7 @@ def test_v2_rdl_contract_and_default_year():
     assert {"DataThrough","ContextStart","PeriodReason"} <= parameters.keys()
     assert set(d.get("Name") for d in root.findall("r:DataSets/r:DataSet",NS)) == {
         "Metadata","Capabilities","ActivityCatalog","EventDetails","AppointmentInventory",
-        "MachineInventory","HistoryStatusInventory","CompletionDiagnostics","VersionInfo"}
+        "MachineInventory","HistoryStatusInventory","CompletionDiagnostics","VersionInfo","ImageObjects"}
     assert root.find(".//r:Query/r:Timeout",NS) is not None
 
 
@@ -82,6 +82,10 @@ def test_excel_event_cells_do_not_measure_multiline_hashes():
     assert details
     assert all(box.findtext("r:CanGrow",namespaces=NS)=="false" for box in details)
     assert all(box.findtext(".//r:Value",namespaces=NS).startswith("=Fields!") for box in details)
+    group = root.find(".//r:Group[@Name='EventDetails_Month']", NS)
+    assert group is not None
+    assert 'yyyy_MM' in group.findtext("r:PageName", namespaces=NS)
+    assert group.findtext("r:PageBreak/r:BreakLocation", namespaces=NS) == "Between"
 
 
 def test_preflight_has_no_patient_detail_dataset_and_valid_table_links():

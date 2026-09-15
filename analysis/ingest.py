@@ -19,7 +19,7 @@ def load_export(path: Path):
         if not required <= set(events):
             raise ValueError("Incomplete flat event contract")
         return meta_rows.iloc[0].to_dict(),events,[],[]
-    tables = {"00_Metadata":[],"01_Capabilities":[],"02_Activities":[],"90_Events":[]}
+    tables = {"00_Metadata":[],"01_Capabilities":[],"02_Activities":[],"90_Events":[],"91_Images":[]}
     with path.open("rb") as stream:
         workbook = load_workbook(stream,read_only=True,data_only=True,keep_links=False)
         try:
@@ -46,7 +46,9 @@ def load_export(path: Path):
     metadata = tables["00_Metadata"]
     if len(metadata)!=1 or str(metadata[0].get("contract_version")) not in {"2.0","2"}:
         raise ValueError("Unsupported export contract; collect with RDL 2.0")
-    events = pd.DataFrame(tables["90_Events"])
+    if not tables["90_Events"]:
+        raise ValueError("No event details: image objects alone do not establish source coverage")
+    events = pd.DataFrame(tables["90_Events"] + tables["91_Images"])
     if events.empty:
         raise ValueError("No event details: check collection_state, capabilities and export version")
     required = {"source","event_key","patient_key","event_start","event_end","status","machine","activity_code"}

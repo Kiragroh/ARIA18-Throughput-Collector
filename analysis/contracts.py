@@ -27,6 +27,7 @@ class Profile:
         "treatment_legacy": "Historische Therapie", "treatment_brachy": "Brachytherapie",
         "treatment_xray": "Roentgentherapie"})
     require_numeric_patient_id: bool = False
+    equipment_periods: list = field(default_factory=list)
     max_interval_minutes: int = 240
     imaging_before_beam_minutes: int = 120
     visit_merge_minutes: int = 5
@@ -60,6 +61,18 @@ class Profile:
         for hours in self.opening_hours.values():
             if not 0 < float(hours) <= 24:
                 raise ValueError("opening_hours must be hours per active device-day (0,24]")
+        eras = {}
+        for item in self.equipment_periods:
+            if item.get("machine") not in self.machines:
+                raise ValueError("Equipment needs a configured machine")
+            a, b = date.fromisoformat(item["start"]), date.fromisoformat(item["end"])
+            if a > b or any(not (b < x or a > y) for x,y in eras.get(item["machine"],[])):
+                raise ValueError("Equipment periods overlap or are reversed")
+            eras.setdefault(item["machine"],[]).append((a,b))
+            if item.get("cbct_modality","unknown") not in {"kv","mv","unknown"}:
+                raise ValueError("Unknown CBCT modality")
+            if not isinstance(item.get("confirmed",False), bool):
+                raise ValueError("Equipment confirmation must be boolean")
 
     def as_dict(self):
         return asdict(self)

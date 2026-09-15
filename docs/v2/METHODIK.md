@@ -132,7 +132,36 @@ abhaengige Summen und Quoten. Unabhaengige Kennzahlen bleiben erhalten.
 Mehrere sich ueberlappende Auswertungen erfordern weiterhin eine lokale
 Datenschutzpruefung. Fehlend ist nicht Null.
 
-## Technische Grundlagen
+## Bildobjektfrequenz und Ausstattung
+
+Der optionale Adapter liest `DWH.FactPatientImage` fuer den ausgewaehlten
+Zeitraum. Er dedupliziert nach Bildobjektidentitaet, ersatzweise nach belegbarer
+Quellidentitaet. Originalkennungen und Bildnamen werden nicht exportiert.
+Referenzbilder werden separat erkannt und nicht als Aufnahmefrequenz gezaehlt.
+CBCT, kV/MV-2D, explizit bezeichnete ExacTrac-Objekte und unbekannte Typen bleiben
+getrennt. Diese Bildnamenklassifikation ist vorlaeufig, keine DICOM-Verifikation.
+
+Ein ExacTrac-Stereopaar kann zwei Bildobjekte sein. Objektzahl ist daher nicht
+gleich Zahl der Aufnahmevorgaenge. Die Verknuepfung mit der Behandlungsdauer
+erfolgt nur bei genau einem messbaren Besuch pro Person/Geraet/Tag. Mehrere
+Besuche werden nicht willkuerlich zugeordnet. Nenner sind messbare Besuche im
+gleichen Zeitmodell und derselben Ausstattungsepoche. Ein Besuch kann mehrere
+Bildarten aufweisen; diese Gruppen sind nicht addierbar. `ExposureTime` ist
+keine vollstaendige Prozesszeit, `ImageCreationDate` nicht sicher Akquisitionszeit.
+
+Im lokalen Profil kann `equipment_periods` datierte Angaben aufnehmen:
+
+```json
+{"machine":"LOKALER_GERAETECODE","start":"2025-01-01","end":"2025-12-31",
+ "model":"Halcyon","cbct_system":"HyperSight","cbct_modality":"kv","confirmed":true}
+```
+
+Dies ist ein Beispiel, keine automatische Standortannahme. Bei Umbauten werden
+nicht ueberlappende Epochen verwendet. Fehlende Angaben bleiben unbekannt;
+aus einer kurzen Bildzeit wird weder HyperSight noch eine andere Hardware
+abgeleitet. Vergleiche sind deskriptiv, nicht fallmixadjustiert oder kausal.
+
+## Technische Grenzen
 
 SSRS-Abfragezeit und Berichtslaufzeit sind getrennte Grenzen; der Ereignisexport
 hat einen begrenzten Abfrage-Timeout. Siehe

@@ -2,16 +2,25 @@
 
 ## Erweiterte Analyse rc.4
 
-- **Noch nicht veroeffentlicht:** Der kombinierte Excel-Export erreichte in zwei
-  temporaeren Tests das 900-s-Clientlimit, auch mit festen Detailzeilenhoehen.
-  Die Freigabe des Downloadpakets bleibt deshalb offen. SQL-Verarbeitung und
-  Excel-Rendering wurden nicht getrennt gemessen; der erfolgreiche Fast-CSV-Lauf
-  allein ist kein Nachweis fuer den kombinierten Excel-Weg.
-- 90 automatisierte Tests bestanden, einschliesslich Auswertung aus dem
+- Jahresblaetter erreichten zweimal das 900-s-Clientlimit. Dieselbe kombinierte
+  Definition lief als CSV in 163,5 s. Mit monatlichen Ereignisblaettern war Excel
+  in 330,6 s erfolgreich; SQL und Ereignisspalten blieben dabei unveraendert.
+  Ruecklesepruefung: 298.345 Zeilen, 28 Spalten, exakt dieselben Quellanzahlen
+  wie im kombinierten CSV. Kein isoliertes serverseitiges Laufzeitprofil.
+- Der zusaetzliche erneute Jahres-Exceltest wurde zugunsten kurzer Tests beendet.
+  Bildobjekt-Adapter: kombinierter Excel-Kurzlauf erfolgreich in 60,8 s;
+  Wiederholung der finalen Quellwaechter in 48,5 s (6.449.209 Bytes).
+  Nur diese Testdefinitionen verwendeten verkuerzten Kontext;
+  Zeitraum 02.-03.01.2025, Kontext ab 20.12.2024, Datenstand 12.01.2025.
+  Kein vollstaendiger Jahres-Excelnachweis mit diesem Zusatz behauptet.
+- 94 automatisierte Tests bestanden, einschliesslich Auswertung aus dem
   entpackten Gesamtpaket und Ausschluss klinischer Daten aus beiden ZIPs.
 - Beide lokalen Standortanalysen: 17 von 17 Diagrammen befuellt; Desktop/Mobil,
   Hell/Dunkel, Box-/Linienansicht, Monatsauswahl und Popup geprueft.
 - Wiederholte lokale Auswertung aus dem SQLite-Cache geprueft.
+- Bildobjekte zurueckgelesen: keine doppelten Bildschluessel; lokale Zuordnung
+  und Bildgebungstabelle in Desktop/Mobil, Hell/Dunkel und allen drei Modellen
+  geprueft. Keine Freigabe der Bildnamenklassifikation als Akquisitionsnachweis.
 - Neuer Fast-CSV-RDL gegen ARIA 18 als temporaere Ausfuehrungsdefinition getestet,
   ohne Aenderung am SSRS-Katalog. Januar/Februar 2025: 153,2 s; Jahr 2025:
   226,2 s. Umfang einschliesslich vollstaendiger Vorjahrespopulation und Nachbeobachtung.

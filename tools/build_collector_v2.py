@@ -290,10 +290,14 @@ ORDER BY event_start,source;
 
 
 def build(include_inventory=True):
+    if __package__:
+        from . import imaging_objects_v2 as image_adapter
+    else:
+        import imaging_objects_v2 as image_adapter
     metadata_fields = ["contract_version","run_id","site","period_start","period_end","period_reason",
                        "context_start","data_through","data_through_confirmed","details_included",
                        "collector_release","tested_aria_major","aria_version_status","collection_state",
-                       "comparison_population_complete"]
+                       "comparison_population_complete", "image_objects_state"]
     queries = {
         "Metadata": "SELECT N'2.0' AS contract_version,@RunId AS run_id,@SiteLabel AS site,"
         "@PeriodStart AS period_start,@PeriodEnd AS period_end,@PeriodReason AS period_reason,"
@@ -301,6 +305,7 @@ def build(include_inventory=True):
         "@DataThroughConfirmed AS data_through_confirmed,@IncludePseudonymizedDetails AS details_included,"
         "N'2.0.0-rc.4' AS collector_release,N'18' AS tested_aria_major,N'NOT_DETECTED_FROM_DWH' AS aria_version_status,"
         "1 AS comparison_population_complete,"
+        "CASE WHEN "+image_adapter.missing()+" THEN N'UNAVAILABLE' ELSE N'AVAILABLE' END AS image_objects_state,"
         "CASE WHEN "+source_gaps()+" THEN N'EVENTS_UNAVAILABLE_CHECK_CAPABILITIES' ELSE N'READY' END AS collection_state;",
         "Capabilities":capabilities(),
         "ActivityCatalog":stage("Activity")+"SELECT DISTINCT ActivityCode AS activity_code,ActivityNameDEU AS activity_name,ActivityCategoryDEU AS activity_category FROM #Activity ORDER BY activity_code;",
@@ -318,15 +323,17 @@ def build(include_inventory=True):
         queries["ActivityCatalog"] = guarded(["Activity"],fields["ActivityCatalog"],queries["ActivityCatalog"])
         for name, (sql, columns) in inventory_queries().items():
             queries[name], fields[name] = sql, columns
+        queries["ImageObjects"], fields["ImageObjects"] = image_adapter.query(), image_adapter.FIELDS
         queries["EventDetails"] = queries.pop("EventDetails")
     sql_dir = ROOT/"sql/v2"
     sql_dir.mkdir(parents=True,exist_ok=True)
     # Reuse the tested RDL table/parameter rendering layer with the v2 contract.
     layout.FIELDS = fields
     layout.PAGE_NAMES = {"Metadata":"00_Metadata","Capabilities":"01_Capabilities",
-                         "ActivityCatalog":"02_Activities","EventDetails":"90_Events"}
+                         "ActivityCatalog":"02_Activities","EventDetails":"90_Events", "ImageObjects":"91_Images"}
     layout.CAPTIONS = {"Metadata":"Exportvertrag und Auswertungszeitraum","Capabilities":"Quellenabdeckung",
-                       "ActivityCatalog":"Lokales Aktivitaetsinventar","EventDetails":"Lokale pseudonymisierte Ereignisse"}
+                       "ActivityCatalog":"Lokales Aktivitaetsinventar","EventDetails":"Lokale pseudonymisierte Ereignisse",
+                       "ImageObjects":"Bildobjekte: lokale pseudonymisierte Zusatzquelle"}
     for i, name in enumerate(n for n in queries if n not in layout.PAGE_NAMES):
         layout.PAGE_NAMES[name] = str(i+3).zfill(2)+"_"+name
         layout.CAPTIONS[name] = name
@@ -354,12 +361,16 @@ def build(include_inventory=True):
     top = 40
     for name in queries:
         table,top = layout._tablix(name,top)
-        if name == "EventDetails":
+        if name in {"EventDetails", "ImageObjects"}:
             # Millions of long hash cells do not need multiline print measurement.
             # This changes row layout only; the full Excel cell values stay intact.
             element = ET.fromstring(table)
+            group = next(g for g in element.iter("Group") if g.get("Name") == name+"_Year")
+            group.set("Name", name+"_Month")
+            group.find("GroupExpressions/GroupExpression").text = '=Format(Fields!event_start.Value, "yyyy_MM")'
+            group.find("PageName").text = '="'+layout.PAGE_NAMES[name]+'_" & Format(Fields!event_start.Value, "yyyy_MM")'
             for box in element.iter("Textbox"):
-                if box.get("Name", "").startswith("EventDetails_D_"):
+                if box.get("Name", "").startswith(name+"_D_"):
                     box.find("CanGrow").text = "false"
                     box.find("KeepTogether").text = "false"
             table = ET.tostring(element, encoding="unicode")

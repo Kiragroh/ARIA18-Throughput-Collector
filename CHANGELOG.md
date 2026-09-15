@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0-rc.4 - 2026-09-15
+## 2.0.0-rc.4 - 2026-09-16
 
 - Getrennte Slotueberlappung und Behandlungsdauer/Slotdauer, Workflow-Endanker korrigiert.
 - Q1-/Periodenpool bleibt fuer auswertbare Geraete sichtbar; kleine Gruppen sind nicht im Pool.
@@ -11,6 +11,9 @@
 - Vollstaendige Vorjahreskohorte, Quellenflags und Aktivitaetsbezeichnungen im neuen RDL.
 - Populations-/Episodenverlaeufe, Vorjahreslegenden, belegtes Tagesfenster und vergroesserbare Diagramme.
 - Bisherige Exporte bleiben lesbar, fehlende Vorjahres-/Planinformationen werden kenntlich gemacht.
+- Monatliche Excel-Ereignisblaetter statt sehr grosser Jahresblaetter; vollstaendiger Datenumfang erhalten.
+- Optionale DWH-Bildobjekte, getrennte Typen und Zuordnung zu eindeutigen Tagesbesuchen.
+- Bildobjektfrequenzen und Behandlungszeiten deskriptiv; datierte Geraeteausstattung statt Geschwindigkeitsvermutung.
 
 ## 2.0.0-rc.3 - 2026-09-15
 

@@ -75,6 +75,12 @@ footer{padding:18px 0;color:var(--muted);font-size:12px}
 <p>Reife Kohorte: mindestens drei Kalendermonate Nachbeobachtung. Die Suche nach Behandlung oder Wiedervorstellungen endet nicht nach drei Monaten. Reife Episoden = Behandlungsbeginn + weitere Beobachtung + ohne gefundenen Beginn. Letzteres ist keine No-show- oder Verlustdiagnose. Bei unbestaetigtem Quellenumfang wird keine negative Quote ausgegeben.</p>
 <p>Stornoquote: stornierte/abgebrochene Aufklaerungstermine geteilt durch alle eindeutigen registrierten Aufklaerungstermine des Zeitraums. Spaetere Kontakte werden getrennt gezaehlt. Offene Termine mit spaeterer Behandlung werden als gestuetzte Anwesenheitsannahme separat gezaehlt und nicht nachtraeglich auf abgeschlossen gesetzt.</p>
 </details><div class="table-wrap"><table id="flowtable"></table></div><div class="table-wrap"><table id="flow-periods"></table></div></section>
+<section><h2>Bildobjekte und zugeordnete Behandlungszeiten</h2><p id="imaging-state"></p>
+<details class="definitions"><summary>Bildgebung, Zaehleinheit und Geraeteausstattung</summary>
+<p>Die Zusatzquelle zaehlt deduplizierte Bildobjekte, nicht Bestrahlungsfelder oder automatisch Aufnahmevorgaenge. Ein ExacTrac-Stereopaar kann zwei Bildobjekte enthalten. Bildnamen/-typen liefern eine vorlaeufige Klassifikation; nicht unterscheidbare CBCT-, 2D- und sonstige Objekte bleiben separat. Fehlender Nachweis bedeutet nicht, dass keine Bildgebung stattgefunden hat.</p>
+<p>Die Zuordnung verwendet nur einen eindeutigen messbaren Besuch derselben Person am selben Geraet und Tag. Mehrere Besuche bleiben ohne Zuordnung. Nenner: messbare Besuche im oben gewaehlten Zeitmodell und in derselben Ausstattungsepoche. Verschiedene Bildarten koennen zum selben Besuch gehoeren und sind nicht addierbar. Bild-Erstellungszeit ist nicht automatisch Aufnahmezeit.</p>
+<p>ExposureTime wird getrennt von der gesamten Behandlungsdauer gezeigt; sie umfasst nicht verlaesslich Positionierung, Rekonstruktion oder Matching. HyperSight, konventionelle Systeme und Umbauzeitpunkte stammen nur aus datierten Standortangaben, nie aus einer geschaetzten Geschwindigkeit. Unterschiede sind deskriptiv und nicht um Indikation, Fraktionsart oder andere Fallmixfaktoren bereinigt.</p>
+</details><div class="table-wrap"><table id="imaging-table"></table></div></section>
 <section><h2>Datenqualitaet und Abdeckung</h2><div class="table-wrap"><table id="quality"></table></div>
 <details><summary>Grenzen der Bildgebung</summary><p>Der Basisexport nutzt DWH-Behandlungshistorie. Fehlendes Imaging, insbesondere bei adaptiven Systemen, ist kein Nachweis fehlender Bildgebung. Direkte Bildobjekte, Aufnahmezeit, Planreferenz und Aufnahmegeraet muessen standortbezogen gesondert validiert werden. Externes Imaging darf nicht automatisch dem Plangeraet zugerechnet werden.</p></details></section>
 <footer id="footer"></footer>
@@ -112,6 +118,10 @@ function controls(){
 function showNumbers(){
  const p=periods()[activeIndex];if(!p)return;
  activeStart=p.start;
+ const imageRows=DATA.imaging?.periods?.[$('granularity').value]?.[$('model').value]?.[activeIndex]?.groups||[];
+ $('imaging-state').textContent=DATA.imaging?.available?'DWH-Bildobjekte | '+p.label+' | Vorlaeufige Klassifikation anhand von Bildnamen/-typen.':'Bildobjektquelle in diesem Export nicht enthalten oder nicht verfuegbar. Neuer Export erforderlich; keine Nullwerte angenommen.';
+ const imageLabels={kv_cbct:'kV-CBCT',mv_cbct:'MV-CBCT',cbct_unknown:'CBCT, Energie unklar',exactrac_2d:'ExacTrac 2D',kv_2d:'kV 2D',mv_2d:'MV 2D',unknown_2d:'2D, Typ unklar',unknown:'Nicht klassifiziert'};
+ table('imaging-table',['Geraet','Bildart','Ausstattung','Bildobjekte','Messbare Besuche (Nenner)','Besuche mit Nachweis','Objekte / 100 Besuche','ExposureTime Median','Behandlungsdauer Median','Behandlungsdauer Q1 / Q3'],imageRows.map(g=>[g.machine,imageLabels[g.kind]||g.kind,g.equipment,fmt(g.objects),fmt(g.denominator_visits),fmt(g.visits_with_objects_pct,' %'),fmt(g.objects_per_100_visits),fmt(g.exposure_seconds.median,' s'),fmt(g.visit_duration_minutes.median,' min'),fmt(g.visit_duration_minutes.q1)+' / '+fmt(g.visit_duration_minutes.q3)+' min']));
  const all=p.groups.find(g=>g.machine==='ALL')?.kpi||{}, large=$('gap').value==='gt30';
  const partial=p.groups.find(g=>g.machine==='ALL')?.pool_excludes_suppressed;
  $('active').textContent=p.label+(p.partial?' | vorlaeufig/teilweise':'');

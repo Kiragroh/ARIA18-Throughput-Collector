@@ -3,7 +3,7 @@ from pathlib import Path
 from plotly.offline import get_plotlyjs
 
 ALLOWED = {"version","site","start","end","period_reason","data_through","periods",
-           "flow","quality","notes","default_model","coverage","population"}
+           "flow","quality","notes","default_model","coverage","population","imaging"}
 
 
 def render(data, target):

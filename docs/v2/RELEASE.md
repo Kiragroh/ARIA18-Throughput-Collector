@@ -18,6 +18,14 @@ fehlende Angaben werden jedoch nicht rekonstruiert oder als Null ausgegeben.
 Die sichtbaren Reportparameter bleiben Standort und Zeitraum. Rueckmeldung:
 Full-Collector-Exceldatei und JSON aus dem Offline-HTML.
 
+Excel-Ereignisblaetter werden monatsweise aufgeteilt, ohne Daten wegzulassen.
+Optional vorhandene DWH-Bildobjekte werden zusaetzlich aufgenommen: CBCT,
+kV/MV-2D, explizit als ExacTrac bezeichnete Objekte und unklare Typen getrennt.
+Die lokale Analyse zeigt Objektfrequenzen und zugeordnete Behandlungsdauern.
+Klassifikation anhand von Bildnamen ist vorlaeufig; fehlende ExacTrac-Objekte
+beweisen keine fehlende Bildgebung. Ausstattung/HyperSight wird nicht aus
+kurzen Aufnahmezeiten geraten. Eine fachliche Quellenpruefung bleibt erforderlich.
+
 - Ein Full Collector fuer Auswertung und Quellenpruefung, ohne Preflight-/Final-Schalter.
 - Nur Standort und Zeitraum sichtbar; 2025 vorgegeben, Kontext automatisch.
 - Integriertes Quellen-, Geraete-, Aktivitaets- und Statusinventar,
@@ -40,7 +48,7 @@ Nachweise und noch offene Validierung: [Pruefstatus](VALIDIERUNG.md).
 Veroeffentlicht wird ausschliesslich eine synthetische Demo; reale Testdaten bleiben lokal.
 
 Grenzen: keine klinische Freigabe und noch keine bestandene Multistandortabnahme.
-Objektbasierte RTPlan-/CBCT-Referenzextraktion ist noch nicht implementiert;
+Verifizierte RTPlan-/CBCT-Akquisitionsreferenzextraktion ist noch nicht implementiert;
 Imaging-Schemapruefung und separat getestete Klassifikationsregeln liegen bei.
 Grosse Excel-Detailexporte koennen das Clientlimit erreichen; optionale
 Spezialwerkzeuge wie Fast-CSV bleiben im Quellrepository. Fuer den Einstieg

@@ -9,6 +9,7 @@ from . import VERSION, cache
 from .contracts import load_profile
 from .ingest import load_export, normalize_flow, eligible_events, resolve_treatment_devices
 from .population import summarize_population
+from .imaging_frequency import summarize_images
 from .throughput import prepare_visits, aggregate
 from .flow import summarize
 from .metrics import deduplicate
@@ -102,6 +103,7 @@ def analyze(path,profile):
         record_fallback_count=int(bad_time.sum())
         measurements.loc[bad_time,["event_start","event_end"]] = None
     prepared = prepare_visits(measurements,profile)
+    imaging = summarize_images(events, prepared, profile, metadata)
     periods = aggregate(prepared,profile)
     quality = {}
     for key,value in prepared["audit"].items():
@@ -125,7 +127,7 @@ def analyze(path,profile):
     return dict(version=VERSION,site=profile.site,start=profile.start,end=profile.end,
                 period_reason=profile.period_reason,data_through=str(pd.Timestamp(metadata["data_through"]).date()),
                 periods=periods,flow=flow,quality=quality,notes=notes,default_model=profile.model,
-                coverage=coverage,population=population)
+                coverage=coverage,population=population,imaging=imaging)
 
 
 def export_outputs(data,output):

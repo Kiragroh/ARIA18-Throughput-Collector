@@ -9,6 +9,7 @@ param(
     [string]$PeriodReason = 'Validierung Januar und Februar 2025',
     [string]$SiteLabel = 'Validierung',
     [switch]$IncludeDetails,
+    [switch]$TestContext,
     [ValidateSet('EXCELOPENXML','CSV')][string]$Format='EXCELOPENXML'
 )
 # Execution-session definition only. Does not create or replace catalog reports.
@@ -24,6 +25,15 @@ $definition=[IO.File]::ReadAllBytes((Get-Item -LiteralPath $RdlPath).FullName)
 [xml]$definitionXml=[Text.Encoding]::UTF8.GetString($definition)
 $ns=[Xml.XmlNamespaceManager]::new($definitionXml.NameTable)
 $ns.AddNamespace('r','http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition')
+$sourceHash=(Get-FileHash -LiteralPath $RdlPath -Algorithm SHA256).Hash
+if ($TestContext) {
+    foreach ($item in @(@('ContextStart',$ContextStart),@('DataThrough',$DataThrough))) {
+        $node=$definitionXml.SelectSingleNode("//r:ReportParameter[@Name='"+$item[0]+"']/r:DefaultValue/r:Values/r:Value",$ns)
+        $node.InnerText=[datetime]::Parse($item[1]).ToString('yyyy-MM-dd')
+    }
+    $definition=[Text.Encoding]::UTF8.GetBytes($definitionXml.OuterXml)
+    Write-Output 'TEST_CONTEXT_OVERRIDE: temporary definition only; production defaults unchanged'
+}
 $detailsDefault=$definitionXml.SelectSingleNode("//r:ReportParameter[@Name='IncludePseudonymizedDetails']/r:DefaultValue/r:Values/r:Value",$ns).InnerText -eq 'true'
 $effectiveDetails=$IncludeDetails.IsPresent -or $detailsDefault
 New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
@@ -58,6 +68,7 @@ $release=[regex]::Match($definitionXml.OuterXml,"N'([^']+)' AS collector_release
 $evidence=[ordered]@{
     status='rendered'; execution='temporary_definition'; method=$release
     rdl_sha256=$definitionHash; export_sha256=(Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash
+    source_rdl_sha256=$sourceHash; test_context_override=$TestContext.IsPresent
     period_start=$PeriodStart; period_end=$PeriodEnd; context_start=$ContextStart; data_through=$DataThrough
     format=$Format; details=$effectiveDetails; bytes=$bytes.Length
     seconds=[math]::Round($watch.Elapsed.TotalSeconds,1); recorded_at=[DateTimeOffset]::Now.ToString('o')
