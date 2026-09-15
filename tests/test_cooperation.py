@@ -10,19 +10,21 @@ UPLOAD='https://filesync.medizin.uni-leipzig.de/u/d/7aa97de1de02445cad42/'
 def test_invitation_is_self_contained_and_has_upload_boundary():
     html=(ROOT/'kooperation/index.html').read_text(encoding='utf-8')
     assert html.count('class="slide')==7
-    assert '__QR_DATA__' not in html and '__CHART_DATA__' not in html
-    assert html.count('data:image/png;base64,')==2
+    assert '__QR_DATA__' not in html and '__CHART_DATA__' not in html and '__PROJECT_QR_DATA__' not in html
+    assert html.count('data:image/png;base64,')==3
     assert UPLOAD in html and 'Nicht hochladen' in html
     assert 'Patientenlisten' in html and 'Hash-Schl' in html
     assert 'Synthetisches Beispiel' in html
     assert 'STANDORT_Phase_VON-BIS_R01.zip' in html
+    assert 'Upload-Benachrichtigungen' in html and 'Maximilian Grohmann' in html
+    assert 'QR-Code zur GitHub-Projektseite' in html
     assert not re.search(r'<(?:script|link)[^>]+(?:src|href)="https?://',html)
 
 
 def test_cooperation_archive_is_explicitly_allowlisted():
     path=build()
     with zipfile.ZipFile(path) as archive:
-        assert len(archive.namelist())==6
+        assert len(archive.namelist())==7
         assert all(n.startswith('kooperation/') for n in archive.namelist())
         assert not any(n.endswith(('.csv','.xlsx','.sqlite','.json')) for n in archive.namelist())
 
@@ -36,3 +38,12 @@ def test_submission_identity_is_required_and_portable_links_resolve():
                   'Export erstellt am','Enthaltene Dateien','Vollstaendiger Klinikname']:
         assert field in form
     assert '../' not in readme
+
+
+def test_startpage_describes_current_workflow_only():
+    readme=(ROOT/'README.md').read_text(encoding='utf-8')
+    assert '2.0.0-rc.1' in readme and 'kooperation/README.md' in readme
+    assert 'analyze_single_site.py' not in readme
+    assert 'ARIA18_Durchsatz_Klinikvergleich_Collector.rdl' not in readme
+    assert readme.index('Dieses Projekt') < readme.index('kooperation/README.md')
+    assert 'Upload-Benachrichtigungen' in readme

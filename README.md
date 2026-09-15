@@ -1,84 +1,92 @@
-# ARIA 18+ Throughput Collector
+# ARIA Performance-Analyse
 
-## Interesse an einer Kooperation?
+Dieses Projekt verbindet einen rein lesenden ARIA-Export mit einer lokalen
+Python-Auswertung. Es hilft strahlentherapeutischen Einrichtungen, gebuchte
+Gerätezeiten, dokumentierte Behandlungsabläufe und Datenlücken nachvollziehbar
+zu untersuchen. Gemeinsame Definitionen sollen anschließend belastbare
+Standortvergleiche ermöglichen, keine unbereinigten Ranglisten.
 
-**[Hier beginnt die Teilnahme](kooperation/README.md)**: Projektidee, Nutzen fuer
-Ihren Standort, kleiner Preflight als erster Schritt und Upload gepruefter Unterlagen.
-Die [kurze Praesentation](https://kiragroh.github.io/ARIA18-Throughput-Collector/)
-laesst sich direkt im Browser ansehen. Fuer den Einstieg ist noch keine lokale
-Python-Installation erforderlich.
+## Aktueller Stand
 
-## Version 2.0: AG-Pilot
+**Version 2.0.0-rc.1** ist der aktuelle Pilot-/Releasekandidat zur Vorbereitung
+eines Projekts der AG Digitalisierung. Technische Tests an einem Pilotstandort
+sind erfolgt; eine gemeinsame fachliche Multistandortabnahme steht noch aus.
+Die Software ist nicht klinisch freigegeben.
 
-Der neue Stand liegt in [START 2.0](docs/v2/START.md).
-Standard ist **01.01.2025 bis 31.12.2025**. Ein anderes aktuelles,
-vollstaendiges Jahr bleibt mit dokumentierter Begruendung moeglich.
+**[Aktuelles Paket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/tag/v2.0.0-rc.1)**
+| [Prüfstatus](docs/v2/VALIDIERUNG.md)
+| [Änderungen](CHANGELOG.md)
 
-- [Collector 2.0 RDL](dist/ARIA18_Throughput_Collector_2.0.rdl)
-- [Zuerst: Standort-Preflight](dist/ARIA18_Standort_Preflight_2.0.rdl)
-- [Preflight, Formular und minimale Standortanpassung](docs/v2/STANDORTTEST.md)
-- [Schneller CSV-Collector fuer Jahresdaten](dist/ARIA18_Throughput_Collector_Fast_2.0.rdl)
-- [AG-Projektskizze und Analyseplan](docs/v2/AG_PROJEKT.md)
-- [Methodik und Nenner](docs/v2/METHODIK.md)
-- [Standortprofil](profiles/site-template.json)
-- [Bildgebung: Quellenpruefung](docs/v2/IMAGING.md)
-- [Pruefstatus](docs/v2/VALIDIERUNG.md)
+Gemeinsamer Jahreszeitraum: **1. Januar bis 31. Dezember 2025**.
+Ein anderes möglichst aktuelles, vollständiges Jahr ist mit dokumentierter
+Begründung möglich. Für den ersten technischen Test reichen Januar/Februar 2025.
 
-Die Version 2.0 ist ein **Pilot-/Releasekandidat**, keine klinisch freigegebene
-Software. Der neue Ereignisvertrag ersetzt nicht stillschweigend die Definitionen
-von 1.x. Das folgende Kapitel beschreibt ausschliesslich den historischen 1.x-Stand.
+## Sie möchten mitmachen?
 
-## Archiv: Version 1.x
+Im **[Ordner kooperation](kooperation/README.md)** stehen die Projektidee,
+der Nutzen für Ihren Standort und alle Schritte zur Teilnahme: kleiner
+Preflight, Begleitbogen, eindeutige Dateibenennung und Upload-Checkliste.
 
-Portabler SSRS-Bericht mit eingebetteten SQL-Abfragen für standortübergreifende Durchsatz- und Klinikvergleiche in der Strahlentherapie. Ein Standort führt ihn einmal gegen seine lokale ARIA-DWH aus und exportiert die Ergebnisblätter als Excel. Die Ausgabe erfasst Zeitraum, aktive Geräte, Sitzungen, Patienten, Gerätetage, Betriebsfenster, Taktung, lange Lücken, Slotnutzung, Fallmix, Bildgebung, Patientenanmeldung, Workflowstatus und Datenqualität in einer methodisch einheitlichen Form.
+Die **[kurze Präsentation](https://kiragroh.github.io/ARIA18-Throughput-Collector/)**
+erklärt den Einstieg und enthält QR-Codes zur Projektseite und zum Upload.
+Für die erste Einreichung benötigen Sie noch keine Python-Installation.
 
-## In drei Schritten
+Die über den dort verlinkten Upload eingereichten Dateien sind ausschließlich
+für **Maximilian Grohmann** freigegeben. Er erhält Upload-Benachrichtigungen,
+prüft die Einreichungen und kann sich über die dienstliche Kontaktadresse im
+Begleitbogen bei Rückfragen melden. Andere Teilnehmende haben keinen Zugriff
+auf Ihre Einreichung. Nur lokal geprüfte und freigegebene Unterlagen hochladen,
+keine Patientendetails.
 
-1. `ARIA18_Durchsatz_Klinikvergleich_Collector.rdl` aus der neuesten GitHub-Release herunterladen.
-2. Die RDL im ARIA-Modul **Berichte** beziehungsweise im Microsoft Report Builder importieren und mit der lokalen gemeinsamen Datenquelle `variandw` verbinden.
-3. Bericht ausführen, Zeitraum und Therapiegeräte auswählen und als Excel exportieren.
+## Einstieg am Standort
 
-Für eine erste lokale Auswertung genügt anschließend:
+1. **Preflight:** Den
+   [Standort-Preflight](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.1/ARIA18_Standort_Preflight_2.0.rdl)
+   importieren, mit der lokalen ARIA-DWH-Datenquelle verbinden und als Excel
+   exportieren. Damit werden Schema, Geräte, Terminarten und Statuswerte geprüft.
+2. **Zuordnung bestätigen:** Das
+   [Standortformular und den Testablauf](docs/v2/STANDORTTEST.md) verwenden.
+   Auch Brachy und historische Geräte ohne technischen R&V-Nachweis berücksichtigen.
+3. **Lokal auswerten:** Nach der fachlichen Prüfung mit dem
+   [CSV-Collector für Jahresdaten](dist/ARIA18_Throughput_Collector_Fast_2.0.rdl)
+   exportieren und die [Python-Auswertung](docs/v2/START.md) ausführen.
+   Der interaktive HTML-Bericht funktioniert anschließend ohne Internet.
 
-```powershell
-py -3 -m pip install -r requirements-analysis.txt
-py -3 tools/analyze_single_site.py "Collector-Export.xlsx" --output-dir analysis_output
-```
+## Was die Auswertung zeigt
 
-Unter Windows kann alternativ `tools/Analyse_Einzelstandort.bat` mit der Exceldatei als Argument gestartet werden. Das Skript erzeugt eine kompakte Auswertungs-Exceldatei und einen HTML-Bericht. Es exportiert keine Detailzeilen oder Hashschlüssel in den Ergebnisbericht.
+- Kalenderslots, dokumentierte Behandlungsintervalle und deren tatsächliche Überlappung.
+- Zeitverteilungen, Patientenwechsel und freie Gerätezeit mit Messabdeckung.
+- Aufklärungsepisoden, mehrfache Termine, folgende Therapie und weitere Beobachtung.
+- Quellenlücken und unklare Zuordnungen, damit fehlende Daten nicht als Nullwerte erscheinen.
 
-Der Bericht wurde produktiv mit ARIA 18 und dem zugehörigen DWH/SSRS getestet. Er ist für ARIA 18 und neuere Versionen mit kompatiblem DWH-Schema vorgesehen. Bei lokalen Schemaabweichungen dokumentiert das Blatt `00_Coverage`, welche optionale Quelle nicht verfügbar war.
+Aktivität ist das Standard-Zeitmodell. Workflow und Imaging/Beam werden getrennt
+ausgewiesen. Kalenderdauer ersetzt keine gemessene Dauer; eine Datenlücke ist
+keine nachgewiesene Pause. Für eine negative Einstufung einer Aufklärungsepisode
+sind mindestens drei Kalendermonate Nachbeobachtung erforderlich. Die Suche nach
+späterer Behandlung oder Wiedervorstellung endet dadurch nicht nach drei Monaten.
 
-Der Einstieg im Quellpaket ist `dist/ARIA18_Durchsatz_Klinikvergleich_Collector.rdl`. Die ausführliche Installation und der Export sind in `README_Installation_und_Export.md` beschrieben. Felddefinitionen stehen in `Datenwoerterbuch.md`; die Gegenprüfung in `validation/validation_report.md`.
+## Voraussetzungen und Grenzen
 
-## Was der Export beantwortet
+Benötigt werden ARIA-DWH, lesender SSRS-Zugriff und eine fachlich bestätigte
+Zuordnung der lokalen Geräte und Aktivitäten. Therapie ohne technisches R&V
+kann über eindeutig zugeordnete abgeschlossene Therapietermine belegt werden;
+technische Beam-Zeiten werden daraus nicht abgeleitet. Fehlende Quellen brauchen
+eine gekennzeichnete Einschränkung oder einen eigenen Adapter.
 
-- Von wann bis wann und an wie vielen Geräten wurde tatsächlich behandelt?
-- Wie viele Sitzungen und Patienten wurden pro Gerät, Monat und Gerätetag versorgt?
-- Wie lang waren Betriebsfenster, Sitzungen, Start-zu-Start-Takte und Lücken?
-- Wie gut deckten geplante Slots die tatsächlichen Behandlungen ab?
-- Wie lange lagen Patientenanmeldung, Laden des Patienten, erste Bildgebung, erster Beam und Terminabschluss auseinander?
-- Wie unterscheiden sich Technik, Fraktionierung, Diagnosegruppen und Bildgebung?
-- Welche Datenquellen waren am Standort verfügbar und wo bestehen Qualitätslücken?
+Die Abfragen verändern keine ARIA-Daten. Detaildateien und lokale Profile bleiben
+am Standort. Nur freigegebene Aggregate und der geprüfte Preflight werden über
+den vorgesehenen Weg geteilt; auch Aggregate sind nicht automatisch anonym.
+Keine klinischen Dateien in GitHub-Issues oder Pull Requests einstellen.
+Das Projekt dient Analyse und Forschung, nicht der Behandlung einzelner Patienten.
 
-## Verzeichnisstruktur
+## Dokumentation
 
-- `dist`: weiterzugebende RDL und Prüfsummen
-- `sql`: SQL-Quellen der einzelnen Datasets
-- `templates`: RDL-Vorlage
-- `tools`: Build, Prüfung, SQL-Smoke-Test und HTTP/SSRS-Test
-- `tools/analyze_single_site.py`: lokale Einzelstandort-Auswertung aus einem Collector-Excel-Export
-- `tests`: statische Vertrags- und Datenschutztests
-- `validation`: eingefrorener Methodenvergleich ohne Patientendaten
+- [Projektidee und Analyseplan](docs/v2/AG_PROJEKT.md)
+- [Standorttest und minimale Anpassungen](docs/v2/STANDORTTEST.md)
+- [Methodik, Zähler und Nenner](docs/v2/METHODIK.md)
+- [Lokale Installation und Auswertung](docs/v2/START.md)
+- [Bildgebung: Quellen und noch offene Adapter](docs/v2/IMAGING.md)
 
-## Datenschutz
-
-Aggregierte Blätter sind für standortübergreifende Analysen vorgesehen. Die optionalen Detailblätter sind pseudonymisiert, aber weiterhin als kontrollierte Forschungsdaten zu behandeln. Der pro Ausführung erzeugte Salt wird nicht exportiert; Hash-Schlüssel lassen sich deshalb nicht zwischen unabhängigen Läufen verknüpfen.
-
-Namen, Geburtsdaten, ursprüngliche Patienten- oder Plan-IDs, Freitexte und DICOM-UIDs werden nicht exportiert. Vor einer externen Weitergabe bleibt eine lokale Datenschutz- und Freigabeprüfung erforderlich.
-
-Ankunfts-, Pending-/In-Progress- und Abschlusszeiten sind Workflowzeitpunkte und keine Strahlenapplikationszeiten. Der klinische Start-Proxy verwendet die erste dokumentierte Bildgebung, sofern sie vor dem ersten Beam liegt, sonst den ersten Beam. Beide Rohzeitpunkte werden getrennt ausgegeben.
-
-## Abgrenzung
-
-Der Collector ist ein Analyse- und Forschungswerkzeug. Er verändert keine ARIA-Daten und ist nicht für klinische Entscheidungen, Terminsteuerung oder die Behandlung einzelner Patienten bestimmt. Die SQL-Abfragen sind read-only. Installation, Datenfreigabe und Interpretation bleiben in der Verantwortung des jeweiligen Standorts.
+Frühere Stände bleiben in der
+[Versionshistorie](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases)
+nachvollziehbar. Für neue Teilnahmen gilt ausschließlich der oben verlinkte Stand.

@@ -88,6 +88,15 @@ nicht erfunden. [Detaillierte Voraussetzungen](https://github.com/Kiragroh/ARIA1
 
 ## Upload
 
+### Wer die Einreichung erhaelt
+
+Die ueber diesen Link eingereichten Dateien sind ausschliesslich fuer
+**Maximilian Grohmann** freigegeben. Er erhaelt Upload-Benachrichtigungen und
+kann die Einreichung pruefen, die naechsten Schritte vorbereiten und sich bei
+Rueckfragen ueber die dienstliche Kontaktadresse im Begleitbogen melden.
+Andere Teilnehmende haben keinen Zugriff auf Ihre Einreichung. Deshalb bitte
+die Einreichungs-ID und eine erreichbare dienstliche Kontaktadresse angeben.
+
 **[Freigegebene Unterlagen hochladen](https://filesync.medizin.uni-leipzig.de/u/d/7aa97de1de02445cad42/)**
 
 [![QR-Code zum Upload](assets/qr-code.png)](https://filesync.medizin.uni-leipzig.de/u/d/7aa97de1de02445cad42/)

@@ -5,6 +5,8 @@
 - Oeffentlicher Teilnahmeleitfaden mit Preflight-Einstieg, Upload-Checkliste und Begleitbogen.
 - Offline-HTML-Praesentation mit synthetischem Beispiel, Upload-Link und geprueftem QR-Code.
 - Eindeutige Einreichungs-IDs, Standort-/Kontaktangaben und Revisions-/Ersatzkennzeichnung.
+- Startseite auf die aktuelle Version konzentriert; Upload-Zugriff und Benachrichtigungen erklaert.
+- Getrennte QR-Codes fuer Projektseite und Einreichung in der Praesentation.
 - Eigenes Kooperationspaket und Browseransicht; keine Aenderung der Rechenmethodik 2.0.0-rc.1.
 
 ## 2.0.0-rc.1 - 2026-09-15
