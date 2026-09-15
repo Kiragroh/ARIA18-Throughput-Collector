@@ -65,3 +65,13 @@ def test_first_test_form_is_offline_and_not_an_analysis_profile():
 def test_preflight_contains_no_event_dataset():
     root = ET.parse(ROOT / 'dist/ARIA18_Standort_Preflight_2.0.rdl')
     assert all(d.attrib['Name'] != 'EventDetails' for d in root.findall('r:DataSets/r:DataSet', NS))
+
+
+def test_known_patient_count_is_optional_and_distinguishes_counting_basis():
+    html = (ROOT / 'kooperation/START_HIER.html').read_text(encoding='utf-8')
+    for field in ('patients2025', 'patientCountBasis2025', 'patientCountSource2025'):
+        line = next(line for line in html.splitlines() if "'" + field + "'" in line)
+        assert 'required:true' not in line
+    assert "'patients2025'" in html and "min:0" in html
+    assert 'eindeutige Personen' in html and 'Behandlungsfaelle' in html
+    assert 'Brachy' in html and 'leer' in html

@@ -1,3 +1,5 @@
+![ARIA18 Throughput Collector: rein lesender Export und lokale Analyse](docs/assets/banner-github.png)
+
 # ARIA Performance-Analyse
 
 Dieses Projekt verbindet einen rein lesenden ARIA-Export mit einer lokalen
@@ -8,19 +10,19 @@ Standortvergleiche ermöglichen, keine unbereinigten Ranglisten.
 
 ## Aktueller Stand
 
-**Version 2.0.0-rc.4** ist der aktuelle Pilot-/Releasekandidat zur Vorbereitung
+**Version 2.0.0-rc.5** ist der aktuelle Pilot-/Releasekandidat zur Vorbereitung
 eines Projekts der AG Digitalisierung. Technische Tests an einem Pilotstandort
 sind erfolgt; eine gemeinsame fachliche Multistandortabnahme steht noch aus.
 Die Software ist nicht klinisch freigegeben.
 
-**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.4/ARIA-Performance_Gesamtpaket.zip)**
+**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.5/ARIA-Performance_Gesamtpaket.zip)**
 | [Prüfstatus](docs/v2/VALIDIERUNG.md)
 | [Änderungen](CHANGELOG.md)
 
 Zwei Ordner: **Durchfuehrung** mit RDL, Offline-Formular und Anleitung;
 **Analyse** mit Python-Skript, Standortprofilen, Methodik und synthetischem Probelauf.
 
-**[Nur Durchführung herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.4/ARIA-Performance_Durchfuehrung.zip)**:
+**[Nur Durchführung herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.5/ARIA-Performance_Durchfuehrung.zip)**:
 dieselben Durchführungsdateien ohne Analyse-Skripte. Start in beiden Paketen:
 `Durchfuehrung/START_HIER.html`. Für die Einreichung ist Python nicht nötig.
 
@@ -45,6 +47,8 @@ Report zu verbessern. Nur Standort und Auswertungszeitraum werden angezeigt.
 **Für die Einreichung brauchen wir die Full-Collector-Exceldatei und die JSON.**
 Das Formular funktioniert offline und bietet nur „JSON herunterladen“;
 optionale Angaben dürfen leer bleiben. Beide Dateien gemeinsam als ZIP einreichen.
+Falls bekannt, kann die Patientenzahl 2025 mit Zählweise und Quelle ergänzt werden.
+Sie dient als unabhängiger Plausibilitätsabgleich, nicht als Ersatz für den Export.
 Pseudonymisierte Detaildateien nur mit lokaler Freigabe im geschützten
 Projektbereich verarbeiten, niemals auf GitHub veröffentlichen.
 [ARIA-Import, Report Builder und anonymisiertes Excel-URL-Beispiel für 2025](kooperation/RDL_AUSFUEHREN.md).

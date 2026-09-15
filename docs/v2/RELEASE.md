@@ -1,8 +1,13 @@
-# ARIA Throughput 2.0.0-rc.4
+# ARIA Throughput 2.0.0-rc.5
 
 Pilotpaket fuer die AG Digitalisierung, Standardjahr 2025.
 
-Neu in rc.4: Klinikprofil und Verlaeufe fuer Patienten, Fraktionen, bestrahlte
+Neu in rc.5: optional bekannte Patientenzahl 2025 mit Zaehleinheit und Quelle
+im Offline-Formular, sicheres Wiederladen alter Formulare und GitHub-Banner.
+RDL und Rechenlogik bleiben unveraendert auf rc.4. Bereits erzeugte rc.4-Exporte
+weiterverwenden; fuer dieses Formularupdate ist kein erneuter RDL-Import noetig.
+
+Enthalten seit rc.4: Klinikprofil und Verlaeufe fuer Patienten, Fraktionen, bestrahlte
 Plaene, Neueinstellungen und Behandlungsepisoden, einschliesslich bestaetigter
 manueller Therapien. Neueinstellung wird aus der ersten Planbestrahlung abgeleitet.
 Unvollstaendige Plaene mit mehr als sieben Tagen beobachteter Pause werden

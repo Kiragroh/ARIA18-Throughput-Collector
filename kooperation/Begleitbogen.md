@@ -12,6 +12,11 @@ Optionale Angaben koennen leer bleiben. Der Report laeuft auch vor dem Ausfuelle
 - Was wurde geaendert? (optional):
 - Enthaltene Dateien: Full Collector XLSX mit integrierten Prueftabellen
 - ARIA-Version (optional; Report bisher gegen ARIA 18 geprueft):
+- Bekannte Patientenzahl 2025 (optional, sonst leer lassen):
+- Zaehleinheit/Umfang (optional): eindeutige Personen aller Therapieformen,
+  nur externe Bestrahlung, Behandlungsfaelle oder andere lokale Definition:
+- Quelle und Abgrenzung (optional): etwa Jahresbericht/Controlling;
+  Brachy und historische Tomotherapy enthalten? Keine Patientenlisten beilegen.
 - Geraete: Anzahl, exakte Kalender-/Ressourcennamen, Betrieb von/bis,
   laengere Stillstaende und Ersatzgeraete (Monat/Jahr reicht):
 - Ohne technisches R&V, auch Tomotherapy/Brachy: Ressourcenname, exakte
