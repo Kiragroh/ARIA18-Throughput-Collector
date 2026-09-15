@@ -1,7 +1,8 @@
 # Standortanalyse 2.0
 
 Ein rein lesender ARIA-Export und eine lokale Python-Auswertung fuer die
-AG Digitalisierung. Kein zentraler Zugriff auf Patientendaten, kein Cloud-Upload.
+AG Digitalisierung. Kein direkter zentraler Zugriff auf die klinische Datenbank.
+Die Auswertung kann lokal oder nach lokaler Freigabe im geschuetzten Projektbereich erfolgen.
 Die interaktive Ergebnisdatei funktioniert ohne Webserver und ohne Internet.
 
 ## 1. Zeitraum
@@ -19,14 +20,15 @@ Januar/Februar 2025 sind ein schneller Validierungszeitraum, kein Jahresersatz.
 ## 2. RDL
 
 1. [ARIA18_Throughput_Collector_2.0.rdl](../../dist/ARIA18_Throughput_Collector_2.0.rdl)
-   in ARIA Berichte / Report Builder importieren.
+   in ARIA Berichte importieren oder lokal im Report Builder oeffnen.
 2. Gemeinsame Datenquelle an die lokale ARIA-DWH-Datenquelle binden.
    Vorgabepfad: `/VarianTemplate/Data Sources/variandw`.
-3. Zunaechst ohne Ereignisdetails ausfuehren. Quellen und Aktivitaetsinventar pruefen.
-4. Zeitraum, Kontextbeginn und **bestaetigten vollstaendigen DWH-Datenstand**
-   pruefen. Voreingestelltes gestriges Datum ist keine Vollstaendigkeitsgarantie.
-5. Pseudonymisierte Details nur fuer die lokale Auswertung aktivieren; Excel
-   auf geschuetztem lokalen/klinikinternen Speicher ablegen.
+3. Standort ersetzen und Auswertungszeitraum pruefen. Auswertungsdaten und
+   Prueftabellen sind automatisch enthalten. Keine weitere Pflichtangabe.
+4. Vorlauf und Nachbeobachtung werden automatisch bestimmt; der Terminartenkatalog
+   wird vollstaendig geladen. Ein technischer Datenstand ist keine fachliche
+   Vollstaendigkeitsgarantie.
+5. Excel/CSV auf geschuetztem Speicher ablegen. Nicht oeffentlich hochladen.
 
 Der RDL schreibt keine ARIA-Daten. Temporare Tabellen und Indizes existieren nur
 in seiner SQL-Sitzung. Er kann nicht durch blosses Oeffnen einer RDL-Datei im
@@ -38,7 +40,7 @@ Fuer grosse Ereignismengen gibt es zusaetzlich
 Dieser verwendet dieselbe geschuetzte Quellabfrage, exportiert aber ein flaches
 **CSV** mit ISO-Zeitstempeln und eingebettetem Lauf-/Zeitraumvertrag.
 Die Python-Auswertung akzeptiert CSV direkt. Das Aktivitaetsinventar und die
-Spaltenabdeckung stammen weiterhin aus dem kleinen Excel-Metadatenlauf.
+Spaltenabdeckung stehen im gemeinsamen Full-Collector-Excel.
 Ein leeres Detail-CSV wird nicht als klinische Nullmenge interpretiert.
 
 ## 3. Profil
@@ -68,7 +70,9 @@ Bezeichnungen zu. Nur bestaetigte Therapiegeraete aufnehmen.
 `confirmed` erst nach Pruefung der Zuordnungen aktivieren;
 `sources_complete` erst nach Pruefung aller relevanten Therapie- und
 Aufklaerungsquellen. Ohne diese Bestaetigungen gibt es keine belastbare negative
-Quote. Nicht zugeordnete Aktivitaeten werden als Qualitaetsluecke gemeldet.
+Quote. Zusaetzlich muss `complete_through` mindestens den Datenstand im Export
+abdecken. Diese Pruefung ist fuer den Export und andere berechenbare Kennzahlen
+nicht erforderlich. Nicht zugeordnete Aktivitaeten werden als Qualitaetsluecke gemeldet.
 
 ## 4. Python
 
@@ -85,8 +89,8 @@ im HTML brauchen weder SQL noch Python.
 
 Vor Weitergabe HTML/CSV/JSON lokal freigeben. Auch Aggregate koennen
 identifizierend sein. Kleine Gruppen werden unterdrueckt; diese technische
-Massnahme allein garantiert keine Anonymitaet. Aus der Quelldatei niemals
-Detailblaetter an eine zentrale Auswertung weitergeben.
+Massnahme allein garantiert keine Anonymitaet. Pseudonymisierte Detailblaetter
+nur nach lokaler Freigabe ueber den geschuetzten Projektweg bereitstellen.
 
 ## Synthetischer Probelauf
 

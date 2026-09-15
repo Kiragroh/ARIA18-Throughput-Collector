@@ -9,10 +9,7 @@ IF CAST(@PeriodStart AS date) > CAST(@PeriodEnd AS date) OR @ContextStart > @Per
   THROW 51000, N'Invalid period/context/data watermark. Use complete past dates.', 1;
 IF DATEDIFF(day,@ContextStart,@DataThrough)>1827
   THROW 51000, N'Context larger than five years: split extraction.', 1;
-IF (CAST(@PeriodStart AS date)<>'20250101' OR CAST(@PeriodEnd AS date)<>'20251231')
- AND (LEN(LTRIM(RTRIM(@PeriodReason)))=0 OR @PeriodReason=N'Standardjahr 2025')
-  THROW 51000, N'Differing period requires a reason.', 1;
-IF @IncludePseudonymizedDetails=0
+IF @IncludePseudonymizedDetails=0 OR COL_LENGTH(N'DWH.DimPatient',N'DimPatientID') IS NULL OR COL_LENGTH(N'DWH.DimPatient',N'IsMOTestPatient') IS NULL OR COL_LENGTH(N'DWH.DimMachine',N'DimMachineID') IS NULL OR COL_LENGTH(N'DWH.DimMachine',N'MachineId') IS NULL OR COL_LENGTH(N'DWH.FactTreatmentHistory',N'DimPatientID') IS NULL OR COL_LENGTH(N'DWH.FactTreatmentHistory',N'TreatmentRecordDateTime') IS NULL OR COL_LENGTH(N'DWH.FactTreatmentHistory',N'IsImage') IS NULL OR COL_LENGTH(N'DWH.FactTreatmentHistory',N'IsBrachy') IS NULL OR COL_LENGTH(N'DWH.DimActivityTransaction',N'DimActivityTransactionID') IS NULL OR COL_LENGTH(N'DWH.DimActivityTransaction',N'DimPatientID') IS NULL OR COL_LENGTH(N'DWH.DimActivityTransaction',N'DimActivityID') IS NULL OR COL_LENGTH(N'DWH.DimActivityTransaction',N'AppointmentDateTime') IS NULL OR COL_LENGTH(N'DWH.DimActivityTransaction',N'AppointmentStatus') IS NULL OR COL_LENGTH(N'DWH.DimActivity',N'DimActivityID') IS NULL OR COL_LENGTH(N'DWH.DimActivity',N'ActivityCode') IS NULL OR (COL_LENGTH(N'DWH.FactTreatmentHistory',N'DeliveredMU') IS NULL AND COL_LENGTH(N'DWH.FactTreatmentHistory',N'FieldMUActual') IS NULL AND COL_LENGTH(N'DWH.FactTreatmentHistory',N'DoseDelivered') IS NULL)
 BEGIN
  SELECT CAST(NULL AS nvarchar(255)) AS [contract_version],CAST(NULL AS nvarchar(255)) AS [run_id],CAST(NULL AS nvarchar(255)) AS [source],CAST(NULL AS nvarchar(255)) AS [event_key],CAST(NULL AS nvarchar(255)) AS [patient_key],CAST(NULL AS nvarchar(255)) AS [course_key],CAST(NULL AS nvarchar(255)) AS [plan_key],CAST(NULL AS nvarchar(255)) AS [machine],CAST(NULL AS datetime2) AS [event_start],CAST(NULL AS datetime2) AS [event_end],CAST(NULL AS nvarchar(255)) AS [fraction],CAST(NULL AS nvarchar(255)) AS [activity_code],CAST(NULL AS nvarchar(255)) AS [status],CAST(NULL AS nvarchar(255)) AS [is_brachy],CAST(NULL AS datetime2) AS [activity_start],CAST(NULL AS datetime2) AS [activity_end],CAST(NULL AS datetime2) AS [completed],CAST(NULL AS nvarchar(255)) AS [time_source],CAST(NULL AS nvarchar(255)) AS [completion_candidates],CAST(NULL AS nvarchar(255)) AS [source_rows] WHERE 1=0;
  RETURN;
@@ -147,7 +144,7 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
  a.AppointmentDateTime,a.ScheduledEndTime,CAST(NULL AS int),act.ActivityCode,
  a.AppointmentStatus,0,
  a.ActivityStartDateTime,a.ActivityEndDateTime,
- CASE WHEN h.candidate_count=1 THEN h.completed END,N'calendar',h.candidate_count
+ h.completed,N'calendar',h.candidate_count
  FROM #Appointment a JOIN #Activity act ON act.DimActivityID=a.DimActivityID
  LEFT JOIN #Patient p ON p.DimPatientID=a.DimPatientID
  LEFT JOIN appointment_devices r ON (r.DimPatientID=a.DimPatientID OR (r.DimPatientID IS NULL AND a.DimPatientID IS NULL))
@@ -155,7 +152,7 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
  OUTER APPLY (
   SELECT MIN(h.ScheduledActivityHstryDateTime) AS completed,COUNT(DISTINCT h.ScheduledActivityHstryDateTime) AS candidate_count
   FROM #History h WHERE h.DimActivityTransactionID=a.DimActivityTransactionID
-   AND UPPER(h.ScheduledActivityCode) IN (N'COMPLETED',N'MANUALLY COMPLETED',N'COMPLTFINISH')
+   AND UPPER(h.ScheduledActivityCode) IN (N'COMPLETED',N'MANUALLY COMPLETED',N'COMPLTFINISH',N'PT. COMPLTFINISH')
    AND h.ScheduledActivityHstryDateTime >= COALESCE(a.ActivityStartDateTime,a.AppointmentDateTime)
    AND h.ScheduledActivityHstryDateTime < DATEADD(hour,12,a.AppointmentDateTime)
  ) h

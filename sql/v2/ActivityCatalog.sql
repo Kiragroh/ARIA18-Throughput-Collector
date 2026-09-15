@@ -1,3 +1,6 @@
+SET NOCOUNT ON;
+IF COL_LENGTH(N'DWH.DimActivity',N'DimActivityID') IS NULL OR COL_LENGTH(N'DWH.DimActivity',N'ActivityCode') IS NULL
+BEGIN SELECT CAST(NULL AS nvarchar(255)) AS [activity_code], CAST(NULL AS nvarchar(255)) AS [activity_name], CAST(NULL AS nvarchar(255)) AS [activity_category]; RETURN; END;
 CREATE TABLE #Activity ([DimActivityID] bigint NULL, [ActivityCode] nvarchar(255) NULL, [ActivityNameDEU] nvarchar(1000) NULL, [ActivityCategoryDEU] nvarchar(1000) NULL);
 IF COL_LENGTH(N'DWH.DimActivity',N'DimActivityID') IS NULL THROW 51001, N'Required source unavailable: DWH.DimActivity.DimActivityID', 1;
 IF COL_LENGTH(N'DWH.DimActivity',N'ActivityCode') IS NULL THROW 51001, N'Required source unavailable: DWH.DimActivity.ActivityCode', 1;

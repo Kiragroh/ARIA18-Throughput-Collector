@@ -4,11 +4,11 @@ import xml.etree.ElementTree as ET
 import build_rdl as layout
 from build_collector_v2 import build,NS,FIELDS,event_sql
 
-META=["period_start","period_end","context_start","data_through","data_through_confirmed"]
+META=["period_start","period_end","context_start","data_through","data_through_confirmed","site","period_reason"]
 
 
 def create():
-    base=build()
+    base=build(include_inventory=False)
     root=ET.parse(base).getroot()
     uri=NS["r"];tag=lambda n:"{"+uri+"}"+n
     sets=root.find("r:DataSets",NS)
@@ -25,15 +25,16 @@ def create():
                           "is_brachy,CONVERT(nvarchar(33),activity_start,126) AS activity_start,CONVERT(nvarchar(33),activity_end,126) AS activity_end,\n CONVERT(nvarchar(33),completed,126) AS completed,")
     metadata=(",CONVERT(nvarchar(10),@PeriodStart,23) AS period_start,CONVERT(nvarchar(10),@PeriodEnd,23) AS period_end,"
               "CONVERT(nvarchar(10),@ContextStart,23) AS context_start,CONVERT(nvarchar(10),@DataThrough,23) AS data_through,"
-              "@DataThroughConfirmed AS data_through_confirmed")
+              "@DataThroughConfirmed AS data_through_confirmed,@SiteLabel AS site,@PeriodReason AS period_reason")
     select=select.replace("\nFROM grouped_events",metadata+"\nFROM grouped_events")
     # Keep the empty-result schema identical to the enabled detail export.
     before=before.replace(" WHERE 1=0;",","+",".join(f"CAST(NULL AS nvarchar(255)) AS [{f}]" for f in META)+" WHERE 1=0;")
     ds.find("r:Query/r:CommandText",NS).text=before+select
     qp=ds.find("r:Query/r:QueryParameters",NS)
-    if not any(p.get("Name")=="@DataThroughConfirmed" for p in qp):
-        p=ET.SubElement(qp,tag("QueryParameter"),Name="@DataThroughConfirmed")
-        ET.SubElement(p,tag("Value")).text="=Parameters!DataThroughConfirmed.Value"
+    for name in ("DataThroughConfirmed", "SiteLabel", "PeriodReason"):
+        if not any(p.get("Name")=="@"+name for p in qp):
+            p=ET.SubElement(qp,tag("QueryParameter"),Name="@"+name)
+            ET.SubElement(p,tag("Value")).text="=Parameters!"+name+".Value"
     fields=ds.find("r:Fields",NS)
     for name in META:
         field=ET.SubElement(fields,tag("Field"),Name=name)
@@ -65,6 +66,7 @@ def create():
         if prop.findtext("r:Name",namespaces=NS)=="ReportName":
             prop.find("r:Value",NS).text="ARIA18_Throughput_Collector_Fast_2.0"
     ET.ElementTree(root).write(target,encoding="utf-8",xml_declaration=True)
+    build()
     return target
 
 

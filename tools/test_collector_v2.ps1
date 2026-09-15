@@ -7,6 +7,7 @@ param(
     [string]$ContextStart = '2024-01-01',
     [string]$DataThrough = '2025-06-01',
     [string]$PeriodReason = 'Validierung Januar und Februar 2025',
+    [string]$SiteLabel = 'Validierung',
     [switch]$IncludeDetails,
     [ValidateSet('EXCELOPENXML','CSV')][string]$Format='EXCELOPENXML'
 )
@@ -20,6 +21,11 @@ $proxy = New-WebServiceProxy -Uri ($ReportServer.TrimEnd('/')+'/ReportExecution2
 $proxy.Timeout = 900000
 $warnings = $null
 $definition=[IO.File]::ReadAllBytes((Get-Item -LiteralPath $RdlPath).FullName)
+[xml]$definitionXml=[Text.Encoding]::UTF8.GetString($definition)
+$ns=[Xml.XmlNamespaceManager]::new($definitionXml.NameTable)
+$ns.AddNamespace('r','http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition')
+$detailsDefault=$definitionXml.SelectSingleNode("//r:ReportParameter[@Name='IncludePseudonymizedDetails']/r:DefaultValue/r:Values/r:Value",$ns).InnerText -eq 'true'
+$effectiveDetails=$IncludeDetails.IsPresent -or $detailsDefault
 New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
 $snapshot=Join-Path $OutputDirectory 'tested-definition.rdl'
 [IO.File]::WriteAllBytes($snapshot,$definition)
@@ -28,13 +34,18 @@ $info = $proxy.LoadReportDefinition($definition,[ref]$warnings)
 foreach ($w in $warnings) { Write-Output ('RDL_WARNING: '+$w.Code+' '+$w.Message) }
 $parameters = @()
 foreach ($item in @(@('PeriodStart',$PeriodStart),@('PeriodEnd',$PeriodEnd),
+    @('SiteLabel',$SiteLabel),
     @('ContextStart',$ContextStart),@('DataThrough',$DataThrough),@('PeriodReason',$PeriodReason),
     @('IncludePseudonymizedDetails',$IncludeDetails.IsPresent.ToString().ToLowerInvariant()))) {
     if ($item[0] -eq 'IncludePseudonymizedDetails' -and -not $IncludeDetails.IsPresent) { continue }
+    $hidden=$definitionXml.SelectSingleNode("//r:ReportParameter[@Name='"+$item[0]+"']/r:Hidden",$ns)
+    if ($hidden -and $hidden.InnerText -eq 'true') { continue }
     $p=New-Object CollectorV2Execution.ParameterValue
     $p.Name=$item[0]; $p.Value=$item[1]; $parameters+=$p
 }
 $info=$proxy.SetExecutionParameters($parameters,'en-US')
+$ContextStart=[datetime]::Parse((@($info.Parameters | Where-Object Name -eq 'ContextStart')[0].DefaultValues[0]),[Globalization.CultureInfo]::InvariantCulture).ToString('yyyy-MM-dd')
+$DataThrough=[datetime]::Parse((@($info.Parameters | Where-Object Name -eq 'DataThrough')[0].DefaultValues[0]),[Globalization.CultureInfo]::InvariantCulture).ToString('yyyy-MM-dd')
 foreach ($p in $info.Parameters) { if ($p.State -ne 'HasValidValue') { throw ($p.Name+': '+$p.State) } }
 $extension=$null; $mime=$null; $encoding=$null; $renderWarnings=$null; $streams=$null
 $watch=[Diagnostics.Stopwatch]::StartNew()
@@ -44,10 +55,10 @@ $target=Join-Path $OutputDirectory ('collector-v2-'+$PeriodStart+'-'+$PeriodEnd+
 [IO.File]::WriteAllBytes($target,$bytes)
 $watch.Stop()
 $evidence=[ordered]@{
-    status='rendered'; execution='temporary_definition'; method='2.0.0-rc.1'
+    status='rendered'; execution='temporary_definition'; method='2.0.0-rc.2'
     rdl_sha256=$definitionHash; export_sha256=(Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash
     period_start=$PeriodStart; period_end=$PeriodEnd; context_start=$ContextStart; data_through=$DataThrough
-    format=$Format; details=$IncludeDetails.IsPresent; bytes=$bytes.Length
+    format=$Format; details=$effectiveDetails; bytes=$bytes.Length
     seconds=[math]::Round($watch.Elapsed.TotalSeconds,1); recorded_at=[DateTimeOffset]::Now.ToString('o')
 }
 $evidence | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $OutputDirectory 'execution-evidence.json') -Encoding UTF8

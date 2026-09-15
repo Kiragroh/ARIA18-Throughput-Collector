@@ -13,7 +13,7 @@ def test_invitation_is_self_contained_and_has_upload_boundary():
     assert '__QR_DATA__' not in html and '__CHART_DATA__' not in html and '__PROJECT_QR_DATA__' not in html
     assert html.count('data:image/png;base64,')==3
     assert UPLOAD in html and 'Nicht hochladen' in html
-    assert 'Patientenlisten' in html and 'Hash-Schl' in html
+    assert 'Patientenlisten' in html and 'Original-Fall-/Plan-IDs' in html
     assert 'Synthetisches Beispiel' in html
     assert 'STANDORT_Phase_VON-BIS_R01.zip' in html
     assert 'Upload-Benachrichtigungen' in html and 'Maximilian Grohmann' in html
@@ -32,17 +32,17 @@ def test_cooperation_archive_is_explicitly_allowlisted():
 def test_submission_identity_is_required_and_portable_links_resolve():
     readme=(ROOT/'kooperation/README.md').read_text(encoding='utf-8')
     form=(ROOT/'kooperation/Begleitbogen.md').read_text(encoding='utf-8')
-    assert 'MUSTER-STR_Preflight_20250101-20250228_R01.zip' in readme
+    assert 'MUSTER-STR_Standorttest_20250101-20251231_R01.zip' in readme
     assert 'nicht automatisch' in readme
-    for field in ['Einreichungs-ID','Ersetzt Einreichungs-ID','Rueckmeldeadresse (Pflicht',
-                  'Export erstellt am','Enthaltene Dateien','Vollstaendiger Klinikname']:
+    for field in ['Einreichungs-ID','Ersetzt Einreichungs-ID','Rueckmeldeadresse (optional',
+                  'ARIA-Version (optional','Enthaltene Dateien','Vollstaendiger Klinikname']:
         assert field in form
     assert '../' not in readme
 
 
 def test_startpage_describes_current_workflow_only():
     readme=(ROOT/'README.md').read_text(encoding='utf-8')
-    assert '2.0.0-rc.1' in readme and 'kooperation/README.md' in readme
+    assert '2.0.0-rc.2' in readme and 'kooperation/README.md' in readme
     assert 'analyze_single_site.py' not in readme
     assert 'ARIA18_Durchsatz_Klinikvergleich_Collector.rdl' not in readme
     assert readme.index('Dieses Projekt') < readme.index('kooperation/README.md')

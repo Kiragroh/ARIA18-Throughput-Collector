@@ -78,20 +78,59 @@ FROM #History h WHERE EXISTS(SELECT 1 FROM #Appointment a JOIN #Patient p ON p.D
  WHERE a.DimActivityTransactionID=h.DimActivityTransactionID)
 GROUP BY h.ScheduledActivityCode ORDER BY h.ScheduledActivityCode;
 """
+    cf=['source_state','appointment_status','completion_candidates','appointments',
+        'with_activity_end','mean_first_completion_minus_activity_end_seconds']
+    completion=''.join(stage(n,True) for n in ['Patient','Appointment'])+'CREATE INDEX ix_completion_appt ON #Appointment(DimActivityTransactionID);\n'+stage('History',True)+"""
+;WITH anchors AS (
+ SELECT a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,a.AppointmentStatus,
+ MAX(a.ActivityEndDateTime) AS activity_end,
+ COUNT(DISTINCT h.ScheduledActivityHstryDateTime) AS candidates,
+ MIN(h.ScheduledActivityHstryDateTime) AS first_completion
+ FROM #Appointment a JOIN #Patient p ON p.DimPatientID=a.DimPatientID AND p.IsMOTestPatient=0
+ LEFT JOIN #History h ON h.DimActivityTransactionID=a.DimActivityTransactionID
+  AND UPPER(h.ScheduledActivityCode) IN (N'COMPLETED',N'MANUALLY COMPLETED',N'COMPLTFINISH',N'PT. COMPLTFINISH')
+  AND h.ScheduledActivityHstryDateTime>=COALESCE(a.ActivityStartDateTime,a.AppointmentDateTime)
+  AND h.ScheduledActivityHstryDateTime<DATEADD(hour,12,a.AppointmentDateTime)
+ WHERE COALESCE(a.IsScheduled,N'Y')=N'Y' AND COALESCE(a.AppointmentResourceStatus,N'')<>N'Deleted'
+ GROUP BY a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,a.AppointmentStatus
+)
+SELECT N'AVAILABLE' AS source_state,AppointmentStatus AS appointment_status,candidates AS completion_candidates,
+ COUNT_BIG(*) AS appointments,SUM(CASE WHEN activity_end IS NOT NULL THEN 1 ELSE 0 END) AS with_activity_end,
+ AVG(CAST(DATEDIFF(second,activity_end,first_completion) AS float)) AS mean_first_completion_minus_activity_end_seconds
+FROM anchors GROUP BY AppointmentStatus,candidates ORDER BY AppointmentStatus,candidates;
+"""
+    vf=['source_state','component','version_or_source','interpretation']
+    versions="""SET NOCOUNT ON;
+SELECT N'TESTED' AS source_state,N'ARIA-DWH' AS component,N'18' AS version_or_source,
+ N'Bisher gegen ARIA 18 geprueft; keine automatische Versionsgarantie' AS interpretation
+UNION ALL SELECT N'AVAILABLE',N'SQL Server',CONVERT(nvarchar(255),SERVERPROPERTY('ProductVersion')),
+ N'SQL-Version, nicht ARIA-Version'
+UNION ALL SELECT N'NOT_DETECTED',N'Installierte ARIA-Version',N'',
+ N'Bei Abweichung oder Rueckfragen optional im Standortformular angeben'
+UNION ALL SELECT N'SCHEMA_CANDIDATE',N'Versionsmetadaten',s.name+N'.'+t.name+N'.'+c.name,
+ N'Nur Spaltennachweis; kein als ARIA-Version interpretierter Wert'
+FROM sys.objects t JOIN sys.schemas s ON s.schema_id=t.schema_id JOIN sys.columns c ON c.object_id=t.object_id
+WHERE t.type IN ('U','V') AND s.name=N'DWH' AND (c.name LIKE N'%Version%' OR t.name LIKE N'%Version%');
+"""
     return {
         'AppointmentInventory':(guarded(['Patient','Activity','Machine','Appointment'],af,appointment),af),
         'MachineInventory':(guarded(['Patient','Machine','Treatment'],mf,machine),mf),
-        'HistoryStatusInventory':(guarded(['Patient','Appointment'],hf,history),hf)}
+        'HistoryStatusInventory':(guarded(['Patient','Appointment'],hf,history),hf),
+        'CompletionDiagnostics':(guarded(['Patient','Appointment'],cf,completion),cf),
+        'VersionInfo':(versions,vf)}
 
 
 def create():
-    base=build();root=ET.parse(base).getroot();uri=NS['r'];tag=lambda s:'{'+uri+'}'+s
+    base=build(include_inventory=False);root=ET.parse(base).getroot();uri=NS['r'];tag=lambda s:'{'+uri+'}'+s
     params=root.find('r:ReportParameters',NS)
     for p in params:
         if p.get('Name')=='PeriodEnd':p.find('r:DefaultValue/r:Values/r:Value',NS).text='=DateSerial(2025, 2, 28)'
         if p.get('Name')=='PeriodReason':p.find('r:DefaultValue/r:Values/r:Value',NS).text='Technischer Preflight Januar/Februar 2025'
         if p.get('Name')=='IncludePseudonymizedDetails':
-            p.remove(p.find('r:Prompt',NS));ET.SubElement(p,tag('Hidden')).text='true'
+            p.find('r:DefaultValue/r:Values/r:Value',NS).text='false'
+            prompt=p.find('r:Prompt',NS)
+            if prompt is not None:p.remove(prompt)
+            if p.find('r:Hidden',NS) is None:ET.SubElement(p,tag('Hidden')).text='true'
     sets=root.find('r:DataSets',NS)
     sets.remove(next(ds for ds in sets if ds.get('Name')=='EventDetails'))
     catalog=next(ds for ds in sets if ds.get('Name')=='ActivityCatalog')
@@ -126,6 +165,7 @@ def create():
     ET.register_namespace('',uri);ET.register_namespace('rd','http://schemas.microsoft.com/SQLServer/reporting/reportdesigner')
     ET.register_namespace('df','http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition/defaultfontfamily')
     target=base.with_name('ARIA18_Standort_Preflight_2.0.rdl');ET.ElementTree(root).write(target,encoding='utf-8',xml_declaration=True)
+    build()
     return target
 
 

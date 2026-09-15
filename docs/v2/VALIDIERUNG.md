@@ -1,4 +1,35 @@
-# Pruefstatus 2.0-rc.1
+# Pruefstatus 2.0.0-rc.2
+
+## Aktueller kombinierter Report
+
+- 70 automatisierte Tests: Kernmethodik, Parameter, integrierte Diagnoseabfragen,
+  Quellenwaechter, wiederholte Abschlusszeitpunkte und minimales Downloadpaket.
+- Kombinierte RDL am Pilotstandort temporaer geladen, ohne Aenderung des
+  SSRS-Katalogs: 02.-03.01.2025 mit automatischem Vorlauf/Nachbeobachtung,
+  Excel erfolgreich in 19,8 s, 8.089.119 Bytes. Definition und Export gehasht.
+- Excel zurueckgelesen: Quellen-/Status-/Geraeteinventare, Abschlussdiagnostik,
+  VersionInfo und 45.039 Ereigniszeilen, davon 1.146 im kurzen Auswertungsfenster.
+  Kontextjahre sind fuer Episoden/Folgetermine, keine zusaetzlichen Jahresfaelle.
+- Derselbe kombinierte Export im lokalen Zuordnungsformular eingelesen.
+- Negativtest mit absichtlich nicht vorhandenen Pflichtquellen in einer
+  temporaeren Testdefinition: Diagnose-Excel erfolgreich, collection_state
+  kennzeichnet fehlende Ereignisdaten; der Python-Import lehnt die Auswertung ab.
+- Fast-CSV-Kurzlauf mit korrigierter Abschlussauswahl ebenfalls technisch
+  erfolgreich; kein isolierter Performancevergleich verschiedener Perioden.
+- Offline-Teilnahmeformular: nur Standortkuerzel ergaenzt, JSON/Text/PDF,
+  Import/Wiederaufnahme und Direktlink ohne interne SSRS-Parameter getestet.
+- Praesentation in 21 Desktop-/Mobilansichten, Offline-Bilder, Navigation und Druck getestet.
+- Zwei vorhandene Standortlieferungen fuer 2025 lokal mit derselben Methodik
+  ausgewertet. Ergebnisse und Arbeitsprofile bleiben geschuetzt, nicht in Git.
+  Alte Exporte mit verworfenen Abschlussankern brauchen einen neuen Reportlauf.
+
+Die installierte ARIA-Version konnte nicht verlaesslich aus dem DWH abgeleitet
+werden. VersionInfo weist dies aus und verwechselt die auslesbare SQL-Version
+nicht mit ARIA. Gegen ARIA 18 getestet, keine Zusage fuer andere Versionen.
+Keine fachliche Multistandortabnahme und kein neuer vollstaendiger Jahreslauf
+mit genau dieser kombinierten Exceldefinition behauptet.
+
+## Historische Nachweise rc.1
 
 ## Lokal nachgewiesen
 

@@ -7,7 +7,6 @@ ROOT = Path(__file__).resolve().parents[1]
 FILES = {
     'README.md': 'kooperation/RDL_AUSFUEHREN.md',
     'START_HIER.html': 'kooperation/START_HIER.html',
-    'ARIA18_Standort_Preflight_2.0.rdl': 'dist/ARIA18_Standort_Preflight_2.0.rdl',
     'ARIA18_Throughput_Collector_2.0.rdl': 'dist/ARIA18_Throughput_Collector_2.0.rdl',
 }
 

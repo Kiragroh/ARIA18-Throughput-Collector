@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.0.0-rc.2 - 2026-09-15
+
+- Ein Full Collector fuer Auswertung und Preflight: neun Datensaetze einschliesslich Quellen-, Status-, Geraete-, Abschluss- und Versionsdiagnostik; Ereignisblaetter jahresweise.
+- RDL zeigt nur Standort und Auswertung von/bis. Standortvorgabe: Aendere mich. Kein Preflight-/Final-Schalter.
+- Auswertungsdaten automatisch aktiv; Standalone-Preflight und Fast-CSV bleiben optionale Werkzeuge im Vollpaket.
+- Mehrere Abschluss-Historieneintraege verwerfen nicht mehr pauschal den Endanker: erster passender Abschluss im begrenzten Terminfenster, Kandidatenzahl bleibt sichtbar.
+- Bekannte fehlende Pflichtquellen liefern einen diagnostischen Export ohne Ereignisdaten; Python wertet dies nicht als Nullmenge.
+- ARIA-18-Pruefstand getrennt von SQL-Version und nicht erkannter installierter ARIA-Version ausgewiesen.
+- Vorlauf, Nachbeobachtung und Begruendungsmetadaten automatisch; Terminartenkatalog bleibt vollstaendig.
+- Vollstaendigkeitspruefung fuer negative Aufklaerungsquoten im lokalen Profil mit Datum statt im RDL-Dialog.
+- Full Collector pseudonymisiert, nicht anonym: lokal oder mit lokaler Freigabe im geschuetzten Projektbereich, niemals auf GitHub.
+- Vier-Dateien-Testpaket und vereinfachtes Offline-Formular: keine Pflicht-Datenschutzcheckbox, keine doppelte Eingabe von Exportdaten; JSON, Text oder PDF.
+- Direkte SSRS-Links setzen nur bearbeitbare Standort-/Zeitraumparameter; interne Parameter werden nicht mehr uebergeben.
+
 ## Kooperation - 2026-09-15
 
 - Minimales Standorttest-ZIP mit zwei RDLs, Offline-Formular, Anleitung und Pruefsummen.
