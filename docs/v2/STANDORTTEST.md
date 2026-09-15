@@ -1,5 +1,14 @@
 # Standorttest und Voraussetzungen
 
+## Ersttest ohne Python
+
+Das [kleine Standorttest-ZIP](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.1/ARIA-Performance_Standorttest.zip)
+enthaelt zwei RDLs und START_HIER.html mit Anleitung, Rueckmeldeformular und
+Direktlink-Generator. Der Hauptreport kann schon direkt laufen. Bitte trotzdem
+Preflight, Hauptreport ohne Ereignisdetails und ausgefuelltes Rueckmeldeformular
+senden, soweit verfuegbar. [Ausfuehrungswege und Datenschutzgrenzen](../../kooperation/RDL_AUSFUEHREN.md).
+Das kleine Standortformular ist nicht das nachfolgende technische Zuordnungsprofil.
+
 ## So wenig Anpassung wie moeglich
 
 Es gibt nur zwei notwendige Konfigurationsorte: die gemeinsame Datenquelle des

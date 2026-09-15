@@ -31,22 +31,31 @@ keine klinische Entscheidungsunterstuetzung und keine Personalbewertung.
 
 ## Der kleinste erste Schritt
 
-**Noch keinen grossen Jahresbericht erzeugen.** Fuer den Einstieg reicht ein
-kleiner Preflight: eine Vorabpruefung des Datenbankschemas und lokaler Konventionen.
+**[Kleines Standorttest-ZIP herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.1/ARIA-Performance_Standorttest.zip)**:
+nur zwei RDLs, Anleitung mit ausfuellbarem Formular und Linkgenerator, README
+und Pruefsummen. Entpacken und `START_HIER.html` oeffnen. Kein Quellcodepaket.
+
+Der Hauptreport kann bereits beim ersten Versuch laufen. **Preflight und
+Formular helfen trotzdem**, lokale Besonderheiten und Datenluecken richtig
+einzuordnen. Bitte alle drei Unterlagen hochladen, soweit verfuegbar:
+Hauptreport ohne Ereignisdetails, Preflight und ausgefuelltes Standortformular.
 
 1. **Zustaendigkeit klaeren:** Eine fachliche und eine ARIA-/Daten-Ansprechperson
    benennen; erforderliche lokale Freigaben vor dem Datenzugriff klaeren.
-2. **Preflight ausfuehren:**
-   [Standort-Preflight 2.0 herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.1/ARIA18_Standort_Preflight_2.0.rdl),
-   in ARIA Berichte / Report Builder importieren und die lokale gemeinsame
-   ARIA-DWH-Datenquelle zuweisen. Vorgabe: **Januar/Februar 2025**.
-3. **Als Excel exportieren und lokal pruefen:** Der Preflight liefert Spalten,
-   Geraete, Aktivitaetscodes, Statuswerte und aggregierte Ankerverfuegbarkeit.
-   Er liefert keine Patientenliste. Die Inhalte trotzdem vor Weitergabe pruefen.
-4. **Rueckmeldung hochladen:** Freigegebenen Preflight und den ausgefuellten
-   [Begleitbogen](Begleitbogen.md) mit derselben Einreichungs-ID benennen,
-   zusammen als ZIP ueber den unten verlinkten Upload abgeben.
-   Bei einem Fehler genuegen Fehlercode und kurze Beschreibung ohne Patientendaten.
+2. **RDL ausfuehren:** In ARIA im Modul **Berichte importieren** (gegebenenfalls
+   durch die Administration), nach Importwarnungen auch unter **Sonstiges**
+   nachsehen. Alternativ die lokale RDL in **Microsoft Report Builder oeffnen**,
+   dort ohne ARIA-Import ausfuehren. Die lokale DWH-Datenquelle und Zugriffsrechte
+   sind in beiden Faellen noetig. [Anleitung und Excel-URL fuer 2025](RDL_AUSFUEHREN.md).
+3. **Exceldateien erzeugen:** Kleiner Preflight fuer Januar/Februar 2025;
+   Hauptreport fuer 2025 mit **Lokale pseudonymisierte Ereignisse exportieren = Nein**.
+   Dieser Hauptreport enthaelt Metadaten, Quellenabdeckung und Aktivitaetsinventar,
+   noch keine vollstaendige Durchsatzanalyse. Kein Ereignisexport zur Weitergabe.
+4. **Formular und Rueckgabe:** In [START_HIER.html](START_HIER.html) das
+   Standortformular einschliesslich Begleitangaben ausfuellen und als JSON
+   herunterladen. Zusammen mit den lokal geprueften Exceldateien unter derselben
+   Einreichungs-ID als ein ZIP hochladen. Falls ein Report scheitert, vorhandene
+   Unterlagen senden und den Fehlercode ohne Patientendaten im Formular beschreiben.
 
 Fuer diesen ersten Schritt ist **keine Python-Installation am Standort noetig**.
 SQL oder JSON muessen nicht bearbeitet werden. Die Zuordnung wird anschliessend
@@ -113,7 +122,8 @@ Dateinamen beginnen mit derselben Einreichungs-ID:
 - **STANDORT:** dauerhaftes, unterscheidbares Kuerzel fuer Klinik und Abteilung,
   beispielsweise `MUSTER-STR`. Im Begleitbogen auch den vollen Kliniknamen angeben.
   Nur Buchstaben, Ziffern und Bindestriche verwenden; keine Patientendaten.
-- **Phase:** `Preflight` oder spaeter `Auswertung`.
+- **Phase:** `Standorttest` fuer die drei Einstiegsdateien, `Preflight` fuer eine
+  reine Vorabpruefung oder spaeter `Auswertung`.
 - **VON-BIS:** tatsaechlicher Auswertungszeitraum als `JJJJMMTT-JJJJMMTT`,
   nicht das Uploaddatum. Exportdatum und vollstaendiger Datenstand stehen im Begleitbogen.
 - **R01:** erste Einreichung dieses Standorts, dieser Phase und dieses Zeitraums.
@@ -141,14 +151,18 @@ oder eine andere Phase ist eine eigene Einreichung, kein Ersatz.
 Dieses Schema ermoeglicht die Zuordnung und Dublettenpruefung; das Uploadportal
 selbst prueft die Benennung und Doppeleinreichungen nicht automatisch.
 
-**Zum Einstieg:** lokal gepruefter Preflight und Begleitbogen.
+**Zum Einstieg:** Hauptreport-XLSX ohne Ereignisdetails, Preflight-XLSX und
+ausgefuelltes Standortformular-JSON. Es enthaelt den Begleitbogen bereits;
+[Begleitbogen.md](Begleitbogen.md) bleibt eine Alternative ohne HTML-Formular.
 **Spaeter:** lokal freigegebene aggregierte HTML-, CSV- und JSON-Ergebnisse.
 
 **Nicht hochladen:** Collector-Detaildateien, Patienten-/Fall-/Plan-IDs, Hash-
 Schluessel, Patientenlisten, Namen, Geburtsdaten, Freitextnotizen, unbereinigte Logs,
 Screenshots mit Patientendaten oder Zugangsdaten. Die Detail-CSVs und die
-pseudonymisierten Excel-Ereignisblaetter bleiben am Standort. Das lokale Profil
-und das Zuordnungsformular sind ebenfalls keine regulaeren Upload-Dateien.
+pseudonymisierten Excel-Ereignisblaetter bleiben am Standort. Das technische
+Zuordnungsprofil `standort.json` und das lokale `Standortprofil.html` sind nicht
+mit dem zur Rueckgabe vorgesehenen Standortformular zu verwechseln und bleiben
+regulaer am Standort.
 
 Auch Aggregate sind nicht automatisch anonym. Lokale Freigabe und Pruefung
 kleiner Gruppen bleiben erforderlich. Keine klinischen Dateien in GitHub-Issues

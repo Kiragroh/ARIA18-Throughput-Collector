@@ -5,7 +5,8 @@ freigegeben. Er erhaelt Upload-Benachrichtigungen und nutzt die dienstliche
 Kontaktadresse im Begleitbogen fuer Rueckfragen. Andere Teilnehmende erhalten
 keinen Zugriff auf Ihre Einreichung.
 
-- [ ] Es handelt sich um den **Standort-Preflight**, nicht um einen Collector mit Ereignisdetails.
+- [ ] Soweit verfuegbar: Hauptreport-XLSX ohne Ereignisdetails, Preflight-XLSX und ausgefuelltes Standortformular-JSON (mit Begleitangaben).
+- [ ] Beim Hauptreport: `IncludePseudonymizedDetails=0`, `details_included=0` in `00_Metadata`; keine Ereigniszeilen in `90_Events`, auch keine ausgeblendeten.
 - [ ] Alle Tabellenblaetter wurden kontrolliert, auch ausgeblendete oder zusaetzliche Blaetter.
 - [ ] Keine Patienten-, Fall- oder Planidentifikatoren, auch keine Hash-Schluessel.
 - [ ] Keine Patienten-/Personalnamen in Aktivitaetsbezeichnungen oder Metadaten; falls doch, vor Weitergabe lokal bereinigen.
@@ -23,7 +24,7 @@ keinen Zugriff auf Ihre Einreichung.
 - [ ] Nur freigegebene `Standortanalyse.html`, `aggregate.json` und `Kennzahlen.csv`, jeweils mit der Einreichungs-ID im Dateinamen, plus Begleitbogen.
 - [ ] Methode, Zeitraum, Datenstand und Nachweisluecken sind angegeben.
 - [ ] Klinische Quellen einschliesslich manueller Therapie/Brachy wurden abgeglichen.
-- [ ] Keine Detail-CSVs, Ereignis-Exceldateien, Cache-Datenbanken oder lokalen Zuordnungsformulare.
+- [ ] Keine Detail-CSVs, Ereignis-Exceldateien, Cache-Datenbanken oder technischen Zuordnungsprofile. Das kleine Standortformular fuer die Rueckmeldung ist davon zu unterscheiden.
 
 Bei Unsicherheit **nicht hochladen**. Zuerst mit der lokalen Freigabestelle und
 der fachlichen Projektansprechperson klaeren. GitHub ist kein Ablageort fuer

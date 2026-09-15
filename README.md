@@ -17,6 +17,9 @@ Die Software ist nicht klinisch freigegeben.
 | [Prüfstatus](docs/v2/VALIDIERUNG.md)
 | [Änderungen](CHANGELOG.md)
 
+**Für den ersten Standorttest: [kleines ZIP mit nur fünf Dateien](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.1/ARIA-Performance_Standorttest.zip).**
+Zwei RDLs, `START_HIER.html` mit Anleitung und Formular, README und Prüfsummen.
+
 Gemeinsamer Jahreszeitraum: **1. Januar bis 31. Dezember 2025**.
 Ein anderes möglichst aktuelles, vollständiges Jahr ist mit dokumentierter
 Begründung möglich. Für den ersten technischen Test reichen Januar/Februar 2025.
@@ -30,6 +33,10 @@ Preflight, Begleitbogen, eindeutige Dateibenennung und Upload-Checkliste.
 Die **[kurze Präsentation](https://kiragroh.github.io/ARIA18-Throughput-Collector/)**
 erklärt den Einstieg und enthält QR-Codes zur Projektseite und zum Upload.
 Für die erste Einreichung benötigen Sie noch keine Python-Installation.
+Der Report kann bereits direkt funktionieren; Preflight und Formular helfen
+trotzdem bei der Einordnung. Gerne alle drei Unterlagen zurückgeben: Hauptreport
+als Excel **ohne Ereignisdetails**, Preflight und ausgefülltes Standortformular.
+[ARIA-Import, Report Builder und anonymisiertes Excel-URL-Beispiel für 2025](kooperation/RDL_AUSFUEHREN.md).
 
 Die über den dort verlinkten Upload eingereichten Dateien sind ausschließlich
 für **Maximilian Grohmann** freigegeben. Er erhält Upload-Benachrichtigungen,

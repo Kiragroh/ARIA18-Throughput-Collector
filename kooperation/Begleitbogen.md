@@ -1,13 +1,15 @@
 # Begleitbogen zur Teilnahme
 
 Bitte als eigene Datei ausfuellen und nach lokaler Pruefung zusammen mit dem
-Preflight hochladen. Keine Patientendaten und keine originalen Fallbeispiele eintragen.
-Fuer den Erstkontakt Einreichung, Kontakt und Preflight ausfuellen.
+Preflight und Hauptreport ohne Ereignisdetails hochladen. Keine Patientendaten
+und keine originalen Fallbeispiele eintragen. Alternativ das ausfuellbare
+Standortformular in START_HIER.html nutzen; dessen JSON enthaelt die Begleitangaben bereits.
+Fuer den Erstkontakt Einreichung, Kontakt und Exportstatus ausfuellen.
 
 ## Einreichung (Pflicht)
 
 - Einreichungs-ID (STANDORT_Phase_VON-BIS_R01):
-- Phase: Preflight / Auswertung:
+- Phase: Standorttest / Preflight / Auswertung:
 - Auswertungszeitraum (von / bis, einschliesslich):
 - Revision: R01 / R02 / ...:
 - Art: Erste Einreichung / Vollstaendiger Ersatz:
@@ -38,6 +40,15 @@ und immer das vollstaendige Paket, nicht nur die geaenderten Dateien.
 - Export erfolgreich? Ja / Nein / Teilweise:
 - Fehlende Pflichtquellen oder Fehlercode (keine unbereinigten Logs):
 - Preflight vor Weitergabe lokal geprueft? Ja / Nein:
+
+## Hauptreport ohne Ereignisdetails
+
+- Zeitraum (Standard: 01.01.2025 bis 31.12.2025):
+- Exportzeit / Zeitzone:
+- Ausfuehrung erfolgreich? Ja / Nein / Teilweise / Noch nicht ausgefuehrt:
+- IncludePseudonymizedDetails = Nein und details_included = 0? Ja / Nein:
+- Blatt 90_Events ohne Ereigniszeilen, auch keine ausgeblendeten? Ja / Nein:
+- Fehlercode oder kurze Beschreibung ohne Rohlogs:
 
 ## Besondere Nachweiswege
 

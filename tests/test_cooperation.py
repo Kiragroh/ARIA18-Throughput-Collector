@@ -24,7 +24,7 @@ def test_invitation_is_self_contained_and_has_upload_boundary():
 def test_cooperation_archive_is_explicitly_allowlisted():
     path=build()
     with zipfile.ZipFile(path) as archive:
-        assert len(archive.namelist())==7
+        assert len(archive.namelist())==9
         assert all(n.startswith('kooperation/') for n in archive.namelist())
         assert not any(n.endswith(('.csv','.xlsx','.sqlite','.json')) for n in archive.namelist())
 
