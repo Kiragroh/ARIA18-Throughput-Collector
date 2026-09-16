@@ -45,6 +45,13 @@ Besonderheiten können kurz erläutert werden. Für einen Probelauf reichen Janu
 
 ## Sie möchten mitmachen?
 
+**Alternative ohne Detaildaten: [Nur technische Vorprüfung herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Nur_Preflight.zip).**
+Diese separate RDL prüft ausschließlich DWH-Schema und Leserechte. Keine
+klinischen Datensätze, Pseudonyme, individuellen Zeitpunkte oder Fallzahlen.
+Die Exceldatei zeigt technische Voraussetzungen und noch offene Prüfungen,
+nicht die tatsächliche Datenfüllung. [Ablauf und Grenzen](kooperation/PREFLIGHT.md).
+Für diesen Einstieg ist kein Full Collector und kein Formular erforderlich.
+
 Im **[Ordner kooperation](kooperation/README.md)** stehen die Projektidee,
 der Nutzen für Ihren Standort und alle Schritte zur Teilnahme: gemeinsamer
 Report, JSON-Standortformular, eindeutige Dateibenennung und Upload-Hinweise.
@@ -122,14 +129,11 @@ eine gekennzeichnete Einschränkung oder einen eigenen Adapter.
 
 - **Rein lesend:** Der Report verändert keine ARIA-Daten. Export und Auswertung
   können zunächst vollständig am Standort erfolgen; es gibt keinen automatischen Upload.
-- **Ohne direkte Patientenkennungen:** Der Collector exportiert keine eigenen
-  Felder für Patientennamen, Geburtsdaten oder Original-Patienten-/Fall-/Plan-IDs.
-  Technische Zuordnungsschlüssel verbinden zusammengehörige Ereignisse, damit
+- **Für die Detailanalyse:** Technische Zuordnungsschlüssel verbinden zusammengehörige Ereignisse, damit
   Behandlungsfolgen und Mehrfachzählungen korrekt ausgewertet werden können.
 - **Transparente Einordnung:** Die Exceldatei enthält Ereigniszeitpunkte und
   verknüpfbare Behandlungsverläufe. Sie ist deshalb als pseudonymisierter
-  Detaildatensatz vorgesehen, nicht als anonymes Ergebnis. Die Bezeichnung
-  „ohne direkte Patientenkennungen“ ist keine Zusage einer Anonymisierung.
+  Detaildatensatz vorgesehen, nicht als anonymes Ergebnis.
 - **Gezielte Weitergabe:** Nach lokaler Freigabe erhalten nur Maximilian Grohmann
   und nicht die anderen Teilnehmenden die eingereichten Dateien. Alternativ
   können zunächst nur technische Fragen ohne klinische Dateien besprochen werden.
@@ -139,6 +143,17 @@ Für gemeinsame Ergebnisdarstellungen sind geprüfte aggregierte Kennzahlen
 vorgesehen; kleine Gruppen und mögliche Rückschlüsse werden vor einer Weitergabe
 geprüft. Lokale Katalogtexte ebenfalls auf versehentliche Personenangaben prüfen.
 GitHub enthält Software und Anleitung, keine klinischen Einreichungen.
+
+**Auswertung am Zentrum:** Maximilian Grohmann hat keinen Zugriff auf die
+Quellsysteme anderer Zentren. Nach Klärung der Quellen und Definitionen kann das
+vorhandene Auswerteskript standortspezifisch angepasst und vollständig dort
+ausgeführt werden. Detaildaten bleiben dann am Zentrum; geteilt werden nur
+abgestimmte, geprüfte Aggregate.
+
+Bei einer vereinbarten zentralen Analyse werden eingereichte Detaildateien und
+erzeugte Detailkopien nach Abschluss der Analyse gelöscht. Abschluss und
+Umsetzung einschließlich Ablage-/Backup-Fristen werden mit dem Zentrum
+abgestimmt. Das ist eine Projektregel, keine automatische Löschfunktion.
 
 ## Dokumentation
 

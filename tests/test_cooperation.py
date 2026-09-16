@@ -14,7 +14,7 @@ def test_invitation_is_self_contained_and_has_upload_boundary():
     assert '__QR_DATA__' not in html and '__CHART_DATA__' not in html and '__PROJECT_QR_DATA__' not in html
     assert html.count('data:image/png;base64,')==3
     assert UPLOAD in html and 'Kein automatischer Upload' in html
-    assert 'Patientennamen, Geburtsdaten oder Original-Patienten-IDs' in html
+    assert 'keine klinischen Tabellenzeilen, Pseudonyme oder Einzelzeitpunkte' in html
     assert 'GitHub enth&auml;lt nur Software und Anleitung' in html
     assert 'Nach lokaler Freigabe' in html and 'pseudonymisiert, nicht anonym' in html
     assert 'Synthetisches Beispiel' in html

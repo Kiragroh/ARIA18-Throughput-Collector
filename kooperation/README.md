@@ -31,6 +31,19 @@ keine klinische Entscheidungsunterstuetzung und keine Personalbewertung.
 
 ## Der kleinste erste Schritt
 
+**Alternative: [Nur technische Vorpruefung (ZIP)](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Nur_Preflight.zip)**.
+Keine klinischen Tabellenzeilen, Pseudonyme oder Einzelzeitpunkte. Die separate
+RDL prueft DWH-Schema und Leserechte; Datenfuellung, native Zusatzquellen und
+fachliche Zuordnungen bleiben lokal zu klaeren. Fuer diesen Weg reicht die
+Preflight-Exceldatei, ohne Full Collector oder Formular. [Anleitung](PREFLIGHT.md).
+
+Nach der Vorpruefung kann das Auswerteskript gemeinsam angepasst und am Zentrum
+ausgefuehrt werden. Maximilian Grohmann hat keinen Zugriff auf die Quellsysteme
+anderer Zentren. Bei lokaler Auswertung bleiben Detaildaten dort.
+Bei vereinbarter zentraler Analyse werden eingereichte Detaildateien und
+erzeugte Detailkopien nach Abschluss geloescht; Abschluss und Umsetzung mit
+Ablage-/Backup-Fristen werden abgestimmt. Keine automatische Loeschfunktion.
+
 **Zunaechst lokal testen, ohne Upload:** Der Report liest ARIA-Daten, veraendert
 sie aber nicht und uebertraegt keine Dateien automatisch. Fuer diesen Probelauf
 gelten die lokalen Zugriffsregeln. Ob anschliessend eine gemeinsame Auswertung
@@ -174,9 +187,8 @@ Standortformular-JSON. Beide Dateien werden fuer die Auswertung benoetigt.
 
 ### Welche Informationen verlassen den Standort?
 
-Nur die von Ihnen nach lokaler Freigabe hochgeladenen Dateien. Der Collector
-exportiert keine eigenen Felder fuer Patientennamen, Geburtsdaten oder
-Original-Patienten-/Fall-/Plan-IDs. Technische Hash-Schluessel verbinden Ereignisse
+Nur die von Ihnen nach lokaler Freigabe hochgeladenen Dateien. Beim Full
+Collector verbinden technische Hash-Schluessel Ereignisse
 fuer die Episodenbildung und vermeiden Doppelzaehlungen. Ereigniszeitpunkte und
 verknuepfbare Behandlungsverlaeufe bleiben enthalten: Die Full-Collector-Datei ist
 ein **pseudonymisierter Detaildatensatz**, keine anonyme Ergebnistabelle.

@@ -2,6 +2,9 @@
 
 ## 2.0.0-rc.9 - 2026-09-16
 
+- Separates Nur-Preflight-Paket: ausschliesslich DWH-Schema-/Rechtepruefung,
+  ohne klinische Tabellenzeilen oder Pseudonyme. Lokale Auswertung als
+  Alternative und Loeschregel nach vereinbarter zentraler Analyse dokumentiert.
 - Dokumentationsnachtrag: lokaler Probelauf ohne Upload, rein lesender Zugriff
   und Datenweg verstaendlich erklaert. Pseudonymisierte Detaildaten bleiben klar
   von aggregierten Ergebnissen getrennt. Praesentation und Paket-Anleitungen

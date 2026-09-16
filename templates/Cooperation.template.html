@@ -35,10 +35,10 @@
  <p class="footnote">Sie k&ouml;nnen Definitionen und Fragestellungen mitgestalten. Gemeinsame Vergleiche folgen erst nach Quellenabgleich und lokaler Freigabe.</p>
 </section>
 <section class="slide" aria-label="Einstieg" hidden>
- <p class="kicker">So beginnt die Teilnahme</p><h2 tabindex="-1">Ein Report f&uuml;r Auswertung und Pr&uuml;fung</h2>
+ <p class="kicker">So beginnt die Teilnahme</p><h2 tabindex="-1">Technisch vorpr&uuml;fen oder lokal auswerten</h2>
  <ol class="steps"><li><div><strong>Lokal starten</strong><span>Fachliche Ansprechperson und ARIA-/Datenzugang abstimmen. Der Report liest Daten und ver&auml;ndert ARIA nicht.</span></div></li>
- <li><div><strong>Paket laden und Report ausf&uuml;hren</strong><span>Full Collector 2025 mit Auswertungsdaten und Pr&uuml;ftabellen. Nur Standort und Zeitraum. In ARIA importieren oder lokal im Report Builder &ouml;ffnen.</span></div></li>
- <li><div><strong>Gemeinsame Auswertung abstimmen</strong><span>Offline-Formular ausf&uuml;llen. Nach lokaler Freigabe Excel und Standortformular-JSON gemeinsam als ZIP &uuml;ber den Projektupload einreichen.</span></div></li>
+ <li><div><strong>Den passenden Einstieg w&auml;hlen</strong><span>Nur Preflight: Schema und Leserechte, ohne klinische Datens&auml;tze. Oder Full Collector f&uuml;r eine lokale Auswertung. RDL in ARIA importieren oder im Report Builder &ouml;ffnen.</span></div></li>
+ <li><div><strong>Den n&auml;chsten Schritt abstimmen</strong><span>Preflight-Excel zur technischen Kl&auml;rung; kein Full Collector erforderlich. Alternativ nach lokaler Freigabe Detail-Excel und Formular-JSON f&uuml;r eine gemeinsame Analyse.</span></div></li>
  <li><div><strong>Ergebnisse gemeinsam einordnen</strong><span>Lokale Besonderheiten abgleichen und nachvollziehbare Kennzahlen f&uuml;r den Standort gewinnen.</span></div></li></ol>
  <p class="notice">Ein Probelauf ist ohne Upload m&ouml;glich. F&uuml;r den Export ist keine Python-Installation n&ouml;tig.</p>
 </section>
@@ -50,15 +50,15 @@
 </section>
 <section class="slide" aria-label="Datenweitergabe" hidden>
  <p class="kicker">Ein nachvollziehbarer Datenweg</p><h2 tabindex="-1">Lokal testen, Weitergabe abstimmen</h2>
- <div class="columns"><div class="boundary"><h3>Was die Exceldatei enth&auml;lt</h3><p>Behandlungszeiten und technische Zuordnungsschl&uuml;ssel, um Ereignisse zusammenzuf&uuml;hren und Doppelz&auml;hlungen zu vermeiden.</p><p class="small">Keine eigenen Exportfelder f&uuml;r Patientennamen, Geburtsdaten oder Original-Patienten-IDs. Lokale Katalogtexte vor Weitergabe pr&uuml;fen.</p></div>
- <div class="boundary"><h3>Sie entscheiden &uuml;ber die Weitergabe</h3><p>Kein automatischer Upload. Zun&auml;chst ist ein rein lokaler Probelauf m&ouml;glich.</p><p class="small">Nach lokaler Freigabe: Excel und Formular-JSON nur an Maximilian Grohmann. Andere Teilnehmende haben keinen Zugriff. GitHub enth&auml;lt nur Software und Anleitung.</p></div></div>
- <p class="footnote">Zeitpunkte und verkn&uuml;pfbare Verl&auml;ufe bleiben Detaildaten: pseudonymisiert, nicht anonym. Ergebnisse werden aggregiert und vor Weitergabe gepr&uuml;ft. Eine pauschale Datenschutzfreigabe f&uuml;r Standorte liegt nicht vor.</p>
+ <div class="columns"><div class="boundary"><h3>Preflight ohne Detaildaten</h3><p>Nur Schema und Leserechte, keine klinischen Tabellenzeilen, Pseudonyme oder Einzelzeitpunkte.</p><p class="small">Datenf&uuml;llung und fachliche Zuordnungen bleiben lokal zu pr&uuml;fen. Danach kann das Auswerteskript angepasst am Zentrum laufen; Detaildaten bleiben dort.</p></div>
+ <div class="boundary"><h3>Gemeinsame Analyse als Alternative</h3><p>Kein automatischer Upload. Maximilian Grohmann hat keinen Zugriff auf die Quellsysteme anderer Zentren.</p><p class="small">Nach lokaler Freigabe: Detail-Excel und JSON nur an ihn. Detaildateien und Detailkopien werden nach Analyseabschluss gel&ouml;scht; Umsetzung und Backup-Fristen werden abgestimmt. GitHub enth&auml;lt nur Software und Anleitung.</p></div></div>
+ <p class="footnote">Nur beim Full Collector: Zeitpunkte und verkn&uuml;pfbare Verl&auml;ufe bleiben Detaildaten, pseudonymisiert, nicht anonym. Ergebnisse werden vor Weitergabe gepr&uuml;ft. Eine pauschale Datenschutzfreigabe f&uuml;r Standorte liegt nicht vor.</p>
 </section>
 <section class="slide" aria-label="Upload und Kontakt" hidden>
  <p class="kicker">Ihr n&auml;chster Schritt</p><h2 tabindex="-1">Das passende Paket laden</h2>
- <div class="upload"><div><p class="lead"><strong>Gesamtpaket:</strong> Durchf&uuml;hrung und optionale Python-Analyse. <strong>Nur Durchf&uuml;hrung:</strong> Report, Offline-Formular und Anleitung. Start: <code>Durchfuehrung/START_HIER.html</code>.</p>
+ <div class="upload"><div><p class="lead"><a href="https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v__PACKAGE_VERSION__/ARIA-Performance_Nur_Preflight.zip">Nur Preflight (ZIP)</a>: technische Vorpr&uuml;fung ohne Detaildaten. <strong>Gesamtpaket:</strong> mit lokaler Python-Analyse. <strong>Nur Durchf&uuml;hrung:</strong> Full Collector und Formular.</p>
  <a class="action" href="https://filesync.medizin.uni-leipzig.de/u/d/7aa97de1de02445cad42/" target="_blank" rel="noopener">Freigegebene Dateien hochladen &rarr;</a>
- <p class="small muted">Ein ZIP: <strong>STANDORT_Phase_VON-BIS_R01.zip</strong><br>Full-Collector-Exceldatei und Standortformular-JSON.<br>Bei Korrekturen: neue Revision und ersetzte ID angeben.<br>Dienstliche Kontaktadresse f&uuml;r R&uuml;ckfragen beilegen.</p>
+ <p class="small muted">Preflight: nur die technische Exceldatei mit Standort und Kontakt.<br>Detailanalyse: <strong>STANDORT_Phase_VON-BIS_R01.zip</strong> mit Full-Collector-Exceldatei und Standortformular-JSON.<br>Bei Korrekturen: neue Revision und ersetzte ID angeben.</p>
  <p class="small"><a href="https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v__PACKAGE_VERSION__/ARIA-Performance_Gesamtpaket.zip" target="_blank" rel="noopener">Gesamtpaket (ZIP)</a> &middot; <a href="https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v__PACKAGE_VERSION__/ARIA-Performance_Durchfuehrung.zip" target="_blank" rel="noopener">Nur Durchf&uuml;hrung (ZIP)</a> &middot; <a href="https://github.com/Kiragroh/ARIA18-Throughput-Collector/tree/main/kooperation" target="_blank" rel="noopener">Anleitung und Teilnahme</a></p>
  <p class="small">Nur f&uuml;r <strong>Maximilian Grohmann</strong> freigegeben.<br>Er erh&auml;lt Upload-Benachrichtigungen, pr&uuml;ft die Einreichung und kann sich bei R&uuml;ckfragen melden. Andere Teilnehmende haben keinen Zugriff.</p></div>
  <figure><a href="https://filesync.medizin.uni-leipzig.de/u/d/7aa97de1de02445cad42/" target="_blank" rel="noopener"><img class="qr" src="__QR_DATA__" alt="QR-Code zum Upload bei UML-Filesync"></a><figcaption>Zum selben Upload per Smartphone.</figcaption></figure></div>

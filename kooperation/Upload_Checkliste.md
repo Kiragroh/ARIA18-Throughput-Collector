@@ -1,5 +1,9 @@
 # Geschuetzte Einreichung
 
+Alternative Nur-Preflight: Es genuegt die technische Preflight-Exceldatei mit
+Standortkuerzel und Rueckmeldeadresse, ohne Full Collector und ohne Formular.
+Die folgenden Schritte betreffen die optionale zentrale Detailanalyse.
+
 Benoetigt werden Full Collector XLSX mit integrierten Prueftabellen und
 Standortformular-JSON. Im Offline-HTML ausfuellen, JSON herunterladen und beide
 Dateien gemeinsam als ZIP einreichen. Keine zusaetzliche Pflichtbestaetigung.

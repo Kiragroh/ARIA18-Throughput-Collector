@@ -65,6 +65,27 @@ def package(analysis=True):
     return target
 
 
+def package_preflight():
+    files = {
+        'README.md': 'kooperation/PREFLIGHT.md',
+        'ARIA18_Technischer_Preflight_1.0.rdl': 'dist/ARIA18_Technischer_Preflight_1.0.rdl',
+    }
+    target = ROOT / 'packages/ARIA-Performance_Nur_Preflight.zip'
+    contents = {name: (ROOT / source).read_bytes() for name, source in files.items()}
+    contents['SHA256SUMS.txt'] = ''.join(
+        hashlib.sha256(data).hexdigest() + '  ' + name + '\n'
+        for name, data in contents.items()).encode('ascii')
+    with zipfile.ZipFile(target, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
+        for name, data in contents.items():
+            entry = zipfile.ZipInfo(name, date_time=(2026, 9, 16, 0, 0, 0))
+            entry.compress_type = zipfile.ZIP_DEFLATED
+            archive.writestr(entry, data)
+    target.with_suffix('.zip.sha256').write_text(
+        hashlib.sha256(target.read_bytes()).hexdigest() + '  ' + target.name + '\n', encoding='ascii')
+    return target
+
+
 if __name__ == '__main__':
     package()
     package(analysis=False)
+    print(package_preflight())
