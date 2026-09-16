@@ -31,6 +31,11 @@ keine klinische Entscheidungsunterstuetzung und keine Personalbewertung.
 
 ## Der kleinste erste Schritt
 
+**Zunaechst lokal testen, ohne Upload:** Der Report liest ARIA-Daten, veraendert
+sie aber nicht und uebertraegt keine Dateien automatisch. Fuer diesen Probelauf
+gelten die lokalen Zugriffsregeln. Ob anschliessend eine gemeinsame Auswertung
+mit Dateiweitergabe erfolgt, stimmen Sie vor dem Upload am Standort ab.
+
 **[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Gesamtpaket.zip)**:
 Ordner `Durchfuehrung` mit Report, Offline-Formular und Anleitung;
 Ordner `Analyse` mit optionaler Python-Auswertung und synthetischem Probelauf.
@@ -167,18 +172,30 @@ Standortformular-JSON. Beide Dateien werden fuer die Auswertung benoetigt.
 [Begleitbogen.md](Begleitbogen.md) erklaert die Angaben im JSON-Formular.
 **Spaeter:** lokal freigegebene aggregierte HTML-, CSV- und JSON-Ergebnisse.
 
-**Pseudonymisierte Full-Collector-Dateien:** nur lokal oder nach lokaler Freigabe
-im geschuetzten Projektbereich verarbeiten. Die Hash-Schluessel sind fuer die
-Episodenbildung noetig und keine Klartext-Patientenkennungen. Nicht anonym.
+### Welche Informationen verlassen den Standort?
+
+Nur die von Ihnen nach lokaler Freigabe hochgeladenen Dateien. Der Collector
+exportiert keine eigenen Felder fuer Patientennamen, Geburtsdaten oder
+Original-Patienten-/Fall-/Plan-IDs. Technische Hash-Schluessel verbinden Ereignisse
+fuer die Episodenbildung und vermeiden Doppelzaehlungen. Ereigniszeitpunkte und
+verknuepfbare Behandlungsverlaeufe bleiben enthalten: Die Full-Collector-Datei ist
+ein **pseudonymisierter Detaildatensatz**, keine anonyme Ergebnistabelle.
+Katalogtexte vor Weitergabe auf versehentliche Personenangaben pruefen.
+
+Die Teilnahme kann mit einem lokalen Test und technischen Rueckfragen ohne
+klinische Dateien beginnen. Eine pauschale Datenschutzfreigabe fuer teilnehmende
+Standorte liegt nicht vor. Fuer gemeinsame Ergebnisdarstellungen sind gepruefte
+Aggregate vorgesehen; kleine Gruppen und moegliche Rueckschluesse werden vor
+einer Weitergabe geprueft.
+
 **Nicht beifuegen:** Original-Patienten-/Fall-/Plan-IDs, Namen, Geburtsdaten,
 Freitextnotizen, unbereinigte Logs, Screenshots mit Patientendaten oder Zugangsdaten. Das technische
 Zuordnungsprofil `standort.json` und das lokale `Standortprofil.html` sind nicht
 mit dem zur Rueckgabe vorgesehenen Standortformular zu verwechseln und bleiben
 regulaer am Standort.
 
-Auch Aggregate sind nicht automatisch anonym. Lokale Freigabe und Pruefung
-kleiner Gruppen bleiben erforderlich. Keine klinischen Dateien in GitHub-Issues
-oder Pull Requests ablegen. Der Upload-Link ersetzt keine lokale Freigabe.
+GitHub ist fuer Software, Anleitung und technische Fragen vorgesehen.
+Klinische Dateien gehoeren ausschliesslich in den abgestimmten Projektweg.
 
 ## Status
 

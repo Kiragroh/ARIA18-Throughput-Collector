@@ -119,11 +119,15 @@ Nuetzliche optionale Angaben:
   exakter Ressourcenname, Aktivitaetsname oder ActivityCode und Status nach
   Durchfuehrung, etwa `Manually Completed`. Planung, Vermessung und QA abgrenzen.
 
-Die Dateien sind pseudonymisiert, **nicht anonym**. Lokal auswerten oder nach
-lokaler Freigabe ausschliesslich ueber den geschuetzten Projektweg bereitstellen.
-Die Ereignis-Hashschluessel sind zur Episodenbildung notwendig. Keine Namen,
-Original-Patientenkennungen, Freitextnotizen oder Zugangsdaten hinzufuegen.
-Auf GitHub gehoeren weder klinische Detaildateien noch reale Standortergebnisse.
+Ein lokaler Probelauf ist ohne Upload moeglich. Der Report liest ARIA-Daten,
+veraendert sie nicht und uebertraegt keine Dateien automatisch. Technische
+Hash-Schluessel verbinden zusammengehoerige Ereignisse statt direkter
+Patientenkennungen. Zeitpunkte und Verlaeufe bleiben enthalten: Die Exceldatei
+ist pseudonymisiert, **nicht anonym**. Fuer die gemeinsame Auswertung die
+Weitergabe am Standort abstimmen und den geschuetzten Projektupload verwenden.
+Keine Namen, Original-Patientenkennungen, Freitextnotizen oder Zugangsdaten
+hinzufuegen; Katalogtexte auf solche Inhalte pruefen. GitHub enthaelt Software
+und Anleitung, keine klinischen Einreichungen.
 
 ## Eindeutige Benennung
 

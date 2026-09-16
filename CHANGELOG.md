@@ -2,6 +2,10 @@
 
 ## 2.0.0-rc.9 - 2026-09-16
 
+- Dokumentationsnachtrag: lokaler Probelauf ohne Upload, rein lesender Zugriff
+  und Datenweg verstaendlich erklaert. Pseudonymisierte Detaildaten bleiben klar
+  von aggregierten Ergebnissen getrennt. Praesentation und Paket-Anleitungen
+  aktualisiert; Collector und Analyse unveraendert.
 - Collector rc.8: native Bildhersteller-/Akquisitionsquelle zur ExacTrac-
   Zuordnung und optionales Sheet 93_Wartebereich mit historischen Check-ins.
   Wartebereich bleibt reine Diagnostik; auffaellige Zeiten und Testhinweise
