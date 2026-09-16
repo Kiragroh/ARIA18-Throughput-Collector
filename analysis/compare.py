@@ -43,6 +43,43 @@ ALIASES = re.compile(r'[A-Za-z0-9][A-Za-z0-9_. -]{0,47}\Z')
 HEX = re.compile(r'[0-9a-f]{64}\Z')
 MODELS = {'activity','workflow','technical'}
 GRANULARITIES = {'year','quarter','month','week'}
+DOMAIN_LABELS = {'throughput':'Durchsatz','population':'Patienten / Behandlung',
+                'flow':'Aufklaerung / Episoden','imaging':'Bildobjekte'}
+REVIEW_GUIDANCE = {
+    'period_mismatch': ('Unterschiedliche Gesamtzeitraeume', 'Dasselbe Beobachtungsjahr auswerten; abweichende Jahre getrennt berichten.'),
+    'local_review_missing': ('Lokale Vergleichspruefung fehlt', 'Zuordnungen, Positiv-/Negativfaelle und Nenner lokal pruefen; erst danach --reviewed verwenden.'),
+    'observation_incomplete': ('Gesamtzeitraum nicht vollstaendig beobachtet', 'Vollstaendigen Zeitraum exportieren oder einen kuerzeren gemeinsamen Zeitraum gesondert definieren.'),
+    'synthetic_mixed': ('Synthetische und klinische Daten gemischt', 'Demo- und Klinikdateien in getrennten Vergleichen auswerten.'),
+    'profile_unconfirmed': ('Standortprofil nicht bestaetigt', 'Terminarten, Status, Therapiegeraete sowie Brachy/manuelle Therapien lokal pruefen und das Profil bestaetigen.'),
+    'coverage_unconfirmed': ('Quellenumfang / Datenstand nicht bestaetigt', 'Quellenumfang und vollstaendigen Datenstand lokal pruefen; sources_complete und complete_through nicht aus dem letzten Ereignis erraten.'),
+    'provenance_missing': ('Herkunftsmetadaten fehlen', 'Vorhandenen vollstaendigen Export mit der aktuellen Analyse neu berechnen; keine Herkunftsangaben nachtragen.'),
+    'provenance_incomplete': ('Herkunftsmetadaten unvollstaendig', 'Vorhandenen Export mit der aktuellen Analyse neu berechnen; bei fehlenden Quelldaten neu exportieren.'),
+    'collector_missing': ('RDL-Exportstand unbekannt', 'Mit demselben dokumentierten Full-Collector-RDL neu als Excel exportieren. Metadaten nicht manuell ersetzen.'),
+    'collector_mismatch': ('Unterschiedliche RDL-Exportstaende', 'Standorte mit demselben geprueften Full-Collector-RDL exportieren. Gleiche Python-Version allein gleicht SQL-Unterschiede nicht aus.'),
+    'collector_resources_legacy': ('Alter Ressourcenabgleich im RDL', 'RDL vor rc.6 kann parallele Reservierungen zusammenfassen oder durch inaktive Ressourcen fehlzuordnen. Fuer den vollstaendigen Abgleich mit rc.6 oder neuer neu exportieren; Python kann verlorene Zuordnungen nicht wiederherstellen.'),
+    'analysis_mismatch': ('Unterschiedlicher Rechenstand', 'Beide vorhandenen Exporte mit demselben Analysepaket neu berechnen; kein neuer RDL-Lauf allein wegen dieses Unterschieds.'),
+    'settings_mismatch': ('Unterschiedliche Recheneinstellungen', 'Patientenfilter, Zeitfenster und Besuchstoleranzen gemeinsam festlegen und neu berechnen; Standortzuordnungen bleiben lokal.'),
+    'dependencies_mismatch': ('Unterschiedliche Bibliotheksversionen', 'Exporte in derselben Python-Umgebung mit denselben Abhaengigkeiten neu berechnen.'),
+    'contract_mismatch': ('Unterschiedliche Exportvertraege', 'Denselben unterstuetzten Full Collector verwenden und neu exportieren.'),
+    'contract_unsupported': ('Nicht unterstuetzter Exportvertrag', 'Full Collector mit Exportvertrag 2.0 verwenden; Altdateien bleiben nur deskriptiv.'),
+    'capabilities_missing': ('Quelleninventar fehlt', 'Full Collector als Excel einschliesslich 01_Capabilities exportieren. Eine reine Ereignis-CSV belegt das Quelleninventar nicht.'),
+    'required_source_missing': ('Erforderliche Quelle fehlt', 'Fehlende Tabellen/Felder und Leserechte mit der lokalen ARIA-Administration pruefen; danach erneut exportieren.'),
+    'capabilities_mismatch': ('Unterschiedliche Quellenverfuegbarkeit', 'Inventare und Leserechte vergleichen. Fehlende optionale Quellen explizit ausweisen, nicht durch Nullen ersetzen.'),
+    'fields_missing': ('Erforderliche Datenfelder fehlen', 'Neueren Full Collector verwenden und pruefen, ob die benoetigten Felder lokal verfuegbar sind.'),
+    'context_mismatch': ('Unterschiedlicher Vorlauf', 'Mit gleichem Vorlauf neu exportieren, damit laufende Plaene und Episoden am Jahresbeginn gleich eingeordnet werden.'),
+    'context_missing': ('Vorlauf nicht dokumentiert', 'Vollstaendigen Export mit dokumentiertem Kontextbeginn verwenden; nicht aus dem ersten beobachteten Ereignis ableiten.'),
+    'followup_missing': ('Nachbeobachtungsstand fehlt', 'Datenstand und erforderliche Nachbeobachtung lokal pruefen und dokumentiert exportieren.'),
+    'followup_mismatch': ('Unterschiedliche Nachbeobachtung', 'Fuer Episoden einen gemeinsamen Datenstichtag festlegen und entsprechend neu exportieren; Durchsatz im abgeschlossenen Jahr bleibt separat beurteilbar.'),
+    'flow_sources_unconfirmed': ('Patientenflussquellen nicht bestaetigt', 'Insbesondere Behandlungen ohne R&V, Brachy und Wiedervorstellungen pruefen. Kein fehlender Start allein wegen einer fehlenden Quelle.'),
+    'imaging_unavailable': ('Direkte Bildobjekte nicht verfuegbar', 'Bildobjektquelle und Leserechte pruefen. Technische Imaging-Nachweise nicht als vollstaendige Bildobjektfrequenz ausgeben.'),
+    'pool_missing': ('Kein Standortpool', 'Pruefen, ob fuer diesen Abschnitt und dieses Modell ausreichend messbare Besuche vorhanden sind.'),
+    'suppressed_group': ('Standortpool unterdrueckt', 'Kleine Gruppen nicht rekonstruieren. Gegebenenfalls einen groesseren, gemeinsam definierten Zeitraum betrachten.'),
+    'partial_period': ('Unvollstaendiger Abschnitt', 'Nur gleich abgegrenzte vollstaendige Abschnitte vergleichen; Teilperioden gesondert kennzeichnen.'),
+    'partial_population': ('Pool enthaelt nicht alle Geraete', 'Unterdrueckte oder nicht messbare Geraete pruefen; den Teilpool nicht als gesamten Standort interpretieren.'),
+    'incomplete_device_days': ('Freie Zeit nur fuer vollstaendig messbare Geraetetage', 'Fehlende Zeitintervalle und Modellabdeckung pruefen. Freie Stunden und deren Anteil gelten nur fuer die vollstaendigen Geraetetage im Nenner, nicht als Jahresauslastung oder Hochrechnung auf alle Tage.'),
+    'denominator_missing': ('Exakte Nenner fehlen', 'Mit der aktuellen Analyse neu berechnen. Unterdrueckte Nenner bleiben fehlend und werden nicht rueckgerechnet.'),
+    'period_missing': ('Abschnitt nicht vorhanden', 'Zeitraum, Datenabdeckung und Modell pruefen. Fehlende Abschnitte sind keine Nullwerte.'),
+}
 
 
 def _numeric(value):
@@ -82,6 +119,11 @@ def _version(value):
     return value if isinstance(value,str) and re.fullmatch(r'[0-9A-Za-z.+_-]{1,48}',value) else 'unknown'
 
 
+def _collector_release(value):
+    return value if (isinstance(value,str) and len(value) <= 48
+                     and re.fullmatch(r'\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?',value)) else None
+
+
 def _periods(data):
     for granularity, models in data.get('periods',{}).items():
         if granularity not in GRANULARITIES:
@@ -116,6 +158,14 @@ def _common_reasons(a,b,reviewed_a,reviewed_b):
     pa,pb = a.get('provenance'),b.get('provenance')
     if not isinstance(pa,dict) or not isinstance(pb,dict):
         return reasons + ['provenance_missing']
+    releases = [_collector_release(p.get('collector_release')) for p in [pa,pb]]
+    if any(release is None for release in releases):
+        reasons.append('collector_missing')
+    if releases[0] != releases[1]:
+        reasons.append('collector_mismatch')
+    # Reanalysis cannot undo source-level appointment/resource grouping in old exports.
+    if any(re.fullmatch(r'2\.0\.0-rc\.[1-5]',release or '') for release in releases):
+        reasons.append('collector_resources_legacy')
     for p in [pa,pb]:
         if (p.get('schema') != 1 or not _fingerprint(p.get('analysis_sha256'))
             or not _fingerprint(p.get('export_sha256'))
@@ -203,6 +253,10 @@ def build_comparison(sites, reviewed=frozenset()):
             provenance_available=bool(provenance),analysis_sha256=_fingerprint(provenance.get('analysis_sha256')),
             export_sha256=_fingerprint(provenance.get('export_sha256')),aggregate_sha256=source_hash,
             version=_version(data.get('version')),
+            collector_release=_collector_release(provenance.get('collector_release')) or 'unknown',
+            context_start=_date(provenance['context_start']) if provenance.get('context_start') else None,
+            capability_count=len(provenance.get('capabilities',[])),
+            available_capability_count=sum(c.get('available') is True for c in provenance.get('capabilities',[])),
             population=_numbers(data.get('population',{}).get('summary',{}),POPULATION),
             flow=_numbers(data.get('flow',{}),FLOW)))
         for granularity,model,a,b,period in _periods(data):
@@ -223,6 +277,8 @@ def build_comparison(sites, reviewed=frozenset()):
             kpi = _numbers(pool.get('kpi',{}),KPI,suppressed)
             if any(kpi[k] is None for k in ['expected_visits','booked_minutes','overlap_minutes_in_slots']):
                 reasons.append('denominator_missing')
+            if kpi['incomplete_device_days'] is not None and kpi['incomplete_device_days'] > 0:
+                reasons.append('incomplete_device_days')
             output['periods'].append(dict(alias=alias,granularity=granularity,model=model,start=a,end=b,
                 label=a+' / '+b,kpi=kpi,distributions={} if suppressed else {
                     key:_distribution(value) for key,value in pool.get('distributions',{}).items()
@@ -256,6 +312,11 @@ def build_comparison(sites, reviewed=frozenset()):
     for (alias_a,a),(alias_b,b) in combinations(sites.items(),2):
         output['checks'].append(dict(a=alias_a,b=alias_b,
             domains=_domains(a,b,alias_a in reviewed,alias_b in reviewed)))
+    reasons = {reason for check in output['checks'] for domain in check['domains'].values()
+               for reason in domain['reasons']}
+    reasons.update(reason for period in output['periods'] for reason in period['reasons'])
+    output['review_actions'] = [dict(reason=reason,label=REVIEW_GUIDANCE[reason][0],
+                                    action=REVIEW_GUIDANCE[reason][1]) for reason in sorted(reasons)]
     return output
 
 
@@ -269,6 +330,27 @@ def write_outputs(data, output):
     template = Path(__file__).with_name('comparison.html').read_text(encoding='utf-8')
     (output/'Standortvergleich.html').write_text(template.replace('__PLOTLY__',get_plotlyjs())
         .replace('__COMPARISON_DATA__',escaped),encoding='utf-8')
+    notes = ['# Pruefhinweise zum Standortvergleich', '',
+             'Automatisch aus den vorliegenden Aggregaten; keine klinische Freigabe.', '',
+             '| Standort | RDL | Analyse | Kontext ab | Daten bis | Quellenfelder verfuegbar / im Inventar |',
+             '| --- | --- | --- | --- | --- | --- |']
+    for site in data['sites']:
+        notes.append(f"| {site['alias']} | {site['collector_release']} | {site['version']} | "
+                     f"{site['context_start'] or '--'} | {site['data_through'] or '--'} | "
+                     f"{site['available_capability_count']} / {site['capability_count']} |")
+    notes += ['', '## Offene Voraussetzungen je Standortpaar', '']
+    for check in data['checks']:
+        for domain,result in check['domains'].items():
+            reasons = '; '.join(REVIEW_GUIDANCE[r][0] for r in result['reasons'])
+            notes.append(f"- {check['a']} / {check['b']}, {DOMAIN_LABELS[domain]}: "
+                         +(reasons or 'Methodische Voraussetzungen dokumentiert; keine klinische Freigabe.'))
+    notes += ['', '## Naechste Schritte', '']
+    notes += [f"- **{item['label']}:** {item['action']}" for item in data['review_actions']]
+    notes += ['', 'Neue oder korrigierte Quellen ergeben eine neue Einreichungsrevision. '
+              'Die alte Lieferung nicht als weiteren Standort zaehlen. '
+              'Auch bei gleichem Rechenstand bleiben lokale Fallpruefung, '
+              'Fallmix und Freigabe fuer eine Publikation erforderlich.', '']
+    (output/'Pruefhinweise.md').write_text('\n'.join(notes),encoding='utf-8')
     with (output/'Standorte.csv').open('w',newline='',encoding='utf-8-sig') as stream:
         writer = csv.writer(stream,delimiter=';')
         writer.writerow(['Standort','Von','Bis','Domaene','Kennzahl','Wert','Lokal_geprueft'])

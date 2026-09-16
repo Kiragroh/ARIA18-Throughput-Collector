@@ -45,8 +45,28 @@ Der native Test verwendete einen ausdruecklich verkuerzten Kontext, damit kein
 Jahreslauf noetig ist. Er belegt Syntax, Export und Verarbeitung, nicht eine
 vollstaendige Jahreskohorte oder ausreichende Nachbeobachtung.
 
-Abschliessende lokale Testsuite: 135 Tests bestanden in 48,26 Sekunden;
+Testsuite zur Ressourcen- und Fraktionskorrektur: 135 Tests bestanden in 48,26 Sekunden;
 entpacktes Paket einschliesslich Analyse- und Vergleichs-CLI geprueft.
+
+## Weiterer Standortabgleich
+
+Beide bereits vorliegenden Jahresdateien wurden mit demselben Rechen-Fingerprint
+lokal ausgewertet. Die Fraktionskorrektur wirkt an beiden Standorten; bisherige
+Patienten-, Plan- und Aufklaerungskennzahlen sowie Durchsatzverteilungen bleiben
+erhalten. Zusaetzliche Definitionsdiagnostik ist getrennt von der Primaerkohorte.
+
+Der Vergleich prueft nun auch gleiche und bekannte RDL-Exportstaende. Fuer alte
+Ressourcenabfragen bleibt die Vergleichbarkeit selbst nach lokaler Neuberechnung
+eingeschraenkt. Unvollstaendig messbare Geraetetage werden als Einschraenkung der
+freien Zeit ausgewiesen, statt eine Teilmenge als Jahresauslastung zu deuten.
+
+Die Herkunftstabelle und Pruefhinweise wurden mit dem Zwei-Standorte-Abgleich
+sowie sechs synthetischen Standorten und 15 Paarpruefungen getestet. Die
+Browserpruefung umfasst Offlinebetrieb, drei Zeitmodelle, Quartals-/Monatsansicht,
+Diagrammvergroesserung, alle vier Bereiche sowie Desktop/Mobil und Hell/Dunkel.
+Erweiterte lokale Testsuite: 143 Tests bestanden in 48,28 Sekunden.
+Diese technische Pruefung bestaetigt keine klinische Vollstaendigkeit und ist
+kein Nachweis fuer die Ausfuehrbarkeit an weiteren, unbekannten Standorten.
 
 ## Grenzen und erneuter Export
 

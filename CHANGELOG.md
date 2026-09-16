@@ -2,6 +2,13 @@
 
 ## Noch nicht veroeffentlicht
 
+- Standortvergleich prueft auch den tatsaechlichen RDL-Exportstand: unterschiedliche,
+  unbekannte oder bekannte alte Ressourcenabfragen werden nicht durch eine gleiche
+  Python-Version als vergleichbar behandelt. Herkunftstabelle und automatisch
+  erzeugte Pruefhinweise unterscheiden Neuberechnung, Profilpruefung und Neuabfrage.
+- Bei fehlenden Besuchsintervallen bleibt freie Zeit auf vollstaendig messbare
+  Geraetetage beschraenkt und wird pro Abschnitt/Modell entsprechend gekennzeichnet;
+  keine Hochrechnung dieser Teilmenge als gesamte Jahresauslastung.
 - rc.6-Arbeitsstand: patientenlose Paralleltermine bleiben pro Geraet getrennt;
   geloeschte/stornierte Ressourcen erzeugen keine kuenstliche Mehrdeutigkeit.
   Hauptabfrage und Pruefinventar verwenden dieselbe Ressourcenlogik, das Inventar

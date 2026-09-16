@@ -40,6 +40,8 @@ Ausgaben:
 - `Vergleich.json`: explizit ausgewaehlte Aggregate und Vergleichspruefungen.
 - `Standorte.csv`: Gesamtzahlen je Standort und Bereich.
 - `Perioden.csv`: Durchsatzkennzahlen mit exakten Nennern je Zeitraum/Modell.
+- `Pruefhinweise.md`: tatsaechlicher RDL-/Rechenstand, Quelleninventar und
+  konkrete naechste Schritte zu den gefundenen Vergleichshindernissen.
 
 Originale Geraete- und Ausstattungsnamen werden nicht uebernommen; fuer
 Bildobjekte bleiben neutrale Geraete und Ausstattungsepochen getrennt.
@@ -50,7 +52,9 @@ nicht automatisch anonym oder fuer eine Veroeffentlichung geeignet.
 
 ## Was vor einem fachlichen Vergleich gelten muss
 
-- Gleicher Beobachtungszeitraum, Exportvertrag und Rechenstand.
+- Gleicher Beobachtungszeitraum, Exportvertrag, RDL-Exportstand und Rechenstand.
+  Die RDL-Version ist unabhaengig von der Python-Version. Neu berechnete
+  Aggregate aus unterschiedlichen oder unbekannten Abfragen bleiben deskriptiv.
 - Gleiche relevante Recheneinstellungen und Bibliotheksversionen.
 - Dokumentierte Datenfelder und Quellenverfuegbarkeit. Das Verfahren prueft
   konservativ: Auch optionale Unterschiede koennen einen Pruefpunkt ausloesen.
@@ -72,6 +76,21 @@ deskriptiv. Herkunftsangaben nicht manuell erfinden: Mit der aktuellen Analyse
 aus dem vorhandenen Export neu berechnen. Ein erneuter RDL-Lauf ist dafuer
 nicht notwendig, sofern der Export die benoetigten Daten bereits enthaelt.
 
+**Bekannte Ausnahme: Ressourcenabgleich vor rc.6.** Die RDL-Staende rc.1 bis
+rc.5 koennen patientenlose Paralleltermine zusammenfassen und durch inaktive
+Ressourcen mehrdeutige Geraete erzeugen. Diese verlorenen Quellzuordnungen kann
+eine aktuelle Python-Auswertung nicht rekonstruieren. Fuer den vollstaendigen
+Standortvergleich ist dafuer ein neuer Export mit demselben geprueften RDL ab
+rc.6 erforderlich. Die alten Zahlen bleiben sichtbar, aber nicht als methodisch
+freigegebener Vergleich. Die Version nicht manuell in Metadaten aendern.
+
+Die Tabelle **Export- und Rechenstand** macht diese Unterschiede je Standort
+sichtbar. **Offene Voraussetzungen und naechste Schritte** und die Datei
+`Pruefhinweise.md` unterscheiden eine lokale Neuberechnung von einer notwendigen
+Neuabfrage. Eine reine Ereignis-CSV belegt kein Quelleninventar; fuer die
+Teilnahme deshalb den Full Collector als Excel mit Prueftabellen verwenden.
+Die Zahl verfuegbarer Quellenfelder ist kein Nachweis fachlicher Vollstaendigkeit.
+
 ## Was die Zahlen nicht bedeuten
 
 Patienten werden weder ueber Zeitabschnitte noch ueber Standorte addiert.
@@ -81,7 +100,11 @@ die echte Ueberlappung geteilt durch die zugehoerigen gebuchten Minuten.
 Behandlungsdauer geteilt durch Slotdauer ist eine andere Kennzahl.
 
 Fehlende Werte bleiben leer, nicht Null. Freie Zeit setzt vollstaendige
-Intervalle des beobachteten Geraetetages voraus. Bildobjekte sind nicht ohne
+Intervalle des beobachteten Geraetetages voraus. Sobald Geraetetage wegen
+fehlender Intervalle entfallen, wird diese Einschraenkung pro Abschnitt und
+Zeitmodell ausgewiesen. Freie Stunden und Anteile gelten dann nur fuer die
+vollstaendig messbaren Tage, nicht als Jahresauslastung oder Hochrechnung.
+Bildobjekte sind nicht ohne
 weitere Pruefung Aufnahmevorgaenge; Exposition ist nicht die gesamte
 Bildgebungszeit. Unterschiede koennen durch Fallmix, Fraktionierung,
 Organisation, Hardware, Zuordnungen oder Datenluecken entstehen.

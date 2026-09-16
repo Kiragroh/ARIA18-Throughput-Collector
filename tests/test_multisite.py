@@ -9,11 +9,11 @@ def site(index=1):
     from analysis.provenance import CALCULATION_SETTINGS
     from analysis.contracts import Profile
     profile = Profile()
-    return dict(version="2.0.0-rc.4", site=f"Private clinic {index}",
+    return dict(version="2.0.0-rc.6", site=f"Private clinic {index}",
         start="2025-01-01", end="2025-12-31", data_through="2026-04-01",
         provenance=dict(schema=1, export_sha256=hashlib.sha256(str(index).encode()).hexdigest(),
             run_sha256=hashlib.sha256(f"run-{index}".encode()).hexdigest(),
-            analysis_sha256="a"*64, collector_release="2.0.0-rc.4", contract_version="2.0",
+            analysis_sha256="a"*64, collector_release="2.0.0-rc.6", contract_version="2.0",
             context_start="2024-01-01", settings={k:getattr(profile,k) for k in CALCULATION_SETTINGS},
             fields=["source", "event_start", "event_end", "activity_start", "activity_end", "completed",
                     "plan_key", "fraction", "time_source", "patient_class", "resource_status",
@@ -67,6 +67,69 @@ def test_incompatible_inputs_are_not_silently_joined(change, reason):
     check = result["checks"][0]["domains"]["throughput"]
     assert not check["compatible"] and reason in check["reasons"]
     assert len(result["periods"]) == 2
+
+
+def test_same_analysis_does_not_hide_different_collector_semantics():
+    a,b = site(1),site(2)
+    b["provenance"]["collector_release"] = "2.0.0-rc.7"
+    result = compare({"A":a,"B":b})
+    for domain in result["checks"][0]["domains"].values():
+        assert "collector_mismatch" in domain["reasons"]
+        assert not domain["compatible"]
+
+
+@pytest.mark.parametrize("release", [None, "", "unknown", "not-a-release"])
+def test_unknown_collectors_are_not_accepted_even_when_identical(release):
+    a,b = site(1),site(2)
+    for data in [a,b]:
+        data["provenance"]["collector_release"] = release
+    check = compare({"A":a,"B":b})["checks"][0]["domains"]["throughput"]
+    assert "collector_missing" in check["reasons"]
+    assert not check["compatible"]
+
+
+def test_known_old_resource_query_stays_descriptive_after_reanalysis():
+    a,b = site(1),site(2)
+    for data in [a,b]:
+        data["provenance"]["collector_release"] = "2.0.0-rc.4"
+    result = compare({"A":a,"B":b})
+    assert "collector_resources_legacy" in result["checks"][0]["domains"]["throughput"]["reasons"]
+    assert result["sites"][0]["population"]["patients"] == 100
+
+
+def test_comparison_exposes_source_audit_and_actionable_notes_without_private_text(tmp_path):
+    from analysis.compare import write_outputs
+    a,b = site(1),site(2)
+    a["provenance"]["collector_release"] = "2.0.0-rc.4"
+    b["provenance"]["capabilities"] = []
+    a["notes"] = ["PRIVATE-SOURCE-PATH"]
+    result = compare({"A":a,"B":b})
+    audit = result["sites"][0]
+    assert audit["collector_release"] == "2.0.0-rc.4"
+    assert audit["context_start"] == "2024-01-01"
+    assert audit["capability_count"] == 1
+    assert audit["available_capability_count"] == 1
+    assert result["sites"][1]["capability_count"] == 0
+    write_outputs(result,tmp_path)
+    notes = (tmp_path/"Pruefhinweise.md").read_text(encoding="utf-8")
+    assert "RDL" in notes and "Excel" in notes and "Quelleninventar" in notes
+    assert "PRIVATE-SOURCE-PATH" not in notes
+    assert "2.0.0-rc.4" in notes and "2.0.0-rc.6" in notes
+    assert "profile_unconfirmed" not in notes
+
+
+def test_missing_intervals_keep_free_time_explicitly_limited_to_complete_days():
+    result = compare({"A":site(1),"B":site(2)})
+    period = result["periods"][0]
+    assert "incomplete_device_days" in period["reasons"]
+    assert period["kpi"]["free_hours"] == 250
+    assert period["kpi"]["complete_device_days"] == 195
+    assert period["kpi"]["incomplete_device_days"] == 5
+    assert any(item["reason"] == "incomplete_device_days" for item in result["review_actions"])
+    a,b = site(1),site(2)
+    for data in [a,b]:
+        data["periods"]["year"]["activity"][0]["groups"][0]["kpi"]["incomplete_device_days"] = 0
+    assert all("incomplete_device_days" not in p["reasons"] for p in compare({"A":a,"B":b})["periods"])
 
 
 def test_flow_followup_and_imaging_source_have_separate_gates():
