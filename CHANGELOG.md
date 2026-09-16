@@ -2,6 +2,11 @@
 
 ## Noch nicht veroeffentlicht
 
+- Collector rc.7: Quellenverfuegbarkeit prueft Schema und effektive SELECT-Rechte
+  je Spalte. Bildobjektfelder stehen im Inventar; fehlende Abschlusshistorie wird
+  als nicht verfuegbar statt als dokumentierte Null ausgewiesen. Optionale Quellen
+  blockieren nicht den gesamten Ereignisexport. Lokales Profilformular uebernimmt
+  Zeitraum und Standort aus dem Export und erklaert fehlende Leserechte.
 - Zeitmessung kann unbekannte Terminbezeichnungen bei eindeutigem technischem
   R&V-Nachweis und vollstaendig umschliessendem dokumentiertem Aktivitaetsintervall
   zuordnen. Deklarierte Termine haben Vorrang; Mehrdeutigkeiten bleiben offen.

@@ -131,4 +131,13 @@ Andere Teilnehmende haben keinen Zugriff. Lokale Freigaben bleiben erforderlich.
 Die fachliche Quellenpruefung erfolgt bei der Auswertung: Ein vollstaendiger
 Datenstand ist nur fuer die belastbare Quote ohne spaeteren Behandlungsbeginn
 erforderlich, nicht fuer den Export oder alle anderen berechenbaren Kennzahlen.
+
+Falls der Bericht `EVENTS_UNAVAILABLE_CHECK_CAPABILITIES` meldet, ist das keine
+Null-Patienten-Auswertung. Bitte die erzeugte Excel mit dem Begleit-JSON
+einreichen. Im Blatt `01_Capabilities` steht, welche Pflichtquelle fehlt; neuere
+Collector-Versionen unterscheiden dabei sichtbare Spalten und SELECT-Leserechte.
+Fehlende optionale Historien- oder Bildquellen sind separat markiert und muessen
+nicht den gesamten Export verhindern. Keine Datenbankrechte selbst aendern;
+bei Bedarf mit der lokalen ARIA-Administration klaeren.
+
 [Lokale Auswertung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/blob/main/docs/v2/START.md)

@@ -4,29 +4,33 @@ FIELDS = ["contract_version", "run_id", "source", "event_key", "patient_key", "c
           "image_kind", "image_seconds", "image_class_evidence", "image_time_source"]
 TABLE = "DWH.FactPatientImage"
 REQUIRED = ("DimPatientID", "DimMachineID", "ImageCreationDate")
+COLUMNS = {"DimPatientID": "bigint", "DimMachineID": "bigint", "ImageCreationDate": "datetime2",
+           "DimCourseID": "bigint", "ctrImageSer": "bigint", "FactPatientImageID": "bigint",
+           "ImageId": "nvarchar(255)", "ImageType": "nvarchar(255)", "ExposureTime": "float"}
 
 
 def missing():
+    try:
+        from .build_collector_v2 import column_available
+    except ImportError:
+        from build_collector_v2 import column_available
     columns = [(TABLE,c) for c in REQUIRED] + [
         ("DWH.DimPatient","DimPatientID"),("DWH.DimPatient","IsMOTestPatient"),
         ("DWH.DimMachine","DimMachineID"),("DWH.DimMachine","MachineId")]
-    return " OR ".join(f"COL_LENGTH(N'{table}',N'{c}') IS NULL" for table,c in columns)
+    return " OR ".join("NOT "+column_available(table,c) for table,c in columns)
 
 
 def query():
     try:
-        from .build_collector_v2 import stage, lit
+        from .build_collector_v2 import stage, lit, column_available
     except ImportError:
-        from build_collector_v2 import stage, lit
-    optional = {
-        "DimCourseID": "bigint", "ctrImageSer": "bigint", "FactPatientImageID": "bigint",
-        "ImageId": "nvarchar(255)", "ImageType": "nvarchar(255)", "ExposureTime": "float"}
-    columns = {"DimPatientID": "bigint", "DimMachineID": "bigint", "ImageCreationDate": "datetime2", **optional}
+        from build_collector_v2 import stage, lit, column_available
+    columns = COLUMNS
     expressions = []
     for column, dtype in columns.items():
         present = lit(f"TRY_CONVERT({dtype},s.[{column}])")
         expressions.append(present if column in REQUIRED else
-            f"CASE WHEN COL_LENGTH(N'{TABLE}',N'{column}') IS NOT NULL THEN {present} ELSE {lit('CAST(NULL AS '+dtype+')')} END")
+            f"CASE WHEN {column_available(TABLE,column)} THEN {present} ELSE {lit('CAST(NULL AS '+dtype+')')} END")
     result = "SET NOCOUNT ON;\nIF @IncludePseudonymizedDetails=0 OR " + missing() + "\nBEGIN SELECT " + ",".join(
         f"CAST(NULL AS nvarchar(255)) AS [{f}]" for f in FIELDS) + " WHERE 1=0; RETURN; END;\n"
     result += stage("Patient") + stage("Machine")

@@ -242,6 +242,34 @@ abgeleitet. Vergleiche sind deskriptiv, nicht fallmixadjustiert oder kausal.
 
 ## Technische Grenzen
 
+Ab Collector rc.7 bedeutet `Capabilities.available`: Die Spalte ist in den
+Metadaten sichtbar und fuer das ausfuehrende Datenbankkonto lesbar. Zusaetzlich
+werden `schema_available` und `select_allowed` getrennt ausgegeben. Metadaten
+koennen selbst durch Berechtigungen unsichtbar sein; `schema_available=0` ist
+deshalb nicht automatisch der Nachweis, dass die Spalte nicht existiert.
+Die effektiven SELECT-Rechte werden pro Spalte geprueft, nicht pauschal anhand
+einer Benutzerrolle. Siehe [Microsoft: HAS_PERMS_BY_NAME](https://learn.microsoft.com/en-us/sql/t-sql/functions/has-perms-by-name-transact-sql).
+
+Pflichtfelder und mindestens ein lesbarer MU-/Dosisnachweis sind Voraussetzung
+fuer Ereignisse. Fehlen sie, bleibt der kombinierte Report als Quellenpruefung
+ausfuehrbar; Metadaten melden `EVENTS_UNAVAILABLE_CHECK_CAPABILITIES`. Daraus
+entsteht keine Analyse mit Null Patienten. Optionale Spalten werden typisiert
+leer geliefert, nicht als Nullmessung. Fehlende Historien-Schluessel deaktivieren
+die davon abhaengigen Diagnosen mit `SOURCE_UNAVAILABLE`. Fehlende Bildobjekte
+deaktivieren nur die Zusatzquelle, nicht vorhandene technische Therapieereignisse.
+
+`DWH.FactPatientImage` ist als optionale Quelle mit allen abgefragten Spalten im
+Inventar enthalten. Nicht vorhandene Plan-/Zeit-/Bildfelder begrenzen die jeweils
+betroffenen Kennzahlen. Vorhandene Leserechte belegen weder vollstaendige
+Dokumentation noch einen aktuellen DWH-Datenstand. Die Rechtepruefung ersetzt
+keine lokale Funktionspruefung; Sonderfaelle wie fehlerhafte Views bleiben moeglich.
+
+Das lokale Profilformular uebernimmt den Auswertungszeitraum aus den
+Exportmetadaten, auch beim Wiederverwenden einer vorhandenen Codezuordnung.
+Eine bisherige Quellenfreigabe wird nicht automatisch auf einen neuen Export
+uebertragen. Einreichende benoetigen unveraendert nur Excel und Begleit-JSON;
+das technische Profil dient der lokalen Auswertung.
+
 SSRS-Abfragezeit und Berichtslaufzeit sind getrennte Grenzen; der Ereignisexport
 hat einen begrenzten Abfrage-Timeout. Siehe
 [Microsoft: Berichtstimeouts](https://learn.microsoft.com/en-us/sql/reporting-services/report-server/setting-time-out-values-for-report-and-shared-dataset-processing-ssrs?view=sql-server-ver17).

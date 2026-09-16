@@ -34,6 +34,7 @@ def manifest(analysis=True):
             'Analyse/docs/AG_PROJEKT.md': 'docs/v2/AG_PROJEKT.md',
             'Analyse/docs/STANDORTVERGLEICH.md': 'docs/v2/STANDORTVERGLEICH.md',
             'Analyse/docs/VALIDIERUNG_RC6.md': 'docs/v2/VALIDIERUNG_RC6.md',
+            'Analyse/docs/VALIDIERUNG_RC7.md': 'docs/v2/VALIDIERUNG_RC7.md',
         })
         for pattern in ('*.py', '*.html'):
             for path in sorted((ROOT / 'analysis').glob(pattern)):

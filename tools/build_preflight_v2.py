@@ -2,17 +2,18 @@
 import xml.etree.ElementTree as ET
 try:
     from . import build_rdl as layout
-    from .build_collector_v2 import build,NS,SOURCES,stage,appointment_device_ctes
+    from .build_collector_v2 import build,NS,SOURCES,STAGE_KEYS,column_available,stage,appointment_device_ctes
 except ImportError:
     import build_rdl as layout
-    from build_collector_v2 import build,NS,SOURCES,stage,appointment_device_ctes
+    from build_collector_v2 import build,NS,SOURCES,STAGE_KEYS,column_available,stage,appointment_device_ctes
 
 
 def guarded(names,fields,query):
     missing=[]
     for name in names:
         table,columns=SOURCES[name]
-        missing.extend(f"COL_LENGTH(N'{table}',N'{c}') IS NULL" for c,_,required in columns if required)
+        missing.extend('NOT '+column_available(table,c) for c,_,required in columns
+                       if required or c in STAGE_KEYS.get(name,()))
     empty=', '.join(("N'SOURCE_UNAVAILABLE'" if f=='source_state' else 'CAST(NULL AS nvarchar(255))')+' AS ['+f+']' for f in fields)
     return 'SET NOCOUNT ON;\nIF '+ ' OR '.join(missing)+'\nBEGIN SELECT '+empty+'; RETURN; END;\n'+query
 
@@ -110,8 +111,8 @@ WHERE t.type IN ('U','V') AND s.name=N'DWH' AND (c.name LIKE N'%Version%' OR t.n
     return {
         'AppointmentInventory':(guarded(['Patient','Activity','Machine','Appointment'],af,appointment),af),
         'MachineInventory':(guarded(['Patient','Machine','Treatment'],mf,machine),mf),
-        'HistoryStatusInventory':(guarded(['Patient','Appointment'],hf,history),hf),
-        'CompletionDiagnostics':(guarded(['Patient','Appointment'],cf,completion),cf),
+        'HistoryStatusInventory':(guarded(['Patient','Appointment','History'],hf,history),hf),
+        'CompletionDiagnostics':(guarded(['Patient','Appointment','History'],cf,completion),cf),
         'VersionInfo':(versions,vf)}
 
 

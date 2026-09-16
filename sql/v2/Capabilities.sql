@@ -1,4 +1,4 @@
-SELECT N'2.0' AS contract_version, source_name, column_name, is_required, CASE WHEN COL_LENGTH(source_name,column_name) IS NULL THEN 0 ELSE 1 END AS available FROM (VALUES (N'DWH.DimPatient',N'DimPatientID',1),
+SELECT N'2.0' AS contract_version, source_name, column_name, is_required, CASE WHEN COL_LENGTH(source_name,column_name) IS NOT NULL AND COALESCE(HAS_PERMS_BY_NAME(source_name,N'OBJECT',N'SELECT',column_name,N'COLUMN'),0)=1 THEN 1 ELSE 0 END AS available, CASE WHEN COL_LENGTH(source_name,column_name) IS NULL THEN 0 ELSE 1 END AS schema_available, COALESCE(HAS_PERMS_BY_NAME(source_name,N'OBJECT',N'SELECT',column_name,N'COLUMN'),0) AS select_allowed FROM (VALUES (N'DWH.DimPatient',N'DimPatientID',1),
 (N'DWH.DimPatient',N'IsMOTestPatient',1),
 (N'DWH.DimPatient',N'PatientId',0),
 (N'DWH.DimPatient',N'PatientLastName',0),
@@ -47,4 +47,13 @@ SELECT N'2.0' AS contract_version, source_name, column_name, is_required, CASE W
 (N'DWH.InSightiveResourceMachine',N'MachineId',0),
 (N'DWH.DimActivityTransactionHistory',N'DimActivityTransactionID',0),
 (N'DWH.DimActivityTransactionHistory',N'ScheduledActivityHstryDateTime',0),
-(N'DWH.DimActivityTransactionHistory',N'ScheduledActivityCode',0)) v(source_name,column_name,is_required) UNION ALL SELECT N'2.0',N'DWH.FactTreatmentHistory',N'delivery_evidence_any_of_MU_or_dose',1,CASE WHEN COL_LENGTH(N'DWH.FactTreatmentHistory',N'DeliveredMU') IS NULL AND COL_LENGTH(N'DWH.FactTreatmentHistory',N'FieldMUActual') IS NULL AND COL_LENGTH(N'DWH.FactTreatmentHistory',N'DoseDelivered') IS NULL THEN 0 ELSE 1 END;
+(N'DWH.DimActivityTransactionHistory',N'ScheduledActivityCode',0),
+(N'DWH.FactPatientImage',N'DimPatientID',0),
+(N'DWH.FactPatientImage',N'DimMachineID',0),
+(N'DWH.FactPatientImage',N'ImageCreationDate',0),
+(N'DWH.FactPatientImage',N'DimCourseID',0),
+(N'DWH.FactPatientImage',N'ctrImageSer',0),
+(N'DWH.FactPatientImage',N'FactPatientImageID',0),
+(N'DWH.FactPatientImage',N'ImageId',0),
+(N'DWH.FactPatientImage',N'ImageType',0),
+(N'DWH.FactPatientImage',N'ExposureTime',0)) v(source_name,column_name,is_required) UNION ALL SELECT N'2.0',N'DWH.FactTreatmentHistory',N'delivery_evidence_any_of_MU_or_dose',1,CASE WHEN NOT (COL_LENGTH(N'DWH.FactTreatmentHistory',N'DeliveredMU') IS NOT NULL AND COALESCE(HAS_PERMS_BY_NAME(N'DWH.FactTreatmentHistory',N'OBJECT',N'SELECT',N'DeliveredMU',N'COLUMN'),0)=1) AND NOT (COL_LENGTH(N'DWH.FactTreatmentHistory',N'FieldMUActual') IS NOT NULL AND COALESCE(HAS_PERMS_BY_NAME(N'DWH.FactTreatmentHistory',N'OBJECT',N'SELECT',N'FieldMUActual',N'COLUMN'),0)=1) AND NOT (COL_LENGTH(N'DWH.FactTreatmentHistory',N'DoseDelivered') IS NOT NULL AND COALESCE(HAS_PERMS_BY_NAME(N'DWH.FactTreatmentHistory',N'OBJECT',N'SELECT',N'DoseDelivered',N'COLUMN'),0)=1) THEN 0 ELSE 1 END,CASE WHEN COL_LENGTH(N'DWH.FactTreatmentHistory',N'DeliveredMU') IS NULL AND COL_LENGTH(N'DWH.FactTreatmentHistory',N'FieldMUActual') IS NULL AND COL_LENGTH(N'DWH.FactTreatmentHistory',N'DoseDelivered') IS NULL THEN 0 ELSE 1 END,CASE WHEN COALESCE(HAS_PERMS_BY_NAME(N'DWH.FactTreatmentHistory',N'OBJECT',N'SELECT',N'DeliveredMU',N'COLUMN'),0)=1 OR COALESCE(HAS_PERMS_BY_NAME(N'DWH.FactTreatmentHistory',N'OBJECT',N'SELECT',N'FieldMUActual',N'COLUMN'),0)=1 OR COALESCE(HAS_PERMS_BY_NAME(N'DWH.FactTreatmentHistory',N'OBJECT',N'SELECT',N'DoseDelivered',N'COLUMN'),0)=1 THEN 1 ELSE 0 END;

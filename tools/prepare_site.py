@@ -1,5 +1,6 @@
 """Create a local offline profile form from the aggregate preflight workbook."""
 import argparse
+from datetime import datetime
 import json
 from pathlib import Path
 import sys
@@ -39,6 +40,16 @@ def create(path,output,existing=None):
     tables=read_preflight(path)
     profile=Profile().as_dict() if existing is None else Profile(**json.loads(existing.read_text(encoding='utf-8-sig'))).as_dict()
     profile['confirmed']=False;profile['sources_complete']=False;profile['complete_through']=''
+    metadata=tables['Metadata'][0]
+    for field,key in [('period_start','start'),('period_end','end')]:
+        if metadata.get(field) is not None:
+            profile[key]=datetime.fromisoformat(str(metadata[field])).date().isoformat()
+    site=str(metadata.get('site') or '').strip()
+    if site.casefold() not in {'','standort','\u00e4ndere mich','aendere mich'}:
+        profile['site']=site
+    if metadata.get('period_reason') is not None:
+        profile['period_reason']=str(metadata['period_reason'])
+    Profile(**profile)
     uses={}
     statuses=set()
     for row in tables['AppointmentInventory']:
@@ -51,8 +62,16 @@ def create(path,output,existing=None):
                 for r in tables['ActivityCatalog'] if r.get('activity_code')]
     machines=sorted({str(r['machine']) for key in ['MachineInventory','AppointmentInventory'] for r in tables[key]
                      if r.get('machine') and r['machine'] not in {'UNMAPPED','AMBIGUOUS_DEVICE'}})
-    missing=[dict(source=r.get('source_name'),column=r.get('column_name'),required=str(r.get('is_required')) in {'1','True'})
-             for r in tables['Capabilities'] if str(r.get('available')) not in {'1','True'}]
+    def flag(value):
+        return str(value).casefold() in {'1','1.0','true'}
+    missing=[]
+    for row in tables['Capabilities']:
+        if flag(row.get('available')):
+            continue
+        reason=('unavailable_legacy' if row.get('schema_available') is None or row.get('select_allowed') is None
+                else 'schema_unavailable' if not flag(row['schema_available']) else 'select_unavailable')
+        missing.append(dict(source=row.get('source_name'),column=row.get('column_name'),
+                            required=flag(row.get('is_required')),reason=reason))
     # Only the allowlisted inventory is embedded, never arbitrary workbook cells.
     data=dict(profile=profile,activities=activities,machines=machines,statuses=sorted(statuses),missing=missing)
     payload=json.dumps(data,ensure_ascii=True).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026')
