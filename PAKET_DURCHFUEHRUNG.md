@@ -1,4 +1,4 @@
-# ARIA Performance: Nur Durchfuehrung 2.0.0-rc.4
+# ARIA Performance: Nur Durchfuehrung 2.0.0-rc.6 (Teststand)
 
 Start: [Durchfuehrung/START_HIER.html](Durchfuehrung/START_HIER.html).
 
@@ -10,10 +10,11 @@ Start: [Durchfuehrung/START_HIER.html](Durchfuehrung/START_HIER.html).
 
 Die [Anleitung](Durchfuehrung/README.md) erklaert Datenquelle, Import und Export.
 Kein Python und kein separater Preflight erforderlich. Standardjahr 2025,
-bislang gegen ARIA 18 getestet. Bestehende rc.2-Exceldateien bleiben verwendbar.
+bislang gegen ARIA 18 getestet. Alte Exceldateien bleiben lesbar; die korrigierte
+Ressourcenaufloesung patientenloser Pausenslots erfordert einen neuen Export.
 
 Dieses Paket enthaelt dieselben Durchfuehrungsdateien wie das
-[Gesamtpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.4/ARIA-Performance_Gesamtpaket.zip),
+[Gesamtpaket derselben Version](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases),
 aber keine Python-Auswertung. Exporte sind pseudonymisiert, nicht anonym:
 nur nach lokaler Freigabe im geschuetzten Projektbereich teilen, niemals auf
 GitHub. Keine klinische Freigabe der Software.

@@ -2,6 +2,13 @@
 
 ## Noch nicht veroeffentlicht
 
+- rc.6-Arbeitsstand: patientenlose Paralleltermine bleiben pro Geraet getrennt;
+  geloeschte/stornierte Ressourcen erzeugen keine kuenstliche Mehrdeutigkeit.
+  Hauptabfrage und Pruefinventar verwenden dieselbe Ressourcenlogik, das Inventar
+  erfasst jetzt auch patientenlose Reservierungen.
+- Externe Termine ohne aufloesbares Geraet mit bereits technischem Tagesnachweis
+  bleiben als Prueffaelle erhalten, zaehlen jedoch nicht als zusaetzliche manuelle
+  Fraktionen. Brachy und historische Therapie bleiben unabhaengig zaehlbar.
 - Lokaler Vergleich von 2 bis 12 aggregierten Standorten mit gruppierten
   Boxplots, drei Zeitmodellen, Population, Patientenfluss und Bildobjekten.
   Getrennte Vergleichbarkeitspruefung und exakte Slot-Nenner; keine Rangliste,

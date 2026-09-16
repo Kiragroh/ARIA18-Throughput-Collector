@@ -60,6 +60,7 @@ mit synthetischem Sechs-Standorte-Test, Pruefkriterien und CSV-Ausgaben.
 ## Interpretation
 
 [Methodik und Nenner](docs/METHODIK.md) | [AG-Projektidee](docs/AG_PROJEKT.md)
+| [Pruefumfang rc.6](docs/VALIDIERUNG_RC6.md)
 
 Aktivitaet ist das Standardmodell. Workflow und Imaging/Beam haben andere
 Zeitanker und duerfen nicht als identische Auslastungsmasse gelesen werden.
@@ -69,9 +70,10 @@ oder unterdrueckt, nicht als Null interpretiert.
 
 Echte Exporte nur auf geschuetztem Speicher verarbeiten. Auch die aggregierten
 Ausgaben vor Weitergabe lokal pruefen. Keine klinischen Daten auf GitHub.
-Pilotversion ohne klinische Freigabe. Der RDL bleibt rc.4; der neue
-Standortvergleich gehoert zum noch nicht veroeffentlichten Analysestand.
-Vorhandene rc.4-Exporte bleiben verwendbar. Neue Herkunftsmetadaten werden
+Pilotversion ohne klinische Freigabe. RDL und Analyse im aktuellen Arbeitsstand
+sind rc.6; die oeffentlichen rc.5-Downloads werden damit noch nicht ersetzt.
+Vorhandene rc.4-Exporte bleiben verwendbar. Die neue Ressourcenaufloesung fuer
+patientenlose Slots erfordert jedoch einen neuen Export. Neue Herkunftsmetadaten werden
 nur bei einer echten lokalen Neuberechnung erzeugt, nicht nachgetragen.
 Patienten, Fraktionen, bestrahlte Plaene und aus erster Bestrahlung abgeleitete
 Neueinstellungen werden zusaetzlich ausgewiesen. Die Vorjahrespopulation und

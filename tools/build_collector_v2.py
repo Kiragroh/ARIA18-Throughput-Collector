@@ -9,6 +9,7 @@ except ImportError:
     import build_rdl as layout
 
 ROOT = Path(__file__).resolve().parents[1]
+COLLECTOR_RELEASE = '2.0.0-rc.6'
 NS = {"r":"http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition"}
 PARAMETERS = {
     "PeriodStart":("DateTime",'=DateSerial(2025, 1, 1)',"Auswertung von"),
@@ -130,6 +131,31 @@ def source_gaps():
     return " OR ".join(required+["("+delivery_evidence_missing()+")"])
 
 
+def appointment_device_ctes():
+    # Patientless reservations at the same time are independent per resource.
+    return """resource_map AS (
+ SELECT DISTINCT a.DimActivityTransactionID, m.MachineId
+ FROM #Appointment a
+ JOIN #Resource r ON r.ctrResourceSer=a.ctrResourceSer
+ JOIN #Machine m ON m.MachineId=r.ResourceId
+ WHERE COALESCE(a.AppointmentResourceStatus,N'') NOT IN (N'Deleted',N'Cancelled')
+ UNION
+ SELECT DISTINCT a.DimActivityTransactionID, m.MachineId
+ FROM #Appointment a
+ JOIN #ResourceMachine r ON r.DimResourceID=a.DimResourceID
+ JOIN #Machine m ON m.MachineId=r.MachineId
+ WHERE COALESCE(a.AppointmentResourceStatus,N'') NOT IN (N'Deleted',N'Cancelled')
+), appointment_devices AS (
+ SELECT a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,
+ CASE WHEN COALESCE(a.DimPatientID,0)<=0 THEN a.DimActivityTransactionID END AS standalone_id,
+ CASE WHEN COUNT(DISTINCT r.MachineId)=1 THEN MIN(r.MachineId)
+      WHEN COUNT(DISTINCT r.MachineId)>1 THEN N'AMBIGUOUS_DEVICE' ELSE N'' END AS machine
+ FROM #Appointment a LEFT JOIN resource_map r ON r.DimActivityTransactionID=a.DimActivityTransactionID
+ GROUP BY a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,
+ CASE WHEN COALESCE(a.DimPatientID,0)<=0 THEN a.DimActivityTransactionID END
+)"""
+
+
 def event_sql():
     guard = """
 SET NOCOUNT ON;
@@ -178,23 +204,7 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
  CASE WHEN COUNT(DISTINCT NoFractionsPlanned)=1 THEN MAX(NoFractionsPlanned) END AS planned_fractions,
  MIN(FirstDayOfTreatment) AS first_treatment,MAX(LastDayOfTreatment) AS last_treatment
  FROM #Plan GROUP BY DimPlanID
-), resource_map AS (
- SELECT DISTINCT a.DimActivityTransactionID, m.MachineId
- FROM #Appointment a
- JOIN #Resource r ON r.ctrResourceSer=a.ctrResourceSer
- JOIN #Machine m ON m.MachineId=r.ResourceId
- UNION
- SELECT DISTINCT a.DimActivityTransactionID, m.MachineId
- FROM #Appointment a
- JOIN #ResourceMachine r ON r.DimResourceID=a.DimResourceID
- JOIN #Machine m ON m.MachineId=r.MachineId
-), appointment_devices AS (
- SELECT a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,
- CASE WHEN COUNT(DISTINCT r.MachineId)=1 THEN MIN(r.MachineId)
-      WHEN COUNT(DISTINCT r.MachineId)>1 THEN N'AMBIGUOUS_DEVICE' ELSE N'' END AS machine
- FROM #Appointment a LEFT JOIN resource_map r ON r.DimActivityTransactionID=a.DimActivityTransactionID
- GROUP BY a.DimPatientID,a.DimActivityID,a.AppointmentDateTime
-), events AS (
+), """+appointment_device_ctes()+""", events AS (
  SELECT
  CASE WHEN t.IsImage=1 THEN N'imaging' ELSE N'delivery' END AS source,
  CONCAT(N'T:',t.DimPatientID,N':',t.DimCourseID,N':',t.DimPlanID,N':',t.DimFieldID,N':',
@@ -225,7 +235,9 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
                            OR COALESCE(t.FieldMUActual,0)>0 OR COALESCE(t.DoseDelivered,0)>0)
  UNION ALL
  SELECT N'appointment',
- CONCAT(N'A:',a.DimPatientID,N':',a.DimActivityID,N':',CONVERT(nvarchar(33),a.AppointmentDateTime,126)),
+ CONCAT(N'A:',a.DimPatientID,N':',a.DimActivityID,N':',CONVERT(nvarchar(33),a.AppointmentDateTime,126),
+   CASE WHEN COALESCE(a.DimPatientID,0)<=0 THEN CONCAT(N':R:',r.machine,
+     CASE WHEN COALESCE(r.machine,N'') IN (N'',N'AMBIGUOUS_DEVICE') THEN CONCAT(N':',a.DimActivityTransactionID) END) END),
  a.DimPatientID,CAST(NULL AS bigint),CAST(NULL AS bigint),COALESCE(r.machine,N''),
  a.AppointmentDateTime,a.ScheduledEndTime,CAST(NULL AS int),act.ActivityCode,
  a.AppointmentStatus,0,
@@ -243,6 +255,7 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
  LEFT JOIN #Patient p ON p.DimPatientID=a.DimPatientID
  LEFT JOIN appointment_devices r ON (r.DimPatientID=a.DimPatientID OR (r.DimPatientID IS NULL AND a.DimPatientID IS NULL))
   AND r.DimActivityID=a.DimActivityID AND r.AppointmentDateTime=a.AppointmentDateTime
+  AND (a.DimPatientID>0 OR r.standalone_id=a.DimActivityTransactionID)
  OUTER APPLY (
   SELECT MIN(h.ScheduledActivityHstryDateTime) AS completed,COUNT(DISTINCT h.ScheduledActivityHstryDateTime) AS candidate_count
   FROM #History h WHERE h.DimActivityTransactionID=a.DimActivityTransactionID
@@ -267,7 +280,9 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
  CASE WHEN COUNT(DISTINCT completed)<=1 THEN MIN(completed) END AS completed,
  time_source,MAX(completion_candidates) AS completion_candidates,COUNT_BIG(*) AS source_rows,
  MAX(activity_name) AS activity_name,MAX(activity_category) AS activity_category,
- MIN(milestone_time) AS milestone_time,MIN(resource_status) AS resource_status,
+ MIN(milestone_time) AS milestone_time,
+ COALESCE(MIN(CASE WHEN resource_status NOT IN (N'Cancelled',N'Deleted') THEN resource_status END),
+          MIN(resource_status)) AS resource_status,
  MAX(patient_class) AS patient_class,
  CASE WHEN COUNT(DISTINCT planned_fractions)=1 THEN MAX(planned_fractions) END AS planned_fractions,
  MIN(plan_first_treatment) AS plan_first_treatment,MAX(plan_last_treatment) AS plan_last_treatment
@@ -303,7 +318,7 @@ def build(include_inventory=True):
         "@PeriodStart AS period_start,@PeriodEnd AS period_end,@PeriodReason AS period_reason,"
         "@ContextStart AS context_start,@DataThrough AS data_through,"
         "@DataThroughConfirmed AS data_through_confirmed,@IncludePseudonymizedDetails AS details_included,"
-        "N'2.0.0-rc.4' AS collector_release,N'18' AS tested_aria_major,N'NOT_DETECTED_FROM_DWH' AS aria_version_status,"
+        f"N'{COLLECTOR_RELEASE}' AS collector_release,N'18' AS tested_aria_major,N'NOT_DETECTED_FROM_DWH' AS aria_version_status,"
         "1 AS comparison_population_complete,"
         "CASE WHEN "+image_adapter.missing()+" THEN N'UNAVAILABLE' ELSE N'AVAILABLE' END AS image_objects_state,"
         "CASE WHEN "+source_gaps()+" THEN N'EVENTS_UNAVAILABLE_CHECK_CAPABILITIES' ELSE N'READY' END AS collection_state;",

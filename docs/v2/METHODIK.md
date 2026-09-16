@@ -111,6 +111,23 @@ aus genau einem technisch belegten Tagesgeraet derselben Person aufgeloest werde
 Die Zahl dieser Zuordnungen bleibt sichtbar. Bei mehreren tatsaechlichen Geraeten
 bleibt die Zuordnung ungeklaert. Brachy und historische Therapien werden dadurch
 nicht einem LINAC zugeschlagen.
+Ein externer Therapietermin ohne aufloesbares Geraet beweist am selben Tag wie
+eine technisch belegte externe Bestrahlung keine **zusaetzliche** Fraktion.
+Er bleibt als Behandlungsnachweis und Prueffall erhalten, wird aber nicht noch
+einmal als manuelle Fraktion addiert. Der Kontextzaehler weist dies gesondert
+aus. Andere bestaetigte Modalitaeten, insbesondere Brachy und historische
+Therapie ohne R&V, bleiben getrennt zaehlbar. Eine wirklich zusaetzliche
+Anwendung benoetigt einen eigenen belastbaren Nachweis.
+
+Ab Collector rc.6 werden patientenlose Reservierungen bei der Ressourcenauflosung
+zunaechst nach Quelltransaktion getrennt. Erst nach eindeutiger Geraetezuordnung
+werden gleiche Slots desselben Geraets zusammengefuehrt. Parallele Pausen
+mehrerer Geraete verlieren dadurch nicht ihre Zuordnung. Geloeschte/stornierte
+Ressourcenzuordnungen erzeugen kein zusaetzliches aktuelles Geraet. Das ist
+getrennt vom Stornostatus eines klinischen Termins. Das Terminarteninventar
+enthaelt jetzt auch patientenlose Reservierungen. Bereits in alten Exporten
+verlorene Ressourceninformation kann lokal nicht rekonstruiert werden.
+
 Exakte Aktivitaetsnamen koennen im Profil mehrdeutige Aktivitaetscodes uebersteuern.
 Testnamen und nichtklinische Kennungen werden nur anhand nicht-identifizierender
 Quellflags geprueft. Die numerische Kennungsregel ist standortabhaengig, nicht

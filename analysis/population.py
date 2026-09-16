@@ -33,8 +33,16 @@ def treatment_days(events, profile, data_through):
     manual["evidence"] = "manual"
     manual["fraction"] = None
     result = pd.concat([technical.astype(object), manual.astype(object)], ignore_index=True).infer_objects(copy=False)
+    # An unresolved external appointment does not prove an additional fraction
+    # on a day already covered by technical external-beam evidence.
+    external_days = set(zip(technical.loc[technical.kind.eq('treatment_external'),'patient_key'],
+                            technical.loc[technical.kind.eq('treatment_external'),'date']))
+    result['manual_technical_overlap'] = (result.evidence.eq('manual')
+        & result.kind.eq('treatment_external') & ~result.raw_machine.isin(profile.machines)
+        & pd.Series([(p,d) in external_days for p,d in zip(result.patient_key,result.date)],index=result.index))
     result["fraction_countable"] = result.evidence.eq("manual") | (
         result.plan_key.ne("") & pd.to_numeric(result.fraction, errors="coerce").fillna(0).gt(0))
+    result.loc[result.manual_technical_overlap,'fraction_countable'] = False
     return result
 
 
@@ -150,7 +158,10 @@ def summarize_population(events, profile, metadata):
                             plans[plans.machine.eq(name)], profile, a, b))
                          for name in sorted(days[days.date.between(a,b)].machine.unique(), key=natural_key)]))
         result["periods"][granularity] = rows
+    overlapping_manual = int(days.manual_technical_overlap.sum())
     result["quality"] = dict(
+        manual_appointments_with_technical_day=(f'<{profile.minimum_patients}'
+            if 0<overlapping_manual<profile.minimum_patients else overlapping_manual),
         technical_rows_without_fraction=int((days.evidence.eq("technical") & ~days.fraction_countable).sum()),
         plans_without_confirmed_start=int((~plans.start_confirmed).sum()),
         plans_without_target=int(plans.planned_fractions.isna().sum()))

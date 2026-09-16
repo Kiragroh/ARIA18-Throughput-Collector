@@ -51,25 +51,40 @@ DECLARE @sql_Appointment nvarchar(max) = N'INSERT INTO #Appointment SELECT ' + N
 EXEC sys.sp_executesql @sql_Appointment, N'@context date,@through date', @context= @PeriodStart, @through= @PeriodEnd;
 END;
 
-;WITH resources AS (
- SELECT DISTINCT a.DimActivityTransactionID,m.MachineId FROM #Appointment a
- JOIN #Resource r ON r.ctrResourceSer=a.ctrResourceSer JOIN #Machine m ON m.MachineId=r.ResourceId
+;WITH resource_map AS (
+ SELECT DISTINCT a.DimActivityTransactionID, m.MachineId
+ FROM #Appointment a
+ JOIN #Resource r ON r.ctrResourceSer=a.ctrResourceSer
+ JOIN #Machine m ON m.MachineId=r.ResourceId
+ WHERE COALESCE(a.AppointmentResourceStatus,N'') NOT IN (N'Deleted',N'Cancelled')
  UNION
- SELECT DISTINCT a.DimActivityTransactionID,m.MachineId FROM #Appointment a
- JOIN #ResourceMachine r ON r.DimResourceID=a.DimResourceID JOIN #Machine m ON m.MachineId=r.MachineId
-), devices AS (
+ SELECT DISTINCT a.DimActivityTransactionID, m.MachineId
+ FROM #Appointment a
+ JOIN #ResourceMachine r ON r.DimResourceID=a.DimResourceID
+ JOIN #Machine m ON m.MachineId=r.MachineId
+ WHERE COALESCE(a.AppointmentResourceStatus,N'') NOT IN (N'Deleted',N'Cancelled')
+), appointment_devices AS (
  SELECT a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,
+ CASE WHEN COALESCE(a.DimPatientID,0)<=0 THEN a.DimActivityTransactionID END AS standalone_id,
  CASE WHEN COUNT(DISTINCT r.MachineId)=1 THEN MIN(r.MachineId)
-      WHEN COUNT(DISTINCT r.MachineId)>1 THEN N'AMBIGUOUS_DEVICE' ELSE N'UNMAPPED' END AS machine
- FROM #Appointment a LEFT JOIN resources r ON r.DimActivityTransactionID=a.DimActivityTransactionID
- GROUP BY a.DimPatientID,a.DimActivityID,a.AppointmentDateTime
+      WHEN COUNT(DISTINCT r.MachineId)>1 THEN N'AMBIGUOUS_DEVICE' ELSE N'' END AS machine
+ FROM #Appointment a LEFT JOIN resource_map r ON r.DimActivityTransactionID=a.DimActivityTransactionID
+ GROUP BY a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,
+ CASE WHEN COALESCE(a.DimPatientID,0)<=0 THEN a.DimActivityTransactionID END
 ), appointments AS (
  SELECT a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,a.AppointmentStatus,d.machine,
  COUNT_BIG(*) AS resource_rows,MAX(a.ActivityStartDateTime) AS activity_start,
  MAX(a.ActivityEndDateTime) AS activity_end,MAX(a.ScheduledEndTime) AS calendar_end
- FROM #Appointment a JOIN #Patient p ON p.DimPatientID=a.DimPatientID AND p.IsMOTestPatient=0
- JOIN devices d ON d.DimPatientID=a.DimPatientID AND d.DimActivityID=a.DimActivityID AND d.AppointmentDateTime=a.AppointmentDateTime
- GROUP BY a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,a.AppointmentStatus,d.machine
+ FROM #Appointment a LEFT JOIN #Patient p ON p.DimPatientID=a.DimPatientID
+ JOIN appointment_devices d ON (d.DimPatientID=a.DimPatientID OR (d.DimPatientID IS NULL AND a.DimPatientID IS NULL))
+  AND d.DimActivityID=a.DimActivityID AND d.AppointmentDateTime=a.AppointmentDateTime
+  AND (a.DimPatientID>0 OR d.standalone_id=a.DimActivityTransactionID)
+ WHERE ((a.DimPatientID>0 AND p.IsMOTestPatient=0) OR COALESCE(a.DimPatientID,0)<=0)
+  AND COALESCE(a.IsScheduled,N'Y')=N'Y'
+  AND COALESCE(a.AppointmentResourceStatus,N'')<>N'Deleted'
+  AND COALESCE(a.AppointmentStatus,N'')<>N'Deleted'
+ GROUP BY a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,a.AppointmentStatus,d.machine,
+  CASE WHEN COALESCE(a.DimPatientID,0)<=0 AND d.machine IN (N'',N'AMBIGUOUS_DEVICE') THEN a.DimActivityTransactionID END
 )
 SELECT N'AVAILABLE' AS source_state,act.ActivityCode AS activity_code,MAX(act.ActivityNameDEU) AS activity_name,
  a.AppointmentStatus AS appointment_status,a.machine,COUNT_BIG(*) AS distinct_appointments,

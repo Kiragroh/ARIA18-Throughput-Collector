@@ -2,7 +2,7 @@
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import build_rdl as layout
-from build_collector_v2 import build,NS,FIELDS,event_sql
+from build_collector_v2 import build,NS,FIELDS,event_sql,COLLECTOR_RELEASE
 
 META=["period_start","period_end","context_start","data_through","data_through_confirmed","site","period_reason",
       "comparison_population_complete","collector_release"]
@@ -29,7 +29,7 @@ def create():
     metadata=(",CONVERT(nvarchar(10),@PeriodStart,23) AS period_start,CONVERT(nvarchar(10),@PeriodEnd,23) AS period_end,"
               "CONVERT(nvarchar(10),@ContextStart,23) AS context_start,CONVERT(nvarchar(10),@DataThrough,23) AS data_through,"
               "@DataThroughConfirmed AS data_through_confirmed,@SiteLabel AS site,@PeriodReason AS period_reason,"
-              "1 AS comparison_population_complete,N'2.0.0-rc.4' AS collector_release")
+              f"1 AS comparison_population_complete,N'{COLLECTOR_RELEASE}' AS collector_release")
     select=select.replace("\nFROM grouped_events",metadata+"\nFROM grouped_events")
     # Keep the empty-result schema identical to the enabled detail export.
     before=before.replace(" WHERE 1=0;",","+",".join(f"CAST(NULL AS nvarchar(255)) AS [{f}]" for f in META)+" WHERE 1=0;")

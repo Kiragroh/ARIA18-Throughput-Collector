@@ -143,17 +143,21 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
  FROM #Appointment a
  JOIN #Resource r ON r.ctrResourceSer=a.ctrResourceSer
  JOIN #Machine m ON m.MachineId=r.ResourceId
+ WHERE COALESCE(a.AppointmentResourceStatus,N'') NOT IN (N'Deleted',N'Cancelled')
  UNION
  SELECT DISTINCT a.DimActivityTransactionID, m.MachineId
  FROM #Appointment a
  JOIN #ResourceMachine r ON r.DimResourceID=a.DimResourceID
  JOIN #Machine m ON m.MachineId=r.MachineId
+ WHERE COALESCE(a.AppointmentResourceStatus,N'') NOT IN (N'Deleted',N'Cancelled')
 ), appointment_devices AS (
  SELECT a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,
+ CASE WHEN COALESCE(a.DimPatientID,0)&lt;=0 THEN a.DimActivityTransactionID END AS standalone_id,
  CASE WHEN COUNT(DISTINCT r.MachineId)=1 THEN MIN(r.MachineId)
       WHEN COUNT(DISTINCT r.MachineId)&gt;1 THEN N'AMBIGUOUS_DEVICE' ELSE N'' END AS machine
  FROM #Appointment a LEFT JOIN resource_map r ON r.DimActivityTransactionID=a.DimActivityTransactionID
- GROUP BY a.DimPatientID,a.DimActivityID,a.AppointmentDateTime
+ GROUP BY a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,
+ CASE WHEN COALESCE(a.DimPatientID,0)&lt;=0 THEN a.DimActivityTransactionID END
 ), events AS (
  SELECT
  CASE WHEN t.IsImage=1 THEN N'imaging' ELSE N'delivery' END AS source,
@@ -185,7 +189,9 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
                            OR COALESCE(t.FieldMUActual,0)&gt;0 OR COALESCE(t.DoseDelivered,0)&gt;0)
  UNION ALL
  SELECT N'appointment',
- CONCAT(N'A:',a.DimPatientID,N':',a.DimActivityID,N':',CONVERT(nvarchar(33),a.AppointmentDateTime,126)),
+ CONCAT(N'A:',a.DimPatientID,N':',a.DimActivityID,N':',CONVERT(nvarchar(33),a.AppointmentDateTime,126),
+   CASE WHEN COALESCE(a.DimPatientID,0)&lt;=0 THEN CONCAT(N':R:',r.machine,
+     CASE WHEN COALESCE(r.machine,N'') IN (N'',N'AMBIGUOUS_DEVICE') THEN CONCAT(N':',a.DimActivityTransactionID) END) END),
  a.DimPatientID,CAST(NULL AS bigint),CAST(NULL AS bigint),COALESCE(r.machine,N''),
  a.AppointmentDateTime,a.ScheduledEndTime,CAST(NULL AS int),act.ActivityCode,
  a.AppointmentStatus,0,
@@ -203,6 +209,7 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
  LEFT JOIN #Patient p ON p.DimPatientID=a.DimPatientID
  LEFT JOIN appointment_devices r ON (r.DimPatientID=a.DimPatientID OR (r.DimPatientID IS NULL AND a.DimPatientID IS NULL))
   AND r.DimActivityID=a.DimActivityID AND r.AppointmentDateTime=a.AppointmentDateTime
+  AND (a.DimPatientID&gt;0 OR r.standalone_id=a.DimActivityTransactionID)
  OUTER APPLY (
   SELECT MIN(h.ScheduledActivityHstryDateTime) AS completed,COUNT(DISTINCT h.ScheduledActivityHstryDateTime) AS candidate_count
   FROM #History h WHERE h.DimActivityTransactionID=a.DimActivityTransactionID
@@ -227,7 +234,9 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
  CASE WHEN COUNT(DISTINCT completed)&lt;=1 THEN MIN(completed) END AS completed,
  time_source,MAX(completion_candidates) AS completion_candidates,COUNT_BIG(*) AS source_rows,
  MAX(activity_name) AS activity_name,MAX(activity_category) AS activity_category,
- MIN(milestone_time) AS milestone_time,MIN(resource_status) AS resource_status,
+ MIN(milestone_time) AS milestone_time,
+ COALESCE(MIN(CASE WHEN resource_status NOT IN (N'Cancelled',N'Deleted') THEN resource_status END),
+          MIN(resource_status)) AS resource_status,
  MAX(patient_class) AS patient_class,
  CASE WHEN COUNT(DISTINCT planned_fractions)=1 THEN MAX(planned_fractions) END AS planned_fractions,
  MIN(plan_first_treatment) AS plan_first_treatment,MAX(plan_last_treatment) AS plan_last_treatment
@@ -242,7 +251,7 @@ SELECT N'2.0' AS contract_version,@RunId AS run_id,source,
  machine,CONVERT(nvarchar(33),event_start,126) AS event_start,CONVERT(nvarchar(33),event_end,126) AS event_end,fraction,activity_code,status,is_brachy,CONVERT(nvarchar(33),activity_start,126) AS activity_start,CONVERT(nvarchar(33),activity_end,126) AS activity_end,
  CONVERT(nvarchar(33),completed,126) AS completed,time_source,completion_candidates,source_rows,
  activity_name,activity_category,CONVERT(nvarchar(33),milestone_time,126) AS milestone_time,resource_status,patient_class,
- planned_fractions,CONVERT(nvarchar(33),plan_first_treatment,126) AS plan_first_treatment,CONVERT(nvarchar(33),plan_last_treatment,126) AS plan_last_treatment,CONVERT(nvarchar(10),@PeriodStart,23) AS period_start,CONVERT(nvarchar(10),@PeriodEnd,23) AS period_end,CONVERT(nvarchar(10),@ContextStart,23) AS context_start,CONVERT(nvarchar(10),@DataThrough,23) AS data_through,@DataThroughConfirmed AS data_through_confirmed,@SiteLabel AS site,@PeriodReason AS period_reason,1 AS comparison_population_complete,N'2.0.0-rc.4' AS collector_release
+ planned_fractions,CONVERT(nvarchar(33),plan_first_treatment,126) AS plan_first_treatment,CONVERT(nvarchar(33),plan_last_treatment,126) AS plan_last_treatment,CONVERT(nvarchar(10),@PeriodStart,23) AS period_start,CONVERT(nvarchar(10),@PeriodEnd,23) AS period_end,CONVERT(nvarchar(10),@ContextStart,23) AS context_start,CONVERT(nvarchar(10),@DataThrough,23) AS data_through,@DataThroughConfirmed AS data_through_confirmed,@SiteLabel AS site,@PeriodReason AS period_reason,1 AS comparison_population_complete,N'2.0.0-rc.6' AS collector_release
 FROM grouped_events
 ORDER BY event_start,source;
 </CommandText>

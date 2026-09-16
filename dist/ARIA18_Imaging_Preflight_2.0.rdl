@@ -45,7 +45,7 @@ ORDER BY source_table,source_column</CommandText><Timeout>60</Timeout></Query><F
             <PageBreak><BreakLocation>Start</BreakLocation></PageBreak><PageName>ImageRelations</PageName>
             <Top>40.00mm</Top><Left>2mm</Left><Height>22.00mm</Height><Width>128.00mm</Width>
             <Style><Border><Style>None</Style></Border></Style>
-          </Tablix></ReportItems><Height>200.0mm</Height>
+          </Tablix></ReportItems><Height>440.0mm</Height>
         <Style />
       </Body>
       <Width>400mm</Width>
@@ -92,12 +92,12 @@ ORDER BY source_table,source_column</CommandText><Timeout>60</Timeout></Query><F
   <ReportParameters>
 <ReportParameter Name="PeriodStart"><DataType>DateTime</DataType><DefaultValue><Values><Value>=DateSerial(2025, 1, 1)</Value></Values></DefaultValue><Prompt>Auswertung von</Prompt></ReportParameter>
 <ReportParameter Name="PeriodEnd"><DataType>DateTime</DataType><DefaultValue><Values><Value>=DateSerial(2025, 12, 31)</Value></Values></DefaultValue><Prompt>Auswertung bis</Prompt></ReportParameter>
-<ReportParameter Name="PeriodReason"><DataType>String</DataType><DefaultValue><Values><Value>Standardjahr 2025</Value></Values></DefaultValue><Prompt>Grund bei abweichendem Zeitraum</Prompt></ReportParameter>
-<ReportParameter Name="ContextStart"><DataType>DateTime</DataType><DefaultValue><Values><Value>=DateAdd("yyyy", -1, Parameters!PeriodStart.Value)</Value></Values></DefaultValue><Prompt>Kontext ab</Prompt></ReportParameter>
-<ReportParameter Name="DataThrough"><DataType>DateTime</DataType><DefaultValue><Values><Value>=Today().AddDays(-1)</Value></Values></DefaultValue><Prompt>Datenstand bis</Prompt></ReportParameter>
-<ReportParameter Name="DataThroughConfirmed"><DataType>Boolean</DataType><DefaultValue><Values><Value>false</Value></Values></DefaultValue><Prompt>Vollstaendigkeit bis Datenstand lokal bestaetigt</Prompt></ReportParameter>
-<ReportParameter Name="SiteLabel"><DataType>String</DataType><DefaultValue><Values><Value>Standort</Value></Values></DefaultValue><Prompt>Neutraler Standortname</Prompt></ReportParameter>
-<ReportParameter Name="IncludePseudonymizedDetails"><DataType>Boolean</DataType><DefaultValue><Values><Value>false</Value></Values></DefaultValue><Prompt>Lokale pseudonymisierte Ereignisse exportieren</Prompt></ReportParameter>
+<ReportParameter Name="PeriodReason"><DataType>String</DataType><AllowBlank>true</AllowBlank><DefaultValue><Values><Value>=IIf(Parameters!PeriodStart.Value = DateSerial(2025,1,1) And Parameters!PeriodEnd.Value = DateSerial(2025,12,31), "Standardjahr 2025", "Abweichender Zeitraum")</Value></Values></DefaultValue><Hidden>true</Hidden></ReportParameter>
+<ReportParameter Name="ContextStart"><DataType>DateTime</DataType><DefaultValue><Values><Value>=DateAdd("yyyy", -1, Parameters!PeriodStart.Value)</Value></Values></DefaultValue><Hidden>true</Hidden></ReportParameter>
+<ReportParameter Name="DataThrough"><DataType>DateTime</DataType><DefaultValue><Values><Value>=Today().AddDays(-1)</Value></Values></DefaultValue><Hidden>true</Hidden></ReportParameter>
+<ReportParameter Name="DataThroughConfirmed"><DataType>Boolean</DataType><DefaultValue><Values><Value>false</Value></Values></DefaultValue><Hidden>true</Hidden></ReportParameter>
+<ReportParameter Name="SiteLabel"><DataType>String</DataType><AllowBlank>true</AllowBlank><DefaultValue><Values><Value>Ändere mich</Value></Values></DefaultValue><Prompt>Standort / Klinik</Prompt></ReportParameter>
+<ReportParameter Name="IncludePseudonymizedDetails"><DataType>Boolean</DataType><DefaultValue><Values><Value>true</Value></Values></DefaultValue><Hidden>true</Hidden></ReportParameter>
 <ReportParameter Name="RunId"><DataType>String</DataType><DefaultValue><Values><Value>=System.Guid.NewGuid().ToString("N")</Value></Values></DefaultValue><Hidden>true</Hidden></ReportParameter>
 <ReportParameter Name="ExportSalt"><DataType>String</DataType><DefaultValue><Values><Value>=System.Guid.NewGuid().ToString("N")</Value></Values></DefaultValue><Hidden>true</Hidden></ReportParameter>
   </ReportParameters>

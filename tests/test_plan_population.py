@@ -80,3 +80,36 @@ def test_ambiguous_resource_resolves_only_with_unique_actual_device():
     out=resolve_treatment_devices(pd.DataFrame([a,b,c]),p)
     assert out.iloc[1].machine=="AMBIGUOUS_DEVICE"
     assert not out.iloc[1].machine_inferred
+
+
+def test_unknown_external_slot_is_not_an_extra_fraction_after_two_device_deliveries():
+    rows=[delivery('2025-01-02',1), delivery('2025-01-02',1,plan='b',machine='M2')]
+    rows.append(dict(rows[0],source='appointment',event_key='slot',machine='AMBIGUOUS_DEVICE',
+                     plan_key='',course_key='',activity_code='TX',status='completed'))
+    p=Profile(machines={'M':'Linac 1','M2':'Linac 2'},activity_codes={'TX':'treatment_external'})
+    out=treatment_days(pd.DataFrame(rows),p,'2025-01-10')
+    assert len(out)==3  # Retain the unresolved appointment as clinical evidence.
+    assert out.fraction_countable.sum()==2
+    assert out.manual_technical_overlap.sum()==1
+    assert out.loc[out.evidence.eq('manual'),'machine'].iloc[0]=='Nicht zugeordnet'
+
+
+def test_manual_different_modality_or_without_technical_day_remains_a_fraction():
+    rows=[delivery('2025-01-02',1),delivery('2025-01-02',1,plan='b',machine='M2')]
+    for kind,day in [('BR','2025-01-02'),('TOMO','2025-01-02'),('TX','2025-01-03')]:
+        rows.append(dict(rows[0],source='appointment',event_key=kind,machine='',plan_key='',
+            course_key='',event_start=day+' 09:00',event_end=day+' 09:10',activity_code=kind,status='completed'))
+    p=Profile(machines={'M':'Linac 1','M2':'Linac 2'},activity_codes={
+        'TX':'treatment_external','BR':'treatment_brachy','TOMO':'treatment_legacy'})
+    out=treatment_days(pd.DataFrame(rows),p,'2025-01-10')
+    assert out.fraction_countable.sum()==5
+    assert not out.manual_technical_overlap.any()
+
+
+def test_small_overlap_diagnostic_is_not_a_published_count():
+    rows=[delivery('2025-01-02',1),delivery('2025-01-02',1,plan='b',machine='M2')]
+    rows.append(dict(rows[0],source='appointment',event_key='slot',machine='AMBIGUOUS_DEVICE',
+        plan_key='',course_key='',activity_code='TX',status='completed'))
+    p=Profile(machines={'M':'Linac 1','M2':'Linac 2'},activity_codes={'TX':'treatment_external'})
+    out=summarize_population(pd.DataFrame(rows),p,{'data_through':'2026-04-01','context_start':'2024-01-01'})
+    assert out['quality']['manual_appointments_with_technical_day']=='<5'
