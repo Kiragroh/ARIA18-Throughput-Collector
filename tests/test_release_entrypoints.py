@@ -55,6 +55,20 @@ def test_participation_describes_runtime_and_correction_loop():
         assert 'RDL' in text and 'JSON' in text and 'Excel' in text
 
 
+def test_participation_explains_local_trial_and_detail_data():
+    from html import unescape
+    for name in ('README.md', 'kooperation/README.md', 'kooperation/START_HIER.html',
+                 'kooperation/RDL_AUSFUEHREN.md', 'templates/Cooperation.template.html'):
+        text = unescape((ROOT / name).read_text(encoding='utf-8'))
+        assert 'ohne Upload' in text, name
+        assert 'pseudonymisiert' in text, name
+        assert 'zeitpunkte' in text.lower(), name
+        assert 'lokaler Freigabe' in text or 'am Standort abstimmen' in text, name
+    page = unescape((ROOT / 'templates/Cooperation.template.html').read_text(encoding='utf-8'))
+    assert 'Kein automatischer Upload' in page
+    assert 'pauschale Datenschutzfreigabe' in page
+
+
 def test_generated_page_check_rejects_stale_file_without_rewriting(tmp_path, monkeypatch):
     for name in ('templates/Cooperation.template.html', 'release-v2.json',
                  'kooperation/assets/qr-code.png', 'kooperation/assets/projekt-qr-code.png',

@@ -11,9 +11,10 @@ Standortvergleiche ermöglichen, keine unbereinigten Ranglisten.
 ## Aktueller Stand
 
 **Paket 2.0.0-rc.9** ist der aktuelle Pilot-/Releasekandidat zur Vorbereitung
-eines Projekts der AG Digitalisierung. Technische Tests an einem Pilotstandort
-sind erfolgt; eine gemeinsame fachliche Multistandortabnahme steht noch aus.
-Die Software ist nicht klinisch freigegeben.
+eines Projekts der AG Digitalisierung. Exporte aus zwei ARIA-18-Kliniken wurden
+technisch ausgewertet und mit lokalen Kennzahlen abgeglichen. Einzelne
+Zähldifferenzen werden noch geklärt; weitere Standorte helfen beim Abgleich.
+Das Werkzeug dient der rückblickenden Prozessanalyse, nicht der Patientenbehandlung.
 
 **[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Gesamtpaket.zip)**
 | [Prüfstatus](docs/v2/VALIDIERUNG.md)
@@ -65,8 +66,8 @@ Das Formular funktioniert offline und bietet nur „JSON herunterladen“;
 optionale Angaben dürfen leer bleiben. Beide Dateien gemeinsam als ZIP einreichen.
 Falls bekannt, kann die Patientenzahl 2025 mit Zählweise und Quelle ergänzt werden.
 Sie dient als unabhängiger Plausibilitätsabgleich, nicht als Ersatz für den Export.
-Pseudonymisierte Detaildateien nur mit lokaler Freigabe im geschützten
-Projektbereich verarbeiten, niemals auf GitHub veröffentlichen.
+**Ein lokaler Probelauf ist auch ohne Upload möglich.** Für eine gemeinsame
+Auswertung wird anschließend die Weitergabe am Standort abgestimmt.
 [ARIA-Import, Report Builder und anonymisiertes Excel-URL-Beispiel für 2025](kooperation/RDL_AUSFUEHREN.md).
 
 Die über den dort verlinkten Upload eingereichten Dateien sind ausschließlich
@@ -117,12 +118,27 @@ kann über eindeutig zugeordnete abgeschlossene Therapietermine belegt werden;
 technische Beam-Zeiten werden daraus nicht abgeleitet. Fehlende Quellen brauchen
 eine gekennzeichnete Einschränkung oder einen eigenen Adapter.
 
-Die Abfragen verändern keine ARIA-Daten. Detaildateien sind pseudonymisiert,
-nicht anonym: lokal auswerten oder nach lokaler Freigabe ausschließlich im
-geschützten Projektbereich bereitstellen. Öffentlich nur geprüfte Aggregate;
-auch Aggregate sind nicht automatisch anonym.
-Keine klinischen Dateien in GitHub-Issues oder Pull Requests einstellen.
-Das Projekt dient Analyse und Forschung, nicht der Behandlung einzelner Patienten.
+## Welche Daten werden verwendet?
+
+- **Rein lesend:** Der Report verändert keine ARIA-Daten. Export und Auswertung
+  können zunächst vollständig am Standort erfolgen; es gibt keinen automatischen Upload.
+- **Ohne direkte Patientenkennungen:** Der Collector exportiert keine eigenen
+  Felder für Patientennamen, Geburtsdaten oder Original-Patienten-/Fall-/Plan-IDs.
+  Technische Zuordnungsschlüssel verbinden zusammengehörige Ereignisse, damit
+  Behandlungsfolgen und Mehrfachzählungen korrekt ausgewertet werden können.
+- **Transparente Einordnung:** Die Exceldatei enthält Ereigniszeitpunkte und
+  verknüpfbare Behandlungsverläufe. Sie ist deshalb als pseudonymisierter
+  Detaildatensatz vorgesehen, nicht als anonymes Ergebnis. Die Bezeichnung
+  „ohne direkte Patientenkennungen“ ist keine Zusage einer Anonymisierung.
+- **Gezielte Weitergabe:** Nach lokaler Freigabe erhalten nur Maximilian Grohmann
+  und nicht die anderen Teilnehmenden die eingereichten Dateien. Alternativ
+  können zunächst nur technische Fragen ohne klinische Dateien besprochen werden.
+  Eine pauschale Datenschutzfreigabe für teilnehmende Standorte liegt nicht vor.
+
+Für gemeinsame Ergebnisdarstellungen sind geprüfte aggregierte Kennzahlen
+vorgesehen; kleine Gruppen und mögliche Rückschlüsse werden vor einer Weitergabe
+geprüft. Lokale Katalogtexte ebenfalls auf versehentliche Personenangaben prüfen.
+GitHub enthält Software und Anleitung, keine klinischen Einreichungen.
 
 ## Dokumentation
 

@@ -4,12 +4,18 @@ Benoetigt werden Full Collector XLSX mit integrierten Prueftabellen und
 Standortformular-JSON. Im Offline-HTML ausfuellen, JSON herunterladen und beide
 Dateien gemeinsam als ZIP einreichen. Keine zusaetzliche Pflichtbestaetigung.
 
+Ein lokaler Probelauf ist ohne Upload moeglich. Es werden keine Dateien
+automatisch uebertragen. Diese Checkliste betrifft erst die abgestimmte
+Weitergabe fuer eine gemeinsame Auswertung.
+
 - Ein ZIP mit Standortkuerzel, Auswertungszeitraum und Revision.
 - Eine dienstliche Rueckmeldeadresse beilegen, soweit noch nicht bekannt.
 - Exportdatum und Datenstand werden aus den Excel-Metadaten gelesen.
 - Bei Korrekturen neue Revision verwenden; unveraenderte Wiederholung behaelt ihre ID.
-- Full Collector enthaelt pseudonymisierte Ereignisse und ist nicht anonym.
-  Nur lokal oder mit lokaler Freigabe im geschuetzten Projektbereich verarbeiten.
+- Technische Zuordnungsschluessel ersetzen direkte Patientenkennungen und
+  verbinden Behandlungsereignisse. Zeitpunkte und Verlaeufe bleiben enthalten:
+  pseudonymisierte Detaildaten, keine anonyme Ergebnistabelle. Die Weitergabe
+  dieser Exceldatei vor dem Upload am Standort abstimmen.
 - Keine Original-Patientenkennungen, Namen, Notizen, unbereinigten Logs oder
   Zugangsdaten hinzufuegen. Katalogtexte auf solche Inhalte pruefen.
 - Keine klinischen Detaildateien oder echten Standortergebnisse auf GitHub.

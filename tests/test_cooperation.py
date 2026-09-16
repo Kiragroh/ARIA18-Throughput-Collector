@@ -13,8 +13,10 @@ def test_invitation_is_self_contained_and_has_upload_boundary():
     assert html.count('class="slide')==7
     assert '__QR_DATA__' not in html and '__CHART_DATA__' not in html and '__PROJECT_QR_DATA__' not in html
     assert html.count('data:image/png;base64,')==3
-    assert UPLOAD in html and 'Nicht hochladen' in html
-    assert 'Patientenlisten' in html and 'Original-Fall-/Plan-IDs' in html
+    assert UPLOAD in html and 'Kein automatischer Upload' in html
+    assert 'Patientennamen, Geburtsdaten oder Original-Patienten-IDs' in html
+    assert 'GitHub enth&auml;lt nur Software und Anleitung' in html
+    assert 'Nach lokaler Freigabe' in html and 'pseudonymisiert, nicht anonym' in html
     assert 'Synthetisches Beispiel' in html
     assert 'STANDORT_Phase_VON-BIS_R01.zip' in html
     assert 'Upload-Benachrichtigungen' in html and 'Maximilian Grohmann' in html
