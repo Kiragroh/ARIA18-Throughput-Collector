@@ -26,11 +26,13 @@ def manifest(analysis=True):
             'Analyse/tools/prepare_site.py': 'tools/prepare_site.py',
             'Analyse/tools/Standort_vorbereiten.cmd': 'tools/Standort_vorbereiten.cmd',
             'Analyse/tools/create_demo_v2.py': 'tools/create_demo_v2.py',
+            'Analyse/tools/create_comparison_demo.py': 'tools/create_comparison_demo.py',
             'Analyse/tools/build_collector_v2.py': 'tools/build_collector_v2.py',
             'Analyse/tools/imaging_objects_v2.py': 'tools/imaging_objects_v2.py',
             'Analyse/tools/build_rdl.py': 'tools/build_rdl.py',
             'Analyse/docs/METHODIK.md': 'docs/v2/METHODIK.md',
             'Analyse/docs/AG_PROJEKT.md': 'docs/v2/AG_PROJEKT.md',
+            'Analyse/docs/STANDORTVERGLEICH.md': 'docs/v2/STANDORTVERGLEICH.md',
         })
         for pattern in ('*.py', '*.html'):
             for path in sorted((ROOT / 'analysis').glob(pattern)):

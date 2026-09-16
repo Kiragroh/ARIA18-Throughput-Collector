@@ -2,6 +2,13 @@
 
 ## Noch nicht veroeffentlicht
 
+- Lokaler Vergleich von 2 bis 12 aggregierten Standorten mit gruppierten
+  Boxplots, drei Zeitmodellen, Population, Patientenfluss und Bildobjekten.
+  Getrennte Vergleichbarkeitspruefung und exakte Slot-Nenner; keine Rangliste,
+  keine gepoolten Patienten und kein Mittelwert aus Standortmedianen.
+- Reproduzierbare Herkunftsmetadaten fuer neu berechnete Aggregate;
+  Altdateien bleiben ausdruecklich deskriptiv. Sechs-Standorte-Demo und
+  Anleitung im Gesamtpaket, keine neuen SQL-Abfragen fuer den Vergleich.
 - Getrennter Definitionsabgleich fuer operative Behandlungspfade: dokumentierte
   und nur aus Behandlungsbeginn abgeleitete Anwesenheit, letzter statt erster
   Aufklaerungstermin sowie Kursintervalle gegen belegte Behandlungstage.

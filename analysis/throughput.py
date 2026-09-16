@@ -223,12 +223,16 @@ def aggregate(prepared, profile):
                     free_patients=set().union(*(d['patients'] for d in days))
                     safe_free=len(free_patients)>=profile.minimum_patients
                     booked = group.booked.sum()
-                    kpi = dict(visits=len(group),unique_patients=len(patients),device_days=len(days),
+                    kpi = dict(visits=len(group),expected_visits=sum(expected_group.values()),
+                               unique_patients=len(patients),device_days=len(days),
                                complete_device_days=len(days),incomplete_device_days=len(expected_group)-len(days),
                                measured_visits_pct=100*len(group)/sum(expected_group.values()) if expected_group else None,
                                relevant_slots=len(slot),matched_slots=int(slot.matched.sum()),
                                match_pct=100*slot.matched.mean() if len(slot) else None,
                                measurable_slots=int(group.booked.notna().sum()),
+                               booked_minutes=float(booked) if safe_slots else None,
+                               overlap_minutes_in_slots=float(group.overlap.sum()) if safe_slots else None,
+                               duration_minutes_in_slots=float(group.loc[group.booked.notna(),'duration'].sum()) if safe_slots else None,
                                slot_coverage_pct=100*group.overlap.sum()/booked if booked>0 and safe_slots else None,
                                duration_ratio_pct=100*group.loc[group.booked.notna(),"duration"].sum()/booked if booked>0 and safe_slots else None,
                                slotted_duration_mean=group.loc[group.booked.notna(),"duration"].mean() if safe_slots else None,

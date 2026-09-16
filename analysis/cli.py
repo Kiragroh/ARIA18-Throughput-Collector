@@ -11,6 +11,7 @@ from .ingest import load_export, normalize_flow, eligible_events, resolve_treatm
 from .population import summarize_population
 from .imaging_frequency import summarize_images
 from .reconciliation import reference_conventions, source_filter_audit
+from .provenance import create_provenance
 from .throughput import prepare_visits, aggregate
 from .flow import summarize
 from .metrics import deduplicate
@@ -57,6 +58,7 @@ def suppress_flow(flow,minimum):
 
 def analyze(path,profile):
     metadata,events,coverage,activities = load_export(path)
+    source_fields = tuple(events.columns)
     for field,value in (("period_start",profile.start),("period_end",profile.end)):
         if str(pd.Timestamp(metadata[field]).date()) != value:
             raise ValueError("Profile period must match export metadata")
@@ -133,7 +135,8 @@ def analyze(path,profile):
     return dict(version=VERSION,site=profile.site,start=profile.start,end=profile.end,
                 period_reason=profile.period_reason,data_through=str(pd.Timestamp(metadata["data_through"]).date()),
                 periods=periods,flow=flow,quality=quality,notes=notes,default_model=profile.model,
-                coverage=coverage,population=population,imaging=imaging)
+                coverage=coverage,population=population,imaging=imaging,
+                provenance=create_provenance(path,metadata,profile,source_fields,coverage))
 
 
 def export_outputs(data,output):
