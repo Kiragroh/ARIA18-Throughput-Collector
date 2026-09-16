@@ -1,4 +1,4 @@
-# ARIA Performance: Nur Durchfuehrung 2.0.0-rc.9 (Teststand)
+# ARIA Performance: Nur Durchfuehrung 2.0.0-rc.10 (Teststand)
 
 Start: [Durchfuehrung/START_HIER.html](Durchfuehrung/START_HIER.html).
 
@@ -19,7 +19,7 @@ Details stehen in Durchfuehrung/RDL_AUSFUEHREN.md.
 [release-v2.json](release-v2.json) nennt die enthaltenen Versionsstaende.
 
 Dieses Paket enthaelt dieselben Durchfuehrungsdateien wie das
-[Gesamtpaket derselben Version](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Gesamtpaket.zip),
+[Gesamtpaket derselben Version](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.10/ARIA-Performance_Gesamtpaket.zip),
 aber keine Python-Auswertung. Exporte sind pseudonymisiert, nicht anonym:
 nur nach lokaler Freigabe im geschuetzten Projektbereich teilen, niemals auf
 GitHub. Keine klinische Freigabe der Software.

@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.0.0-rc.10 - 2026-09-16
+
+- Collector rc.9 ergaenzt ausschliesslich fehlende/NA-Aktivitaetsnamen aus der
+  neuesten Revision ueber die Aktivitaets-ID des Termins. Historische Codes,
+  Kategorien und Ereignisschluessel bleiben erhalten.
+- Auditfelder activity_name_original, activity_name_source und
+  activity_name_revision erlaeutern die Ergaenzung. Fehlende optionale
+  Revisionsspalten verhindern den Export nicht; Namen bleiben dann unveraendert.
+- Regressionstest gegen zusaetzliche Fraktionszaehlung durch erkannte R&V-Termine.
+  Die Analyseversion bleibt rc.7. Namensbasierte Standortzuordnungen muessen
+  ausdruecklich im lokalen Profil vorhanden sein.
+
 ## 2.0.0-rc.9 - 2026-09-16
 
 - Separates Nur-Preflight-Paket: ausschliesslich DWH-Schema-/Rechtepruefung,

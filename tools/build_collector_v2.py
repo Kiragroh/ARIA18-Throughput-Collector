@@ -9,7 +9,7 @@ except ImportError:
     import build_rdl as layout
 
 ROOT = Path(__file__).resolve().parents[1]
-COLLECTOR_RELEASE = '2.0.0-rc.8'
+COLLECTOR_RELEASE = '2.0.0-rc.9'
 NS = {"r":"http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition"}
 PARAMETERS = {
     "PeriodStart":("DateTime",'=DateSerial(2025, 1, 1)',"Auswertung von"),
@@ -45,6 +45,7 @@ SOURCES = {
     "Appointment":("DWH.DimActivityTransaction",[
         ("DimActivityTransactionID","bigint",True),("DimPatientID","bigint",True),
         ("DimActivityID","bigint",True),("AppointmentDateTime","datetime2",True),
+        ("ctrActivitySer","bigint",False),
         ("ScheduledEndTime","datetime2",False),("ActivityStartDateTime","datetime2",False),
         ("ActivityEndDateTime","datetime2",False),("AppointmentStatus","nvarchar(255)",True),
         ("DerivedAppointmentTaskDate","datetime2",False),
@@ -52,6 +53,7 @@ SOURCES = {
         ("ctrResourceSer","bigint",False),("DimResourceID","bigint",False)]),
     "Activity":("DWH.DimActivity",[
         ("DimActivityID","bigint",True),("ActivityCode","nvarchar(255)",True),
+        ("ctrActivitySer","bigint",False),("ActivityRevCount","int",False),
         ("ActivityNameDEU","nvarchar(1000)",False),("ActivityCategoryDEU","nvarchar(1000)",False)]),
     "Resource":("DWH.vv_ResourceInfo",[
         ("ctrResourceSer","bigint",False),("ResourceId","nvarchar(255)",False)]),
@@ -66,7 +68,8 @@ FIELDS = ["contract_version","run_id","source","event_key","patient_key","course
           "machine","event_start","event_end","fraction","activity_code","status","is_brachy",
           "activity_start","activity_end","completed","time_source","completion_candidates","source_rows",
           "activity_name","activity_category","milestone_time","resource_status","patient_class",
-          "planned_fractions","plan_first_treatment","plan_last_treatment"]
+          "planned_fractions","plan_first_treatment","plan_last_treatment",
+          "activity_name_original","activity_name_source","activity_name_revision"]
 STAGE_KEYS = {
     'History': ('DimActivityTransactionID','ScheduledActivityHstryDateTime','ScheduledActivityCode'),
     'Plan': ('DimPlanID',),
@@ -216,6 +219,7 @@ IF """+delivery_evidence_missing()+"""
  THROW 51001, N'No delivery evidence column available', 1;
 CREATE INDEX ix_history_id ON #History(DimActivityTransactionID,ScheduledActivityHstryDateTime);
 CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
+CREATE INDEX ix_activity_revision ON #Activity(ctrActivitySer,ActivityRevCount DESC,DimActivityID DESC);
 ;WITH plan_info AS (
  SELECT DimPlanID,
  CASE WHEN COUNT(DISTINCT NoFractionsPlanned)=1 THEN MAX(NoFractionsPlanned) END AS planned_fractions,
@@ -243,7 +247,10 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
       WHEN LTRIM(RTRIM(p.PatientId))<>N'' AND p.PatientId NOT LIKE N'%[^0-9]%' THEN N'clinical_numeric'
       ELSE N'clinical_other' END AS patient_class,
  COALESCE(pl.planned_fractions,t.FractionsPlanned) AS planned_fractions,
- pl.first_treatment AS plan_first_treatment,pl.last_treatment AS plan_last_treatment
+ pl.first_treatment AS plan_first_treatment,pl.last_treatment AS plan_last_treatment,
+ CAST(N'' AS nvarchar(1000)) AS activity_name_original,
+ CAST(N'not_applicable' AS nvarchar(50)) AS activity_name_source,
+ CAST(NULL AS int) AS activity_name_revision
  FROM #Treatment t JOIN #Patient p ON p.DimPatientID=t.DimPatientID AND p.IsMOTestPatient=0
  LEFT JOIN #Machine am ON am.DimMachineID=t.DimActualMachineID
  LEFT JOIN #Machine pm ON pm.DimMachineID=t.DimPlanMachineID
@@ -260,15 +267,32 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
  a.AppointmentStatus,0,
  a.ActivityStartDateTime,a.ActivityEndDateTime,
  h.completed,N'calendar',h.candidate_count,
- act.ActivityNameDEU,act.ActivityCategoryDEU,
+ COALESCE(latest_name.ActivityNameDEU,act.ActivityNameDEU),act.ActivityCategoryDEU,
  COALESCE(a.DerivedAppointmentTaskDate,a.AppointmentDateTime),a.AppointmentResourceStatus,
  CASE WHEN COALESCE(a.DimPatientID,0)<=0 THEN N'no_patient'
       WHEN p.PatientLastName LIKE N'zz%' THEN N'test_name'
       WHEN p.PatientId IS NULL THEN N'unknown'
       WHEN LTRIM(RTRIM(p.PatientId))<>N'' AND p.PatientId NOT LIKE N'%[^0-9]%' THEN N'clinical_numeric'
       ELSE N'clinical_other' END,
- CAST(NULL AS int),CAST(NULL AS datetime2),CAST(NULL AS datetime2)
+ CAST(NULL AS int),CAST(NULL AS datetime2),CAST(NULL AS datetime2),
+ act.ActivityNameDEU,
+ CASE WHEN latest_name.ActivityNameDEU IS NOT NULL THEN N'latest_revision_fallback'
+      WHEN NULLIF(LTRIM(RTRIM(act.ActivityNameDEU)),N'') IS NULL
+        OR UPPER(LTRIM(RTRIM(act.ActivityNameDEU)))=N'NA' THEN N'unresolved'
+      ELSE N'historical' END,
+ latest_name.ActivityRevCount
  FROM #Appointment a JOIN #Activity act ON act.DimActivityID=a.DimActivityID
+ OUTER APPLY (
+  SELECT recent.ActivityNameDEU,recent.ActivityRevCount
+  FROM (SELECT TOP (1) n.ActivityNameDEU,n.ActivityRevCount FROM #Activity n
+        WHERE n.ctrActivitySer=a.ctrActivitySer AND a.ctrActivitySer>0
+          AND n.ActivityRevCount IS NOT NULL
+          AND (NULLIF(LTRIM(RTRIM(act.ActivityNameDEU)),N'') IS NULL
+               OR UPPER(LTRIM(RTRIM(act.ActivityNameDEU)))=N'NA')
+        ORDER BY n.ActivityRevCount DESC,n.DimActivityID DESC) recent
+  WHERE NULLIF(LTRIM(RTRIM(recent.ActivityNameDEU)),N'') IS NOT NULL
+    AND UPPER(LTRIM(RTRIM(recent.ActivityNameDEU)))<>N'NA'
+ ) latest_name
  LEFT JOIN #Patient p ON p.DimPatientID=a.DimPatientID
  LEFT JOIN appointment_devices r ON (r.DimPatientID=a.DimPatientID OR (r.DimPatientID IS NULL AND a.DimPatientID IS NULL))
   AND r.DimActivityID=a.DimActivityID AND r.AppointmentDateTime=a.AppointmentDateTime
@@ -302,7 +326,10 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
           MIN(resource_status)) AS resource_status,
  MAX(patient_class) AS patient_class,
  CASE WHEN COUNT(DISTINCT planned_fractions)=1 THEN MAX(planned_fractions) END AS planned_fractions,
- MIN(plan_first_treatment) AS plan_first_treatment,MAX(plan_last_treatment) AS plan_last_treatment
+ MIN(plan_first_treatment) AS plan_first_treatment,MAX(plan_last_treatment) AS plan_last_treatment,
+ MAX(activity_name_original) AS activity_name_original,
+ MAX(activity_name_source) AS activity_name_source,
+ MAX(activity_name_revision) AS activity_name_revision
  FROM keyed_events
  GROUP BY source,compact_key,DimPatientID,DimCourseID,DimPlanID,machine,fraction,activity_code,status,is_brachy,time_source
 )
@@ -314,7 +341,8 @@ SELECT N'2.0' AS contract_version,@RunId AS run_id,source,
  machine,event_start,event_end,fraction,activity_code,status,is_brachy,activity_start,activity_end,
  completed,time_source,completion_candidates,source_rows,
  activity_name,activity_category,milestone_time,resource_status,patient_class,
- planned_fractions,plan_first_treatment,plan_last_treatment
+ planned_fractions,plan_first_treatment,plan_last_treatment,
+ activity_name_original,activity_name_source,activity_name_revision
 FROM grouped_events
 ORDER BY event_start,source;
 """

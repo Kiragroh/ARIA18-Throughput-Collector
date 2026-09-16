@@ -353,3 +353,16 @@ hat einen begrenzten Abfrage-Timeout. Siehe
 Der lokale Cache ersetzt keine DWH-Aktualitaetspruefung.
 Boxplots verwenden vorab berechnete Quartile, siehe
 [Plotly: Boxplots](https://plotly.com/python/box-plots/).
+## Historische Aktivitaetsnamen (Collector rc.9)
+
+Der Join auf die historische Aktivitaet bleibt ueber DimActivityID eindeutig.
+Nur NULL, leere oder NA-Namen werden aus der neuesten Revision ergaenzt, ueber
+ctrActivitySer des Termins (nicht der unvollstaendigen Dimensionszeile).
+Die Reihenfolge ActivityRevCount DESC, DimActivityID DESC ist deterministisch.
+Fehlende Revisionsspalten sind optional: ohne Nachweis bleibt der Name erhalten.
+ActivityCode, Kategorie und Ereignisschluessel werden nicht umgeschrieben.
+activity_name_original, activity_name_source und activity_name_revision dienen
+dem Audit. Fuer technische Behandlungsereignisse lautet die Herkunft
+not_applicable. Ergaenzte Namen brauchen eine explizite lokale Profilzuordnung.
+Termin-Nachweise auf R&V-Geraeten werden weiterhin nicht als zusaetzliche
+klinische Fraktionen gezaehlt.

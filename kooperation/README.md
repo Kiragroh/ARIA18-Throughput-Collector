@@ -8,11 +8,11 @@ danach gemeinsam die Ergebnisse. Es geht nicht um eine unbereinigte Rangliste.
 
 **[Kurze Praesentation im Browser](https://kiragroh.github.io/ARIA18-Throughput-Collector/)**
 | [Projekt und Analyseplan](https://github.com/Kiragroh/ARIA18-Throughput-Collector/blob/main/docs/v2/AG_PROJEKT.md)
-| [Gesamtpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Gesamtpaket.zip)
+| [Gesamtpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.10/ARIA-Performance_Gesamtpaket.zip)
 
 Zum Weitergeben oder offline Oeffnen:
-[Praesentation als einzelne HTML-Datei](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/Kooperation_ARIA_Performance.html)
-| [Nur Durchfuehrung als ZIP](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Durchfuehrung.zip).
+[Praesentation als einzelne HTML-Datei](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.10/Kooperation_ARIA_Performance.html)
+| [Nur Durchfuehrung als ZIP](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.10/ARIA-Performance_Durchfuehrung.zip).
 
 ## Was Ihr Standort davon hat
 
@@ -31,7 +31,7 @@ keine klinische Entscheidungsunterstuetzung und keine Personalbewertung.
 
 ## Der kleinste erste Schritt
 
-**Alternative: [Nur technische Vorpruefung (ZIP)](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Nur_Preflight.zip)**.
+**Alternative: [Nur technische Vorpruefung (ZIP)](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.10/ARIA-Performance_Nur_Preflight.zip)**.
 Keine klinischen Tabellenzeilen, Pseudonyme oder Einzelzeitpunkte. Die separate
 RDL prueft DWH-Schema und Leserechte; Datenfuellung, native Zusatzquellen und
 fachliche Zuordnungen bleiben lokal zu klaeren. Fuer diesen Weg reicht die
@@ -49,11 +49,11 @@ sie aber nicht und uebertraegt keine Dateien automatisch. Fuer diesen Probelauf
 gelten die lokalen Zugriffsregeln. Ob anschliessend eine gemeinsame Auswertung
 mit Dateiweitergabe erfolgt, stimmen Sie vor dem Upload am Standort ab.
 
-**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Gesamtpaket.zip)**:
+**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.10/ARIA-Performance_Gesamtpaket.zip)**:
 Ordner `Durchfuehrung` mit Report, Offline-Formular und Anleitung;
 Ordner `Analyse` mit optionaler Python-Auswertung und synthetischem Probelauf.
 Wer nur exportieren und einreichen moechte, nimmt
-**[Nur Durchfuehrung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Durchfuehrung.zip)**.
+**[Nur Durchfuehrung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.10/ARIA-Performance_Durchfuehrung.zip)**.
 Entpacken und `Durchfuehrung/START_HIER.html` oeffnen. Die Durchfuehrungsdateien
 sind in beiden Paketen identisch.
 
@@ -211,7 +211,7 @@ Klinische Dateien gehoeren ausschliesslich in den abgestimmten Projektweg.
 
 ## Status
 
-Pilotpaket **2.0.0-rc.9** mit Collector **rc.8** und Analyseverfahren **rc.7**.
+Pilotpaket **2.0.0-rc.10** mit Collector **rc.9** und Analyseverfahren **rc.7**.
 Die neue Paketfassung ergaenzt die native Hersteller-/Aufnahmequelle (VARIAN),
 trennt Bildschichten von Aufnahmeobjekten und schaetzt manuelle Mindestplaene.
 Fuer die neuen Bildinformationen ist ein neuer Export erforderlich. Kurze native Quellen-/Fehlertests,
