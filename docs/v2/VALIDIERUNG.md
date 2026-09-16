@@ -8,9 +8,11 @@ ausgefuehrte Definition wird durch den RDL-Hash in `release-v2.json` identifizie
 
 - [Collector rc.7: native Quellen-/Rechte- und Ausfalltests](VALIDIERUNG_RC7.md).
 - [Analyse und Collector rc.6: Zuordnungen und Standortvergleich](VALIDIERUNG_RC6.md).
-- 247 lokale Tests in 49,71 Sekunden bestanden, einschliesslich Auswertung aus
+- 248 lokale Tests in 49,72 Sekunden bestanden, einschliesslich Auswertung aus
   entpackten Paketen. Neue Konsistenztests pruefen gemeinsame Versionen,
   Downloadziele, Paketidentitaet und den unveraenderten Collector-Fingerprint.
+- Der CI-Lauf prueft die eingecheckte Praesentation vor den Tests gegen Vorlage
+  und Releaseinventar, ohne eine veraltete Datei dabei still neu zu schreiben.
 - Offline-Praesentation in 21 Desktop-/Mobilansichten mit Navigation, Bildern
   und Druck geprueft; Begleitformular mit JSON-Export und Wiederimport,
   optionalen Referenzzahlen und sicherer Report-URL auf Desktop/Mobil getestet.

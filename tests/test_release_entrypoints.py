@@ -2,11 +2,14 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import shutil
 from zipfile import ZipFile
+import pytest
 
 from analysis import VERSION
 from tools.build_collector_v2 import COLLECTOR_RELEASE
 from tools.build_cooperation import build
+from tools import build_cooperation
 from tools.package_v2 import package
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -50,3 +53,21 @@ def test_participation_describes_runtime_and_correction_loop():
         text = (ROOT / name).read_text(encoding='utf-8')
         assert 'drei Minuten' in text, name
         assert 'RDL' in text and 'JSON' in text and 'Excel' in text
+
+
+def test_generated_page_check_rejects_stale_file_without_rewriting(tmp_path, monkeypatch):
+    for name in ('templates/Cooperation.template.html', 'release-v2.json',
+                 'kooperation/assets/qr-code.png', 'kooperation/assets/projekt-qr-code.png',
+                 'kooperation/assets/boxplots-beispiel.png'):
+        target = tmp_path / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(ROOT / name, target)
+    page = tmp_path / 'kooperation/index.html'
+    page.write_text('stale page', encoding='utf-8')
+    monkeypatch.setattr(build_cooperation, 'ROOT', tmp_path)
+    with pytest.raises(ValueError, match='outdated'):
+        build_cooperation.build(check=True)
+    assert page.read_text(encoding='utf-8') == 'stale page'
+    shutil.copyfile(ROOT / 'kooperation/index.html', page)
+    assert build_cooperation.build(check=True) == page
+    assert not (tmp_path / 'packages').exists()
