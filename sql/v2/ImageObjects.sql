@@ -32,6 +32,7 @@ EXEC sys.sp_executesql @image_sql,N'@a date,@b date',@a=@PeriodStart,@b=@PeriodE
       ELSE CONCAT(N'natural:',i.DimPatientID,N':',i.DimMachineID,N':',
           CONVERT(nvarchar(33),ImageCreationDate,126),N':',ImageId,N':',ImageType) END AS object_id,
  CASE WHEN UPPER(COALESCE(ImageType,N''))=N'IMAGEDRR' THEN N'reference'
+      WHEN UPPER(COALESCE(ImageType,N''))=N'IMAGECT' THEN N'component'
       WHEN UPPER(CONCAT(ImageId,N' ',ImageType)) LIKE N'%EXACTRAC%' THEN N'exactrac_2d'
       WHEN UPPER(CONCAT(ImageId,N' ',ImageType)) LIKE N'%CBCT%' THEN
         CASE WHEN UPPER(ImageId) LIKE N'KV%' THEN N'kv_cbct'

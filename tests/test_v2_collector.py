@@ -15,7 +15,7 @@ def test_v2_rdl_contract_and_default_year():
     assert {"DataThrough","ContextStart","PeriodReason"} <= parameters.keys()
     assert set(d.get("Name") for d in root.findall("r:DataSets/r:DataSet",NS)) == {
         "Metadata","Capabilities","ActivityCatalog","EventDetails","AppointmentInventory",
-        "MachineInventory","HistoryStatusInventory","CompletionDiagnostics","VersionInfo","ImageObjects"}
+        "MachineInventory","HistoryStatusInventory","CompletionDiagnostics","VersionInfo","ImageObjects","ImageAcquisition","WaitingArea"}
     assert root.find(".//r:Query/r:Timeout",NS) is not None
 
 

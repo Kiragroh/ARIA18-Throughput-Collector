@@ -10,25 +10,31 @@ Standortvergleiche ermöglichen, keine unbereinigten Ranglisten.
 
 ## Aktueller Stand
 
-**Paket 2.0.0-rc.8** ist der aktuelle Pilot-/Releasekandidat zur Vorbereitung
+**Paket 2.0.0-rc.9** ist der aktuelle Pilot-/Releasekandidat zur Vorbereitung
 eines Projekts der AG Digitalisierung. Technische Tests an einem Pilotstandort
 sind erfolgt; eine gemeinsame fachliche Multistandortabnahme steht noch aus.
 Die Software ist nicht klinisch freigegeben.
 
-**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.8/ARIA-Performance_Gesamtpaket.zip)**
+**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Gesamtpaket.zip)**
 | [Prüfstatus](docs/v2/VALIDIERUNG.md)
 | [Änderungen](CHANGELOG.md)
 
 Zwei Ordner: **Durchfuehrung** mit RDL, Offline-Formular und Anleitung;
 **Analyse** mit Python-Skript, Standortprofilen, Methodik und synthetischem Probelauf.
 
-**[Nur Durchführung herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.8/ARIA-Performance_Durchfuehrung.zip)**:
+**[Nur Durchführung herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Durchfuehrung.zip)**:
 dieselben Durchführungsdateien ohne Analyse-Skripte. Start in beiden Paketen:
 `Durchfuehrung/START_HIER.html`. Für die Einreichung ist Python nicht nötig.
 
-Enthalten: nativ geprüfter Collector **rc.7**, Analyseverfahren **rc.6**.
-Paket rc.8 aktualisiert Einstieg, Versionsangaben und Downloadlinks; RDL und
-Berechnungen sind gegenüber rc.7 unverändert. Bei Exporten vor rc.6 bitte den
+Enthalten: Collector **rc.8**, Analyseverfahren **rc.7**.
+Paket rc.9 ergaenzt native Hersteller-/Aufnahmedaten zur ExacTrac-Erkennung,
+trennt CT-Schichtobjekte und schaetzt Mindestplaene manueller Therapien.
+Das optionale Sheet `93_Wartebereich` trennt Testhinweise und unplausible
+Ankunftszeiten; es ist noch keine validierte Wartezeitkennzahl.
+Die Analyse trennt Behandlungsdauer/Slotlaenge, positive Slotueberschneidung
+und konservative Lueckenmessung von beobachteten Patientenwechseln.
+Fuer Herstellerangaben und korrigierte Bildfrequenzen ist ein neuer Export
+erforderlich. Bei Exporten vor rc.6 bitte ebenfalls den
 neuen Collector verwenden: verlorene Ressourcen-Zuordnungen sind nicht
 nachträglich in Python rekonstruierbar.
 

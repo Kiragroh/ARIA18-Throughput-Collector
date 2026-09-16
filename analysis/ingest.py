@@ -19,7 +19,8 @@ def load_export(path: Path):
         if not required <= set(events):
             raise ValueError("Incomplete flat event contract")
         return meta_rows.iloc[0].to_dict(),events,[],[]
-    tables = {"00_Metadata":[],"01_Capabilities":[],"02_Activities":[],"90_Events":[],"91_Images":[]}
+    tables = {"00_Metadata":[],"01_Capabilities":[],"02_Activities":[],"90_Events":[],"91_Images":[],
+              "92_Acquisition":[]}
     with path.open("rb") as stream:
         workbook = load_workbook(stream,read_only=True,data_only=True,keep_links=False)
         try:
@@ -58,7 +59,35 @@ def load_export(path: Path):
         raise ValueError("Mixed or missing run identity")
     if events.run_id.iloc[0] != metadata[0].get("run_id"):
         raise ValueError("Run identity differs from metadata")
+    events = enrich_images(events, tables['92_Acquisition'], metadata[0])
     return metadata[0],events,tables["01_Capabilities"],tables["02_Activities"]
+
+
+def enrich_images(events, records, metadata):
+    """Require an exact same-run image key. Never manufacture a patient/day match."""
+    if not records:
+        metadata['image_acquisition_state'] = 'NOT_INCLUDED'
+        return events
+    native = pd.DataFrame(records)
+    if set(native.run_id.dropna()) != {metadata['run_id']}:
+        raise ValueError('Image acquisition run identity differs from metadata')
+    metadata['image_acquisition_state'] = 'AVAILABLE' if native.source_state.eq('AVAILABLE').any() else 'UNAVAILABLE'
+    if not events.source.eq('image_object').any():
+        return events
+    native = native[native.source_state.eq('AVAILABLE') & native.event_key.notna()].drop_duplicates()
+    if native.event_key.duplicated().any():
+        raise ValueError('Conflicting acquisition image identities')
+    fields = ['event_key','acquisition_kind','image_manufacturer','acquisition_machine','acquisition_time']
+    result = events.merge(native.reindex(columns=fields), on='event_key',how='left',validate='many_to_one')
+    images = result.source.eq('image_object')
+    known = images & result.acquisition_kind.notna() & result.acquisition_kind.ne('unknown')
+    # Keep the more specific kV/MV label for manufacturer-qualified CBCT objects.
+    keep_specific = result.acquisition_kind.eq('cbct_unknown') & result.image_kind.isin(['kv_cbct','mv_cbct'])
+    result.loc[known & ~keep_specific,'image_kind'] = result.loc[known & ~keep_specific,'acquisition_kind']
+    result.loc[known,'image_class_evidence'] = 'native_manufacturer_modality_reference'
+    machine = images & result.acquisition_machine.fillna('').ne('')
+    result.loc[machine,'machine'] = result.loc[machine,'acquisition_machine']
+    return result
 
 
 def normalize_flow(events, profile):
@@ -68,6 +97,12 @@ def normalize_flow(events, profile):
     brachy = pd.to_numeric(frame.get("is_brachy",pd.Series(0,index=frame.index)),errors="coerce").eq(1)
     frame.loc[delivered & ~brachy,"kind"] = "treatment_external"
     frame.loc[delivered & brachy,"kind"] = "treatment_brachy"
+    # Calendar entries on R&V devices are scheduling evidence, never additional
+    # clinical fractions, starts or episode endpoints. Keep them in throughput.
+    connected = set(frame.loc[delivered, 'machine'].dropna()) - {''}
+    scheduled_rv = (frame.source.eq('appointment') & frame.kind.str.startswith('treatment')
+                    & frame.machine.isin(connected))
+    frame = frame[~scheduled_rv]
     # Imaging is never a treatment-start event by itself.
     frame = frame[~frame.source.eq("imaging") & frame.patient_key.notna()]
     return frame

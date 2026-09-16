@@ -1,6 +1,7 @@
 from collections import defaultdict
 import pandas as pd
 from .metrics import deduplicate, status_group, slot_overlap, interval_stats, distribution, natural_key
+from .gap_context import collect as collect_gap_context, publish as publish_gap_context
 
 MODELS = ("activity","workflow","technical")
 TIME_COLUMNS = ("event_start","event_end","activity_start","activity_end","completed")
@@ -25,6 +26,10 @@ def prepare_visits(events, profile):
     relevant=rows.source.eq("delivery") | rows.kind.str.startswith("treatment")
     audit["unmapped_device_rows"]=int((relevant & ~rows.machine.isin(profile.machines)).sum())
     rows = rows[rows.machine.isin(profile.machines)].copy()
+    # A calendar-only machine cannot establish technical utilization, even if
+    # configured alongside R&V devices. Do not treat its slots as idle time.
+    connected = set(rows.loc[rows.source.eq('delivery'), 'machine'])
+    rows = rows[rows.machine.isin(connected)].copy()
     technical = rows[rows.source.eq("delivery") & rows.patient_key.ne("")]
     incomplete = technical.plan_key.eq("") | pd.to_numeric(technical.fraction,errors="coerce").fillna(0).le(0)
     audit["technical_identity_incomplete_rows"] = int(incomplete.sum())
@@ -149,6 +154,7 @@ def prepare_visits(events, profile):
         act_end = a.activity_end if pd.notna(a.activity_end) else technical_end
         record("activity",act_start,act_end,base,
                pd.isna(a.activity_start) or pd.isna(a.activity_end))
+        # ActivityEndDateTime is a documented actual end, NOT ScheduledEndTime.
         workflow_end = a.activity_end if pd.notna(a.activity_end) else a.completed
         record("workflow",technical_start,workflow_end,base, pd.isna(a.activity_end))
         record("technical",technical_start,technical_end,base)
@@ -176,7 +182,8 @@ def prepare_visits(events, profile):
             expected[(profile.machines[session["machine"]],session["date"])]+=1
     blocks = rows[rows.source.eq("appointment") & rows.kind.eq("block") &
                   ~rows.status.isin(["cancelled","deleted"])].copy()
-    return dict(visits=visits,slots=slot_frame[slot_columns],audit=audit,blocks=blocks,expected=expected)
+    activities = rows[rows.source.eq('appointment') & ~rows.status.isin(['cancelled','deleted'])].copy()
+    return dict(visits=visits,slots=slot_frame[slot_columns],audit=audit,blocks=blocks,expected=expected,activities=activities)
 
 
 def _bucket(date, granularity):
@@ -215,12 +222,37 @@ def aggregate(prepared, profile):
                     inferred_count = (len(inferred_slot) if inferred_slot.empty or
                                       inferred_slot.patient_key.nunique() >= profile.minimum_patients else None)
                     days,cycles,changes = [],[],[]
+                    complete_cycles,complete_changes = [],[]
+                    complete_cycle_patients,complete_change_patients = set(),set()
+                    change_patients=set()
+                    gap_context = {}
                     cycle_patients=set()
                     expected_group={key:n for key,n in expected.items()
                                     if (key[0] in visible if machine=='ALL' else key[0]==machine)}
                     for (device,day),d in group.groupby(["machine","date"]):
+                        complete = len(d)>=expected_group.get((device,day),len(d))
+                        # Observed neighbours are a separate sample from complete-day idle time.
+                        previous = None
+                        for row in d.sort_values(["start","end"]).itertuples():
+                            if previous and previous.patient_key != row.patient_key:
+                                pair = (previous.patient_key,row.patient_key)
+                                cadence = (row.start-previous.start).total_seconds()/60
+                                turnover = (row.start-previous.end).total_seconds()/60
+                                if cadence > 0:
+                                    cycles.append(cadence)
+                                    cycle_patients.update(pair)
+                                    if complete:
+                                        complete_cycles.append(cadence)
+                                        complete_cycle_patients.update(pair)
+                                if turnover >= 0:
+                                    changes.append(turnover)
+                                    change_patients.update(pair)
+                                    if complete:
+                                        complete_changes.append(turnover)
+                                        complete_change_patients.update(pair)
+                            previous = row
                         # A missing visit interval is unknown occupancy, not idle time.
-                        if len(d)<expected_group.get((device,day),len(d)):
+                        if not complete:
                             continue
                         intervals = [(a.timestamp()/60,b.timestamp()/60) for a,b in zip(d.start,d.end)]
                         stats = interval_stats(intervals)
@@ -228,6 +260,9 @@ def aggregate(prepared, profile):
                         stats["machine"] = d.machine.iloc[0]
                         blocks=prepared["blocks"]
                         raw_machine=next((key for key,label in profile.machines.items() if label==d.machine.iloc[0]),None)
+                        activities=prepared.get('activities',prepared['blocks'])
+                        activities=activities[activities.machine.eq(raw_machine) & activities.date.eq(day)]
+                        collect_gap_context(activities,stats['gap_intervals'],gap_context)
                         blocks=blocks[blocks.machine.eq(raw_machine) & blocks.date.eq(day)]
                         blocked_gaps=[]
                         for block in blocks.itertuples():
@@ -240,22 +275,19 @@ def aggregate(prepared, profile):
                         stats["blocked_free_minutes"]=interval_stats(blocked_gaps)["occupied_minutes"] or 0
                         stats["nominal_hours"]=profile.opening_hours.get(raw_machine) if profile.opening_hours_confirmed else None
                         days.append(stats)
-                        ordered = d.sort_values(["start","end"])
-                        max_end = None
-                        previous = None
-                        for row in ordered.itertuples():
-                            if previous and previous.patient_key != row.patient_key:
-                                cycle_patients.update((previous.patient_key,row.patient_key))
-                                cycles.append((row.start-previous.start).total_seconds()/60)
-                                changes.append(max(0,(row.start-max_end).total_seconds()/60))
-                            previous = row
-                            max_end = row.end if max_end is None else max(max_end,row.end)
                     window = sum(d["window_minutes"] or 0 for d in days)
                     free = sum(d["free_minutes"] or 0 for d in days)
                     gt30 = sum(d["free_gt30_minutes"] or 0 for d in days)
                     free_patients=set().union(*(d['patients'] for d in days))
                     safe_free=len(free_patients)>=profile.minimum_patients
                     booked = group.booked.sum()
+                    positioned = group[group.booked.notna()].copy()
+                    if not {'slot_start','slot_end'}.issubset(positioned.columns):
+                        positioned = positioned.iloc[:0]
+                    else:
+                        positioned = positioned[positioned.slot_start.notna() & positioned.slot_end.notna()]
+                    safe_position = positioned.patient_key.nunique()>=profile.minimum_patients
+                    inside = ((positioned.start>=positioned.slot_start) & (positioned.start<positioned.slot_end)) if safe_position else None
                     kpi = dict(visits=len(group),expected_visits=sum(expected_group.values()),
                                unique_patients=len(patients),device_days=len(days),
                                complete_device_days=len(days),incomplete_device_days=len(expected_group)-len(days),
@@ -264,6 +296,9 @@ def aggregate(prepared, profile):
                                inferred_timing_slots=inferred_count,
                                match_pct=100*slot.matched.mean() if len(slot) else None,
                                measurable_slots=int(group.booked.notna().sum()),
+                               slot_position_n=len(positioned) if safe_position else None,
+                               slot_overlap_visits_pct=100*((positioned.start<positioned.slot_end) & (positioned.end>positioned.slot_start)).mean() if safe_position else None,
+                               fully_in_slot_pct=100*(inside & (positioned.end<=positioned.slot_end)).mean() if safe_position else None,
                                booked_minutes=float(booked) if safe_slots else None,
                                overlap_minutes_in_slots=float(group.overlap.sum()) if safe_slots else None,
                                duration_minutes_in_slots=float(group.loc[group.booked.notna(),'duration'].sum()) if safe_slots else None,
@@ -273,6 +308,8 @@ def aggregate(prepared, profile):
                                booked_mean=group.booked.mean() if safe_slots else None,
                                duration_mean=group.duration.mean(),fallback_intervals=int(group.fallback.sum()),
                                free_hours=free/60,free_gt30_hours=gt30/60,window_hours=window/60,
+                               free_ge30_hours=sum(sum(y-x for x,y in d['gap_intervals'] if y-x>=30) for d in days)/60,
+                               free_ge30_count=sum(sum(y-x>=30 for x,y in d['gap_intervals']) for d in days),
                                free_pct=100*free/window if window else None,
                                occupied_pct=100*(window-free)/window if window else None,
                                free_gt30_pct=100*gt30/window if window else None,
@@ -299,7 +336,9 @@ def aggregate(prepared, profile):
                         "slot_coverage":distribution(100*group.overlap/group.booked,measured_slot_patients,profile.minimum_patients),
                         "duration_ratio":distribution(100*group.duration/group.booked,measured_slot_patients,profile.minimum_patients),
                         "cycle":distribution(cycles,cycle_patients,profile.minimum_patients),
-                        "change":distribution(changes,cycle_patients,profile.minimum_patients),
+                        "change":distribution(changes,change_patients,profile.minimum_patients),
+                        "cycle_complete_days":distribution(complete_cycles,complete_cycle_patients,profile.minimum_patients),
+                        "change_complete_days":distribution(complete_changes,complete_change_patients,profile.minimum_patients),
                         "free":distribution([d["free_minutes"]/60 for d in days],free_patients,profile.minimum_patients),
                         "free_gt30":distribution([d["free_gt30_minutes"]/60 for d in days],free_patients,profile.minimum_patients),
                         "free_pct":distribution([100*d["free_minutes"]/d["window_minutes"] for d in days if d["window_minutes"]],free_patients,profile.minimum_patients),
@@ -307,6 +346,8 @@ def aggregate(prepared, profile):
                         "free_gt30_pct":distribution([100*d["free_gt30_minutes"]/d["window_minutes"] for d in days if d["window_minutes"]],free_patients,profile.minimum_patients),
                     }
                     groups.append(dict(machine=machine,suppressed=suppressed,kpi=kpi,distributions=group_distributions,
+                                       transition_scope='consecutive_observed_visits',
+                                       gap_activities=publish_gap_context(gap_context,profile.minimum_patients,safe_free and not suppressed),
                                        pool_excludes_suppressed=machine=="ALL" and bool(devices-visible)))
                 result[granularity][model].append(dict(
                     label=str(period),start=str(period.start_time.date()),end=str(period.end_time.date()),

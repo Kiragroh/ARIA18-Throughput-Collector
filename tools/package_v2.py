@@ -30,6 +30,8 @@ def manifest(analysis=True):
             'Analyse/tools/create_comparison_demo.py': 'tools/create_comparison_demo.py',
             'Analyse/tools/build_collector_v2.py': 'tools/build_collector_v2.py',
             'Analyse/tools/imaging_objects_v2.py': 'tools/imaging_objects_v2.py',
+            'Analyse/tools/image_acquisition_v2.py': 'tools/image_acquisition_v2.py',
+            'Analyse/tools/waiting_area_v2.py': 'tools/waiting_area_v2.py',
             'Analyse/tools/build_rdl.py': 'tools/build_rdl.py',
             'Analyse/docs/METHODIK.md': 'docs/v2/METHODIK.md',
             'Analyse/docs/AG_PROJEKT.md': 'docs/v2/AG_PROJEKT.md',

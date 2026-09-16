@@ -16,8 +16,8 @@
 | Gebucht | Tatsächlich im Kalender stehende Endzeit minus Beginn | Kein nachtraeglich angenommener Standardtermin |
 | Freie Stunden | Summe positiver Luecken der Intervallvereinigung | Beobachtetes Geraetetagesfenster zwischen erstem Beginn und letztem Ende |
 | Freier Anteil | Freie Stunden | Stunden dieses beobachteten Fensters, nicht nominelle Verfuegbarkeit |
-| Takt | Beginn bis naechster Beginn eines anderen Patienten | Innerhalb desselben Geraetetags, nie ueber Nacht |
-| Wechsel | Bisher spaetestes Ende bis naechster Beginn | Negative Differenzen sind Ueberlappung, als Wechsel Null |
+| Takt | Beginn bis naechster beobachteter Beginn eines anderen Patienten | Positive Differenz am selben Geraetetag, nie ueber Nacht |
+| Wechsel | Ende des vorherigen beobachteten Besuchs bis naechster Beginn | Ueberlappungen ausgeschlossen, nicht auf Null gesetzt |
 | Behandlungsepisode | Ueberlappende Behandlungsintervalle mit maximal 30 Tagen Pause | Alle bestaetigten Modalitaeten derselben Person zusammen |
 | Aufklaerungsepisode | Kette abgeschlossener Aufklaerungen vor einem folgenden Beginn bzw. ohne folgenden Beginn | Erster abgeschlossener Termin bestimmt die Kohorte |
 | Ungeklaert ohne Beginn | Reife Aufklaerungsepisoden ohne Behandlung und ohne weitere Beobachtung | Alle reifen Episoden, auch die mit Behandlung; kein No-show-Nachweis |
@@ -116,7 +116,7 @@ ausgewiesen. Dokumentierte Blockslots werden mit freien Intervallen geschnitten:
 freie Zeit innerhalb und ausserhalb dokumentierter Blocks ist in der CSV enthalten.
 Eine solche Luecke ist nicht automatisch organisatorisch vermeidbar.
 
-Luecken, Takt und Wechsel setzen einen vollstaendig messbaren Geraetetag voraus:
+Luecken setzen einen vollstaendig messbaren Geraetetag voraus:
 alle relevanten Termine plus nicht zugeordnete technische Besuche benoetigen ein
 plausibles Intervall des gewaehlten Modells. Sonst bleibt die Tagesbelegung
 unbekannt; die fehlende Behandlung wird nicht als Pause gezaehlt. Vollstaendige
@@ -125,11 +125,61 @@ auswertbare Teilmenge kann selektiv sein und wird nicht auf ein Jahr hochgerechn
 Auch vollstaendige exportierte Intervalle beweisen nicht die Vollstaendigkeit
 aller klinischen Quellen. Diese muss der Standort gesondert bestaetigen.
 
+Takt und Wechsel verwenden alle aufeinanderfolgenden beobachteten Besuche.
+Ein unvollstaendiger Tag schliesst diese Stichprobe nicht pauschal aus.
+Fehlende Zwischenbesuche koennen Abstaende vergroessern: Diese Verteilungen
+belegen deshalb keine freie Zeit und keine lueckenlose Patientenfolge.
+Der JSON-Export kennzeichnet dies als `consecutive_observed_visits` und liefert
+mit `cycle_complete_days` und `change_complete_days` die strengere Teilmenge
+als Sensitivitaetsanalyse. Takt und Wechsel haben jeweils eigene Stichproben
+und Kleingruppenpruefungen; ueberlappende Besuche erzeugen keinen Null-Wechsel.
+
 Optionale Oeffnungsstunden gelten nur bei lokaler Bestaetigung, je **beobachtetem
 aktiven Geraetetag**. Tage ohne Behandlung fehlen in diesem Nenner. Daraus darf
 keine Jahresverfuegbarkeit oder ungeplante technische Ausfallzeit abgeleitet werden.
 
 ## Deduplizierung und Grenzen
+
+### Slotlaenge und zeitliche Passung
+
+Primaer ist die Summe der tatsaechlichen Behandlungsdauern geteilt durch die
+Summe der zugehoerigen gebuchten Slotlaengen. Ein zeitlicher Versatz aendert
+diese Kennzahl nicht; Werte ueber 100 Prozent sind moeglich.
+Die zeitliche Ueberlappung mit dem Kalenderslot bleibt eine separate Kennzahl.
+`slot_overlap_visits_pct` zaehlt jede positive zeitliche Ueberschneidung,
+auch bei Beginn vor oder Ende nach dem Slot. Reine Randberuehrung zaehlt nicht.
+`fully_in_slot_pct` verlangt Beginn und Ende innerhalb des Slots.
+Nenner ist `slot_position_n`: Besuche mit
+messbarem Ist-Intervall und gueltigem gebuchten Slot. Fehlende Zeiten werden
+nicht als Fehlpassung oder Null gewertet. Alle Werte folgen dem Zeitmodell.
+
+### Optionale Erweiterung: Ankunft und Wartezeit
+
+Das optionale Excel-Sheet `93_Wartebereich` prueft native ARIA-Daten aus
+`PatientLocation` und `PatientLocationMH`, verknuepft ueber den Termin.
+Es verwendet den fruehesten expliziten Check-in (`CheckedInFlag=1`) und den
+dokumentierten Ist-Beginn (`ActualStartDate`), niemals das geplante Ende.
+Die aktuelle InSightive-Wartebereichsansicht ist keine historische Quelle:
+sie kann intern auf den heutigen Tag eingeschraenkt sein.
+
+Ausgegeben werden nur monatliche Diagnosegruppen: fehlender Check-in,
+fehlender Ist-Beginn, negative Zeit, tageuebergreifend, mehr als 240 Minuten
+und gleicher Tag mit 0 bis 240 Minuten. Die 240 Minuten sind eine technische
+Pruefschwelle, keine klinische Normalitaetsgrenze. Auch die letzte Gruppe ist
+ohne lokale Validierung keine belastbare Wartezeitkennzahl. Alle Terminarten
+werden hier zunaechst gemeinsam geprueft, nicht nur Bestrahlungstermine.
+Namenshinweise TEST/DUMMY werden intern als `TEST_HINT` getrennt; `NOT_FLAGGED`
+beweist nicht, dass keine Testpatienten enthalten sind. Keine Namen, IDs,
+Notizen oder Einzelfallzeiten werden in diesem Sheet ausgegeben.
+Gruppen unter fuenf Personen bleiben zahlenmaessig leer. Fehlende Quelle
+oder Leserechte werden als `UNAVAILABLE` statt als Null markiert.
+
+Als weitere Erweiterung vorgemerkt: externe Barcode-/OPAS-Ankunftsereignisse.
+Erforderlich sind eine eindeutige Besuchszuordnung, Zeitbasis/Zeitzone und die
+lokale Bedeutung des Ereignisses (Ankunft, Anmeldung, Raumzutritt).
+Erst dann kann Ankunft bis tatsaechlichem Behandlungsbeginn ausgewertet werden.
+Ein verspaeteter Beginn gegenueber dem Kalenderslot ist keine Patientenwartezeit.
+Ohne solche Nachweise bleibt die Kennzahl nicht verfuegbar; keine Pflichtangabe.
 
 Identische Quellzeilen und gleiche Termine mit mehrfachen Ressourcen werden
 zusammengefuehrt. Natuerlicher Terminschluessel: Person + exakter Aktivitaetscode +
@@ -212,6 +262,33 @@ Mehrere sich ueberlappende Auswertungen erfordern weiterhin eine lokale
 Datenschutzpruefung. Fehlend ist nicht Null.
 
 ## Bildobjektfrequenz und Ausstattung
+
+Fuer Geraete mit technischem R&V-Nachweis im Export werden Therapie-Termine
+nicht als zusaetzlicher klinischer Behandlungsnachweis verwendet, auch nicht
+an Tagen ohne passenden Delivery-Datensatz. Das gilt fuer Patienten, Fraktionen,
+Aufklaerungszuordnung und Behandlungsepisoden. Ihre Kalenderslots und Zeitanker
+bleiben im Durchsatz erhalten. Neueinstellungen folgen technischen Planstarts.
+Fehlende technische Daten sind eine Quellluecke, kein Anlass, Termine als
+tatsaechlich bestrahlte Fraktionen umzudeuten.
+
+Ab Collector rc.8 ergaenzt die native VARIAN-Quelle Hersteller, Modalitaet,
+Referenzkennzeichen und Aufnahmegeraet. Brainlab-ImagePI/RTIMAGE wird als
+ExacTrac klassifiziert, niemals ImageDRR/ReferenceImage. ImageCT-Schichtobjekte
+werden nicht zusaetzlich als Aufnahmen gezaehlt. Die Verknuepfung zur DWH erfolgt
+ueber dieselbe gesalzene Bildidentitaet, nicht ueber Patient und Tag. Details und
+Quellvoraussetzungen stehen in der [Bildgebungsdokumentation](https://github.com/Kiragroh/ARIA18-Throughput-Collector/blob/main/docs/v2/IMAGING.md).
+
+Reine Termingeraete ohne technische Nachweise werden nicht fuer Auslastung,
+Slotnutzung, Behandlungsdauer oder Pausen verwendet. Fuer die klinische
+Beschreibung wird je Patient und Geraet ein Behandlungscluster mit maximal 30
+Tagen Abstand als ein Mindestplan geschaetzt. Die Clusterbildung erfolgt vor
+der Periodenauswahl ueber den gesamten verfuegbaren Kontext. Diese Zahl ist
+getrennt von technisch belegten Plaenen; sie belegt weder Planidentitaet,
+Sollfraktionen noch Planabschluss. Unterschiedliche echte Plaene im Cluster
+bleiben unerkannt, getrennte Cluster koennen denselben technischen Plan nutzen.
+Es handelt sich deshalb um eine Modellannahme, keine bewiesene Untergrenze
+eindeutiger Planidentitaeten. Ungeklaerte Termine an technisch belegten Geraeten
+werden nicht als zusaetzliche Mindestplaene geschaetzt.
 
 Der optionale Adapter liest `DWH.FactPatientImage` fuer den ausgewaehlten
 Zeitraum. Er dedupliziert nach Bildobjektidentitaet, ersatzweise nach belegbarer

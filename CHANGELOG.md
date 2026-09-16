@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.0.0-rc.9 - 2026-09-16
+
+- Collector rc.8: native Bildhersteller-/Akquisitionsquelle zur ExacTrac-
+  Zuordnung und optionales Sheet 93_Wartebereich mit historischen Check-ins.
+  Wartebereich bleibt reine Diagnostik; auffaellige Zeiten und Testhinweise
+  werden getrennt, fehlende Quellen nicht als Null behandelt.
+- Analyse rc.7: R&V-Fraktionen ohne zusaetzliche manuelle Doppelzaehlung,
+  gesonderte Mindestplanschaetzung fuer reine Termingeraete und Luecken ab
+  30 Minuten mit Kalenderkontext. Beobachtete Takt-/Wechselstichproben bleiben
+  von der strengeren Auswertung vollstaendiger Geraetetage getrennt.
+- Behandlungsdauer/Slotlaenge primaer; beliebige positive Slotueberschneidung
+  als Zusatzquote. Ueberlappungen erzeugen keine kuenstlichen Null-Wechsel.
+- Offline-JSON-Formular mit optionalen Angaben zur Aufklaerungsdefinition.
+  Technischer Pilotstand, keine bestaetigte Multistandort-Paritaet.
+
 ## 2.0.0-rc.8 - 2026-09-16
 
 - Projektstartseite, Kooperation, Offline-Formular und beide Pakete zeigen

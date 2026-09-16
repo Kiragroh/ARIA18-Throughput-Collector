@@ -140,7 +140,9 @@ def summarize(events, profile, *, data_through, context_start, sources_complete=
                 values[field] = total if total == 0 or len(patients) >= profile.minimum_patients else None
             if any(values[f] is None for f in fields if f.endswith("_appointments")):
                 values["registered_counselling_appointments"] = None
-            periods.append(dict(label=str(period), start=str(period.start_time.date()), values=values))
+            periods.append(dict(label=str(period), start=str(period.start_time.date()), values=values,
+                withheld={field:'Kleingruppe oder rueckrechenbare Summe'
+                          for field,value in values.items() if value is None}))
         out["periods"][granularity] = periods
     out["series"] = [dict(date=day, **{k:(v if len(people[day][k])>=profile.minimum_patients else None)
                                      for k,v in values.items()}) for day,values in sorted(daily.items())]

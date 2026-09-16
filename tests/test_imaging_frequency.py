@@ -24,6 +24,17 @@ def test_frequency_counts_objects_not_fields_and_does_not_guess_hypersight():
     assert g["visit_duration_minutes"]["median"] == 12.5
 
 
+def test_unmapped_images_are_source_audit_not_treatment_imaging():
+    images, prepared, profile = fixture()
+    images['machine'] = 'NA'
+    images['image_kind'] = 'unknown'
+    out = summarize_images(images, prepared, profile, {'image_objects_state':'AVAILABLE'})
+    period = out['periods']['year']['activity'][0]
+    assert period['groups'] == []
+    assert period['unassigned'][0]['objects'] == 12
+    assert period['unassigned'][0]['machine'] == 'Geraet fehlt / mehrdeutig'
+
+
 def test_missing_source_is_not_zero_and_multiple_visits_are_ambiguous():
     images, prepared, profile = fixture()
     assert not summarize_images(images,prepared,profile,{})["available"]

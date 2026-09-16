@@ -43,6 +43,17 @@ def treatment_days(events, profile, data_through):
     result["fraction_countable"] = result.evidence.eq("manual") | (
         result.plan_key.ne("") & pd.to_numeric(result.fraction, errors="coerce").fillna(0).gt(0))
     result.loc[result.manual_technical_overlap,'fraction_countable'] = False
+    # Cluster the full observation context before slicing periods. A manual
+    # cluster is a minimum-plan estimate, never a technical plan identity.
+    result['manual_cluster'] = ''
+    technical_devices = set(technical.machine)
+    eligible = (result.evidence.eq('manual') & result.fraction_countable
+                & ~result.machine.isin(technical_devices) & result.machine.ne('Nicht zugeordnet'))
+    for (patient, machine), group in result[eligible].groupby(['patient_key', 'machine']):
+        group = group.sort_values('event_start')
+        clusters = group.event_start.dt.normalize().diff().dt.days.gt(30).cumsum()
+        for index, cluster in clusters.items():
+            result.at[index, 'manual_cluster'] = f'{patient}|{machine}|{cluster}'
     return result
 
 
@@ -93,7 +104,8 @@ def period_counts(days, plans, profile, start, end):
                   & plans.start_confirmed]
     if current.empty:
         return dict(patients=0, fractions=0, technical_fractions=0, manual_fractions=0,
-                    treated_plans=0, new_plans=0, treatment_days=0, patients_per_day=None,
+                    treated_plans=0, estimated_manual_plans=0, plans_with_manual_estimate=0,
+                    new_plans=0, treatment_days=0, patients_per_day=None,
                     fractions_per_day=None, plan_ends_incomplete=0, plan_ends_complete=0,
                     plan_ends_target_unknown=0, plan_open_followup=0, plans_resumed_after_gap=0)
     n = profile.minimum_patients
@@ -101,6 +113,7 @@ def period_counts(days, plans, profile, start, end):
     valid = current[current.fraction_countable]
     technical = valid[valid.evidence.eq("technical")]
     manual = valid[valid.evidence.eq("manual")]
+    clusters = manual[manual.get('manual_cluster', pd.Series('', index=manual.index)).ne('')]
     ended = plans[plans.end.notna() & (plans.end >= pd.Timestamp(start))
                   & (plans.end < pd.Timestamp(end)+pd.Timedelta(days=1))]
     summary = dict(
@@ -109,6 +122,8 @@ def period_counts(days, plans, profile, start, end):
         technical_fractions=_cell(len(technical), technical.patient_key, n),
         manual_fractions=_cell(len(manual), manual.patient_key, n),
         treated_plans=_cell(len(active), active.patient_key, n),
+        estimated_manual_plans=_cell(clusters.manual_cluster.nunique() if not clusters.empty else 0,
+                                    clusters.patient_key, n),
         new_plans=_cell(len(begun), begun.patient_key, n),
         treatment_days=_cell(current.date.nunique(), patients, n),
         patients_per_day=float(current.groupby("date").patient_key.nunique().mean()) if patients.nunique() >= n else None,
@@ -120,11 +135,14 @@ def period_counts(days, plans, profile, start, end):
         summary[name] = _cell(len(subset), subset.patient_key, n)
     pending = active[active.state.eq("open_followup")]
     summary["plan_open_followup"] = _cell(len(pending), pending.patient_key, n)
-    resumed = active[active.resumed_after_gap]
+    resumed = active[active.resumed_after_gap.astype(bool)]
     summary["plans_resumed_after_gap"] = _cell(len(resumed), resumed.patient_key, n)
     # Do not reveal a hidden evidence subgroup by subtraction.
     if summary["technical_fractions"] is None or summary["manual_fractions"] is None:
         summary["fractions"] = None
+    summary['plans_with_manual_estimate'] = (
+        summary['treated_plans'] + summary['estimated_manual_plans']
+        if summary['treated_plans'] is not None and summary['estimated_manual_plans'] is not None else None)
     return summary
 
 

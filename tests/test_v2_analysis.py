@@ -158,7 +158,7 @@ def test_resource_fanout_same_appointment_is_one_even_with_different_source_keys
     assert audit["natural_duplicates"]==1
 
 
-def test_mixed_iso_precision_preserves_measured_activity_and_flow():
+def test_mixed_iso_precision_preserves_measured_activity_and_flow(connected_rows):
     from analysis.throughput import prepare_visits
     from analysis.contracts import Profile
     from analysis.flow import summarize
@@ -170,9 +170,10 @@ def test_mixed_iso_precision_preserves_measured_activity_and_flow():
             ("2025-01-02T08:00:00","2025-01-02T08:15:00"),
             ("2025-01-02T08:20:00.123","2025-01-02T08:35:00.123")])])
     profile=Profile(machines={"M1":"Machine 1"},activity_codes={"TX":"treatment_external"})
-    prepared=prepare_visits(rows,profile)
-    assert len(prepared["visits"]["activity"])==2
-    assert prepared["visits"]["activity"].duration.tolist()==[15,15]
+    prepared=prepare_visits(pd.DataFrame(connected_rows(rows.to_dict('records'))),profile)
+    current = prepared['visits']['activity'].query("date == '2025-01-02'")
+    assert len(current)==2
+    assert current.duration.tolist()==[15,15]
     flow=summarize(rows,profile,data_through="2026-04-01",context_start="2024-01-01")
     assert flow["treatment_episodes"]==2
 
