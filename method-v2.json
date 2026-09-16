@@ -4,6 +4,7 @@
   "default_period_start": "2025-01-01",
   "default_period_end": "2025-12-31",
   "default_model": "activity",
+  "unknown_timing_appointments": "unique_documented_activity_containment_of_RV_visit_without_declared_candidate_timing_only",
   "default_event_details": true,
   "watermark_confirmation": "local_profile_complete_through_or_explicit_legacy_export",
   "default_gap_filter": "all_positive",

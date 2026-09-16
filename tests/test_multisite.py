@@ -53,6 +53,15 @@ def test_six_sites_keep_values_denominators_and_no_pooled_median():
     assert "pooled_median" not in text
 
 
+def test_recovered_timing_counts_survive_comparison_without_reconstruction():
+    a,b = site(1),site(2)
+    a['periods']['year']['activity'][0]['groups'][0]['kpi']['inferred_timing_slots'] = 12
+    b['periods']['year']['activity'][0]['groups'][0]['kpi']['inferred_timing_slots'] = None
+    result = compare({'A':a,'B':b})
+    counts = {r['alias']:r['kpi']['inferred_timing_slots'] for r in result['periods']}
+    assert counts == {'A':12,'B':None}
+
+
 @pytest.mark.parametrize("change,reason", [
     (lambda d: d.update(start="2024-01-01"), "period_mismatch"),
     (lambda d: d["provenance"].update(analysis_sha256="b"*64), "analysis_mismatch"),

@@ -61,6 +61,37 @@ Datensaetze koennen anhand dieses Exports nicht nachtraeglich inventarisiert wer
 
 ## Zeitmodelle
 
+### Terminzuordnung ohne standortspezifischen Namen
+
+Fachlich klassifizierte Therapietermine bleiben die primaere Terminquelle.
+Zusaetzlich kann ein noch nicht klassifizierter Geraetetermin einen Zeitanker
+liefern, wenn dieselbe Person am selben konfigurierten R&V-Geraet einen
+technischen Besuch hat und dessen gesamtes Intervall im dokumentierten
+Aktivitaetsintervall liegt. Kalender- und Aktivitaetszeiten muessen gleichentags,
+positiv und innerhalb der bestehenden Plausibilitaetsgrenzen liegen. Es gelten
+derselbe Terminabgleich von -120 bis +240 Minuten und die vorhandene
+Besuchsdefinition. Status muss abgeschlossen oder offen sein.
+
+Die Zuordnung muss in **beide Richtungen eindeutig** sein. Bereits ein
+klassifizierter Therapietermin als zeitlicher Kandidat sperrt die automatische
+Ergaenzung, auch wenn dessen Zuordnung mehrdeutig bleibt. Kein naechstgelegener
+Ersatz bei konkurrierenden unbekannten Terminen, keine Zuordnung eines Termins
+zu mehreren Besuchen. Explizites Ignore, Block, Aufklaerung oder Beobachtung
+wird niemals automatisch ueberstimmt.
+
+Diese Regel betrifft ausschliesslich Zeitmessungen und den zugehoerigen
+Slotnenner. Die klinische Terminart und der Status werden nicht umklassifiziert.
+Patienten, Fraktionen, Planbeginne und Behandlungsepisoden erhalten dadurch
+keine zusaetzlichen manuellen Nachweise. Brachy und historische Therapie ohne
+R&V benoetigen weiterhin eine lokale Zuordnung. Aus Zahl oder Namen der
+Termine wird kein technischer Bestrahlungsnachweis abgeleitet.
+
+R&V-gestuetzte Zeitzuordnungen werden im Kontext und pro Abschnitt/Geraet
+separat gezaehlt; kleine Teilgruppen bleiben unterdrueckt. Die lokale fachliche
+Pruefung bleibt erforderlich, auch wenn die technische Zuordnung eindeutig ist.
+
+### Zeitanker
+
 - **Aktivitaet (Standard):** dokumentierter Aktivitaetsbeginn bis dokumentiertes Ende.
   Fehlende einzelne Anker koennen durch zugeordnete technische Anker ersetzt
   werden. Anzahl dieser Ersatzintervalle bleibt separat sichtbar.

@@ -24,6 +24,7 @@ FLOW_PERIOD = ('treatment_starts','treatment_ends','counselling_episodes',
     'registered_counselling_appointments','completed_counselling_appointments',
     'open_counselling_appointments','cancelled_counselling_appointments')
 KPI = ('visits','expected_visits','unique_patients','relevant_slots','matched_slots','measurable_slots',
+    'inferred_timing_slots',
     'booked_minutes','overlap_minutes_in_slots','duration_minutes_in_slots','slot_coverage_pct',
     'duration_ratio_pct','measured_visits_pct','complete_device_days','incomplete_device_days',
     'duration_mean','booked_mean','fallback_intervals','free_hours','free_gt30_hours','window_hours',

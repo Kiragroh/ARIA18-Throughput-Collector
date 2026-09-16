@@ -108,6 +108,8 @@ def analyze(path,profile):
         record_fallback_count=int(bad_time.sum())
         measurements.loc[bad_time,["event_start","event_end"]] = None
     prepared = prepare_visits(measurements,profile)
+    if prepared['audit']['inferred_timing_slots']:
+        notes.append('Zusaetzliche Terminzeit-Zuordnungen aus eindeutiger technischer Bestrahlungsevidenz; Terminarten bleiben fachlich unklassifiziert und werden nicht als manuelle Behandlungen ergaenzt.')
     imaging = summarize_images(events, prepared, profile, metadata)
     periods = aggregate(prepared,profile)
     quality = {}

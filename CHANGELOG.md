@@ -2,6 +2,10 @@
 
 ## Noch nicht veroeffentlicht
 
+- Zeitmessung kann unbekannte Terminbezeichnungen bei eindeutigem technischem
+  R&V-Nachweis und vollstaendig umschliessendem dokumentiertem Aktivitaetsintervall
+  zuordnen. Deklarierte Termine haben Vorrang; Mehrdeutigkeiten bleiben offen.
+  Separate Zaehler, keine Umklassifizierung oder neuen manuellen Fraktionen.
 - Standortvergleich prueft auch den tatsaechlichen RDL-Exportstand: unterschiedliche,
   unbekannte oder bekannte alte Ressourcenabfragen werden nicht durch eine gleiche
   Python-Version als vergleichbar behandelt. Herkunftstabelle und automatisch

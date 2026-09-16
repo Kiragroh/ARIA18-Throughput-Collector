@@ -68,6 +68,35 @@ Erweiterte lokale Testsuite: 143 Tests bestanden in 48,28 Sekunden.
 Diese technische Pruefung bestaetigt keine klinische Vollstaendigkeit und ist
 kein Nachweis fuer die Ausfuehrbarkeit an weiteren, unbekannten Standorten.
 
+## R&V-gestuetzte Zeitzuordnung
+
+Noch unklassifizierte Terminbezeichnungen koennen jetzt Zeitanker liefern,
+wenn eine dokumentierte Aktivitaet genau einen technischen Besuch derselben
+Person am selben Geraet vollstaendig umfasst. Die Zuordnung muss beidseitig
+eindeutig sein; vorhandene deklarierte Therapiekandidaten haben Vorrang.
+Die fachliche Terminart und alle klinischen Zaehleinheiten bleiben unveraendert.
+
+Die neue Regel wurde zuerst an kurzen Ausschnitten der beiden vorhandenen
+Standortexporte geprueft. Anschliessend wurden beide Jahresdateien lokal neu
+berechnet, ohne weitere SQL-Abfrage. Patienten-/Fraktions-/Planzahlen und der
+gesamte Aufklaerungs-/Episodenabgleich blieben exakt identisch. Auch technische
+Besuchszahlen und Dauerverteilungen blieben fuer alle Abschnitte/Geraete gleich.
+Die zusaetzlichen Slots ersetzen zuvor nicht zugeordnete technische Besuche;
+der Nenner erwarteter Besuche wird nicht erhoeht. Aktivitaets- und Workflowzeiten
+koennen sich durch die neu belegten Zeitanker dagegen aendern.
+
+170 Tests bestanden in 51,68 Sekunden, einschliesslich Pakettests. Neue Fixtures
+decken Mehrdeutigkeit, fehlende/ungueltige Zeitanker, falsche Person/Geraet,
+deklarierte Ausschluesse, Eingabereihenfolge, Status und Kleingruppen ab.
+Beide Jahresberichte zeigten 17 befuellte Diagramme, Q1-Werte, zwoelf Monate
+und funktionierende Vergroesserung. Der Offlinevergleich mit zwei vorhandenen
+sowie sechs synthetischen Standorten bestand die Browserpruefung in Hell/Dunkel
+auf Desktop und Mobilgeraet.
+
+Dies ist keine vollstaendige Quellenrekonstruktion: Mehrdeutige Termine bleiben
+offen, manuelle Therapie benoetigt weiterhin lokale Zuordnung, und fehlende
+Intervalle schraenken die Bewertung freier Zeit weiterhin ein.
+
 ## Grenzen und erneuter Export
 
 Die Fraktionskorrektur kann auf vorhandenen Exporten angewandt werden.

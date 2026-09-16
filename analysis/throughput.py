@@ -83,6 +83,35 @@ def prepare_visits(events, profile):
         reverse = sorted(candidate_by_visit[visit])
         if reverse[0][1] == idx and (len(reverse)==1 or reverse[0][0] < reverse[1][0]):
             winners[idx] = visit
+    # Unknown labels may provide timing, but never establish treatment without R&V.
+    # Preserve every declared candidate, even an ambiguous one; infer only a unique
+    # one-to-one containment of a technical visit by a documented activity interval.
+    inferred_candidates, inferred_reverse = defaultdict(list), defaultdict(list)
+    unknown = rows[rows.source.eq('appointment') & rows.kind.eq('unknown') &
+                   rows.status.isin(['completed','open']) & rows.patient_key.ne('')]
+    for idx,a in unknown.iterrows():
+        if any(pd.isna(a[col]) for col in ['event_start','event_end','activity_start','activity_end']):
+            continue
+        if (a.activity_start.date()!=a.activity_end.date() or a.event_start.date()!=a.event_end.date()
+            or not 0 < (a.activity_end-a.activity_start).total_seconds()/60 <= profile.max_interval_minutes
+            or not 0 < (a.event_end-a.event_start).total_seconds()/60 <= 480):
+            continue
+        for s in session_groups[(a.patient_key,a.machine,a.date)]:
+            if candidate_by_visit.get(s['visit']):
+                continue
+            delta = (s['start']-a.event_start).total_seconds()/60
+            if (-120 <= delta <= 240 and pd.notna(s['start']) and pd.notna(s['end'])
+                and a.activity_start <= s['start'] < s['end'] <= a.activity_end):
+                inferred_candidates[idx].append(s['visit'])
+                inferred_reverse[s['visit']].append(idx)
+    inferred = {idx:visits[0] for idx,visits in inferred_candidates.items()
+                if len(visits)==1 and len(inferred_reverse[visits[0]])==1}
+    audit['inferred_timing_slots'] = len(inferred)
+    audit['ambiguous_inferred_timing_slots'] = len(inferred_candidates)-len(inferred)
+    if inferred:
+        appts = pd.concat([appts,unknown.loc[list(inferred)]])
+        winners.update(inferred)
+    appts['inferred_timing'] = appts.index.isin(inferred)
     audit.update(relevant_slots=len(appts),matched_slots=len(winners),ambiguous_matches=ambiguous,
                  technical_plan_fractions=len(plans),technical_visits=len(sessions),
                  multiple_plan_visits=sum(s["plan_count"]>1 for s in sessions))
@@ -133,10 +162,11 @@ def prepare_visits(events, profile):
     columns = ["patient_key","machine","date","slot_start","slot_end","matched","start","end",
                "duration","booked","overlap","fallback"]
     visits = {model:pd.DataFrame(items,columns=columns) for model,items in output.items()}
-    slot_columns = ["patient_key","machine","date","matched"]
+    slot_columns = ["patient_key","machine","date","matched","inferred_timing"]
     slot_frame = appts[["patient_key","machine","date"]].copy()
     slot_frame["machine"] = slot_frame.machine.map(profile.machines)
     slot_frame["matched"] = [i in winners for i in appts.index]
+    slot_frame["inferred_timing"] = appts.inferred_timing
     expected=defaultdict(int)
     for row in slot_frame.itertuples():
         if pd.notna(row.date):
@@ -181,6 +211,9 @@ def aggregate(prepared, profile):
                     suppressed = len(patients)<profile.minimum_patients
                     measured_slot_patients = set(group.loc[group.booked.notna(),"patient_key"])
                     safe_slots = len(measured_slot_patients)>=profile.minimum_patients
+                    inferred_slot = slot[slot.get('inferred_timing',pd.Series(False,index=slot.index))]
+                    inferred_count = (len(inferred_slot) if inferred_slot.empty or
+                                      inferred_slot.patient_key.nunique() >= profile.minimum_patients else None)
                     days,cycles,changes = [],[],[]
                     cycle_patients=set()
                     expected_group={key:n for key,n in expected.items()
@@ -228,6 +261,7 @@ def aggregate(prepared, profile):
                                complete_device_days=len(days),incomplete_device_days=len(expected_group)-len(days),
                                measured_visits_pct=100*len(group)/sum(expected_group.values()) if expected_group else None,
                                relevant_slots=len(slot),matched_slots=int(slot.matched.sum()),
+                               inferred_timing_slots=inferred_count,
                                match_pct=100*slot.matched.mean() if len(slot) else None,
                                measurable_slots=int(group.booked.notna().sum()),
                                booked_minutes=float(booked) if safe_slots else None,
