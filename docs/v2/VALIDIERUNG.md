@@ -1,6 +1,24 @@
-# Pruefstatus Paket 2.0.0-rc.5
+# Pruefstatus: aktuelles Pilotpaket
 
-## Unveroeffentlichter Definitionsabgleich
+## Paket rc.8, Collector rc.7, Analyse rc.6
+
+rc.8 aktualisiert die oeffentlichen Einstiegsseiten und Teilnahmeunterlagen.
+RDL und Rechenverfahren sind gegenueber dem rc.7-Paket unveraendert. Die
+ausgefuehrte Definition wird durch den RDL-Hash in `release-v2.json` identifiziert.
+
+- [Collector rc.7: native Quellen-/Rechte- und Ausfalltests](VALIDIERUNG_RC7.md).
+- [Analyse und Collector rc.6: Zuordnungen und Standortvergleich](VALIDIERUNG_RC6.md).
+- 247 lokale Tests in 49,71 Sekunden bestanden, einschliesslich Auswertung aus
+  entpackten Paketen. Neue Konsistenztests pruefen gemeinsame Versionen,
+  Downloadziele, Paketidentitaet und den unveraenderten Collector-Fingerprint.
+- Offline-Praesentation in 21 Desktop-/Mobilansichten mit Navigation, Bildern
+  und Druck geprueft; Begleitformular mit JSON-Export und Wiederimport,
+  optionalen Referenzzahlen und sicherer Report-URL auf Desktop/Mobil getestet.
+- Fachliche Multistandortabnahme weiter offen. Insbesondere alte Exporte,
+  lokale manuelle Therapien, Datenvollstaendigkeit und gemeinsame Nachbeobachtung
+  bleiben zu pruefen. Technische Tests allein erteilen keine klinische Freigabe.
+
+## Historisch: Definitionsabgleich vor rc.6
 
 - 107 automatisierte Tests bestanden (44,27 s), einschliesslich entpacktem
   Analysepaket. Zusaetzliche Faelle: Kurs-/Behandlungstaggrenzen, Jahreswechsel

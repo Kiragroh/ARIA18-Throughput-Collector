@@ -8,11 +8,11 @@ danach gemeinsam die Ergebnisse. Es geht nicht um eine unbereinigte Rangliste.
 
 **[Kurze Praesentation im Browser](https://kiragroh.github.io/ARIA18-Throughput-Collector/)**
 | [Projekt und Analyseplan](https://github.com/Kiragroh/ARIA18-Throughput-Collector/blob/main/docs/v2/AG_PROJEKT.md)
-| [Gesamtpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.5/ARIA-Performance_Gesamtpaket.zip)
+| [Gesamtpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.8/ARIA-Performance_Gesamtpaket.zip)
 
 Zum Weitergeben oder offline Oeffnen:
-[Praesentation als einzelne HTML-Datei](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.5/Kooperation_ARIA_Performance.html)
-| [Nur Durchfuehrung als ZIP](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.5/ARIA-Performance_Durchfuehrung.zip).
+[Praesentation als einzelne HTML-Datei](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.8/Kooperation_ARIA_Performance.html)
+| [Nur Durchfuehrung als ZIP](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.8/ARIA-Performance_Durchfuehrung.zip).
 
 ## Was Ihr Standort davon hat
 
@@ -31,11 +31,11 @@ keine klinische Entscheidungsunterstuetzung und keine Personalbewertung.
 
 ## Der kleinste erste Schritt
 
-**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.5/ARIA-Performance_Gesamtpaket.zip)**:
+**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.8/ARIA-Performance_Gesamtpaket.zip)**:
 Ordner `Durchfuehrung` mit Report, Offline-Formular und Anleitung;
 Ordner `Analyse` mit optionaler Python-Auswertung und synthetischem Probelauf.
 Wer nur exportieren und einreichen moechte, nimmt
-**[Nur Durchfuehrung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.5/ARIA-Performance_Durchfuehrung.zip)**.
+**[Nur Durchfuehrung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.8/ARIA-Performance_Durchfuehrung.zip)**.
 Entpacken und `Durchfuehrung/START_HIER.html` oeffnen. Die Durchfuehrungsdateien
 sind in beiden Paketen identisch.
 
@@ -44,6 +44,12 @@ Formular helfen trotzdem**, lokale Besonderheiten und Datenluecken richtig
 einzuordnen. Bitte die Exceldatei mit Auswertungsdaten und Prueftabellen hochladen:
 **Full Collector XLSX und Standortformular-JSON werden beide benoetigt.**
 Das Formular funktioniert offline: ausfuellen, JSON herunterladen und zusammen mit der Exceldatei einreichen.
+
+Erstellung des Reports und Excel-Export dauern derzeit jeweils etwa **drei Minuten**;
+Standort, Datenmenge und Serverlast koennen die Wartezeit verlaengern. Bitte nicht
+allein deshalb abbrechen. Bei Problemen helfen Fehlercode, Prueftabellen und JSON,
+den naechsten kurzen Test abzustimmen. Ein paar gemeinsame Korrekturschleifen
+machen den Report auch fuer weitere Kliniken robuster.
 
 1. **Zustaendigkeit klaeren:** Eine fachliche und eine ARIA-/Daten-Ansprechperson
    benennen; erforderliche lokale Freigaben vor dem Datenzugriff klaeren.
@@ -176,11 +182,14 @@ oder Pull Requests ablegen. Der Upload-Link ersetzt keine lokale Freigabe.
 
 ## Status
 
-Pilot-/Releasekandidat **2.0.0-rc.5**. Technischer Preflight, Jahresexport und
-lokale Python-Auswertung wurden an einem Pilotstandort erprobt. Eine gemeinsame
-fachliche Multistandortabnahme steht noch aus. Die direkte objektbasierte
-RTPlan-/CBCT-Referenzextraktion ist noch nicht implementiert; das wird nicht als
-vollstaendige Imaging-Erfassung dargestellt.
+Pilotpaket **2.0.0-rc.8** mit Collector **rc.7** und Analyseverfahren **rc.6**.
+Die neue Paketfassung korrigiert Einstieg und Downloadlinks, ohne RDL oder
+Berechnung gegenueber rc.7 zu aendern. Kurze native Quellen-/Fehlertests,
+Jahresauswertungen vorhandener Exporte und ein synthetischer Sechs-Standort-Vergleich
+sind technisch geprueft. Eine gemeinsame fachliche Multistandortabnahme steht
+noch aus. Fuer korrigierte Ressourcen-Zuordnungen bei Exporten vor rc.6 ist ein
+neuer Collector-Lauf erforderlich. Optionale DWH-Bildobjekte werden ausgewertet;
+eine direkte objektbasierte RTPlan-/CBCT-Akquisitionsreferenz ist nicht verifiziert.
 
 [Methodik und Grenzen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/blob/main/docs/v2/METHODIK.md) |
 [Pruefstatus](https://github.com/Kiragroh/ARIA18-Throughput-Collector/blob/main/docs/v2/VALIDIERUNG.md) |

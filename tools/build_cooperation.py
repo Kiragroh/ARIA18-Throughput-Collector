@@ -1,6 +1,7 @@
 """Build a self-contained invitation and a separate, non-clinical cooperation ZIP."""
 import base64
 import hashlib
+import json
 from pathlib import Path
 import zipfile
 
@@ -9,6 +10,8 @@ ROOT=Path(__file__).resolve().parents[1]
 
 def build():
     html=(ROOT/'templates/Cooperation.template.html').read_text(encoding='utf-8')
+    release=json.loads((ROOT/'release-v2.json').read_text(encoding='utf-8'))
+    html=html.replace('__PACKAGE_VERSION__',release['package_version'])
     for token,name in [('__QR_DATA__','qr-code.png'),('__PROJECT_QR_DATA__','projekt-qr-code.png'),
                        ('__CHART_DATA__','boxplots-beispiel.png')]:
         image=(ROOT/'kooperation/assets'/name).read_bytes()

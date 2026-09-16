@@ -1,11 +1,24 @@
-# ARIA Throughput 2.0.0-rc.5
+# ARIA Throughput: Paket 2.0.0-rc.8
 
 Pilotpaket fuer die AG Digitalisierung, Standardjahr 2025.
 
-Neu in rc.5: optional bekannte Patientenzahl 2025 mit Zaehleinheit und Quelle
-im Offline-Formular, sicheres Wiederladen alter Formulare und GitHub-Banner.
-RDL und Rechenlogik bleiben unveraendert auf rc.4. Bereits erzeugte rc.4-Exporte
-weiterverwenden; fuer dieses Formularupdate ist kein erneuter RDL-Import noetig.
+Collector rc.7 und Analyseverfahren rc.6 bleiben bytegleich gegenueber dem
+rc.7-Paket. rc.8 vereinheitlicht die oeffentlichen Einstiegsseiten, Downloadlinks
+und Formularbeschriftung. `release-v2.json` nennt Paket-, Collector- und
+Analyseversion sowie den LF-normalisierten SHA-256 des nativ geprueften RDLs; automatische Tests
+pruefen diesen Zusammenhang. Alte Pakete bleiben unveraendert nachvollziehbar.
+
+Vorhandene rc.7-Exporte weiterverwenden; fuer dieses Paketupdate ist kein neuer
+RDL-Lauf erforderlich. **Bei Exporten vor rc.6 neu exportieren**, da korrigierte
+Ressourcen-Zuordnungen nicht nachtraeglich aus verlorenen Daten entstehen.
+Nur der Kalenderzeitraum und das Standortkuerzel bleiben sichtbare Parameter.
+
+Seit rc.6/rc.7: Ressourcen-Deduplizierung, getrennte klinische und technische
+Behandlungsevidenz, zusaetzliche eindeutige R&V-gestuetzte Zeitanker,
+quellengepruefter Standortvergleich, Schema-/SELECT-Diagnostik einschliesslich
+optionaler Bildobjekte und explizite Kennzeichnung fehlender Abschlusshistorie.
+Quellenabgleich, lokale Fallpruefung und vergleichbare Nachbeobachtung bleiben
+Voraussetzung belastbarer klinischer Vergleiche.
 
 Enthalten seit rc.4: Klinikprofil und Verlaeufe fuer Patienten, Fraktionen, bestrahlte
 Plaene, Neueinstellungen und Behandlungsepisoden, einschliesslich bestaetigter

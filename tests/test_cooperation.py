@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import re
 import zipfile
 from tools.build_cooperation import build
@@ -42,7 +43,8 @@ def test_submission_identity_is_required_and_portable_links_resolve():
 
 def test_startpage_describes_current_workflow_only():
     readme=(ROOT/'README.md').read_text(encoding='utf-8')
-    assert '2.0.0-rc.5' in readme and 'kooperation/README.md' in readme
+    release=json.loads((ROOT/'release-v2.json').read_text(encoding='utf-8'))
+    assert release['package_version'] in readme and 'kooperation/README.md' in readme
     assert 'docs/assets/banner-github.png' in readme
     assert (ROOT/'docs/assets/banner-github.png').is_file()
     assert 'analyze_single_site.py' not in readme

@@ -1,6 +1,18 @@
 # Changelog
 
-## Noch nicht veroeffentlicht
+## 2.0.0-rc.8 - 2026-09-16
+
+- Projektstartseite, Kooperation, Offline-Formular und beide Pakete zeigen
+  denselben aktuellen Paketstand. Downloadziele werden automatisch gegen
+  das Releaseinventar geprueft; kein versehentlicher Einstieg mit rc.5.
+- Paketidentitaet in `release-v2.json`: Collector rc.7, Analyse rc.6,
+  LF-normalisierter Hash der nativ geprueften Definition. Keine neue SQL-
+  oder Rechenlogik; bereits vorhandene rc.7-Exporte weiterverwenden.
+- Laufzeithinweis und gemeinsame Rueckmeldungs-/Korrekturschleife im Einstieg.
+  Beide Pakete behalten nur die noetigen Dateien; die Praesentation ist
+  zusaetzlich als einzelne Offline-HTML verfuegbar.
+
+## 2.0.0-rc.7 - 2026-09-16
 
 - Collector rc.7: Quellenverfuegbarkeit prueft Schema und effektive SELECT-Rechte
   je Spalte. Bildobjektfelder stehen im Inventar; fehlende Abschlusshistorie wird

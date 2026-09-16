@@ -15,7 +15,8 @@ RUN_FILES = {
 
 
 def manifest(analysis=True):
-    files = {'README.md': 'PAKET_START.md' if analysis else 'PAKET_DURCHFUEHRUNG.md', **RUN_FILES}
+    files = {'README.md': 'PAKET_START.md' if analysis else 'PAKET_DURCHFUEHRUNG.md',
+             'release-v2.json': 'release-v2.json', **RUN_FILES}
     if analysis:
         files.update({
             'Analyse/README.md': 'docs/v2/PAKET_ANALYSE.md',

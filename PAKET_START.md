@@ -1,4 +1,4 @@
-# ARIA Performance: Gesamtpaket 2.0.0-rc.6 (Teststand)
+# ARIA Performance: Gesamtpaket 2.0.0-rc.8 (Teststand)
 
 ## Durchfuehrung
 
@@ -22,10 +22,11 @@ und Statuswerte muessen fuer die Auswertung fachlich zugeordnet werden.
 
 Standardjahr 2025; bislang gegen ARIA 18 getestet. Auswertungsdaten und
 Prueftabellen stehen in derselben Exceldatei, kein separater Preflight noetig.
-rc.6 korrigiert Ressourcenaufloesung und doppelte Fraktionsnachweise und
-ergaenzt den lokalen Vergleich mehrerer Standorte. Alte Exceldateien bleiben
-lesbar. Verlorene Geraetezuordnungen patientenloser Pausenslots koennen jedoch
-nur durch einen neuen Export mit dem enthaltenen RDL ergaenzt werden.
+Enthalten sind Collector rc.7 und Analyseverfahren rc.6. Paket rc.8 korrigiert
+nur Teilnahmeunterlagen, Versionsangaben und Downloadlinks. Ein vorhandener
+rc.7-Export muss nicht erneut erstellt werden. Bei Exporten vor rc.6 dagegen
+neu exportieren: verlorene Geraetezuordnungen lassen sich nicht rekonstruieren.
+[release-v2.json](release-v2.json) dokumentiert die einzelnen Versionsstaende.
 
 Pilot-/Releasekandidat, keine klinische Freigabe. Exporte sind pseudonymisiert,
 nicht anonym. Nur lokal oder nach lokaler Freigabe im geschuetzten
