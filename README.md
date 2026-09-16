@@ -10,24 +10,28 @@ Standortvergleiche ermöglichen, keine unbereinigten Ranglisten.
 
 ## Aktueller Stand
 
-**Paket 2.0.0-rc.9** ist der aktuelle Pilot-/Releasekandidat zur Vorbereitung
+**Paket 2.0.0-rc.10** ist der aktuelle Pilot-/Releasekandidat zur Vorbereitung
 eines Projekts der AG Digitalisierung. Exporte aus zwei ARIA-18-Kliniken wurden
 technisch ausgewertet und mit lokalen Kennzahlen abgeglichen. Einzelne
 Zähldifferenzen werden noch geklärt; weitere Standorte helfen beim Abgleich.
 Das Werkzeug dient der rückblickenden Prozessanalyse, nicht der Patientenbehandlung.
 
-**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Gesamtpaket.zip)**
+**[Gesamtpaket herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.10/ARIA-Performance_Gesamtpaket.zip)**
 | [Prüfstatus](docs/v2/VALIDIERUNG.md)
 | [Änderungen](CHANGELOG.md)
 
 Zwei Ordner: **Durchfuehrung** mit RDL, Offline-Formular und Anleitung;
 **Analyse** mit Python-Skript, Standortprofilen, Methodik und synthetischem Probelauf.
 
-**[Nur Durchführung herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Durchfuehrung.zip)**:
+**[Nur Durchführung herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.10/ARIA-Performance_Durchfuehrung.zip)**:
 dieselben Durchführungsdateien ohne Analyse-Skripte. Start in beiden Paketen:
 `Durchfuehrung/START_HIER.html`. Für die Einreichung ist Python nicht nötig.
 
-Enthalten: Collector **rc.8**, Analyseverfahren **rc.7**.
+Enthalten: Collector **rc.9**, Analyseverfahren **rc.7**.
+Paket rc.10 korrigiert fehlende historische Aktivitaetsnamen mit einem
+nachvollziehbaren Revisions-Fallback. Vorhandene Namen, Codes und
+Ereignisschluessel bleiben unveraendert. Fuer diese Ergaenzung ist ein neuer
+Export erforderlich; die lokale Zuordnung der ergaenzten Namen bleibt notwendig.
 Paket rc.9 ergaenzt native Hersteller-/Aufnahmedaten zur ExacTrac-Erkennung,
 trennt CT-Schichtobjekte und schaetzt Mindestplaene manueller Therapien.
 Das optionale Sheet `93_Wartebereich` trennt Testhinweise und unplausible
@@ -45,7 +49,7 @@ Besonderheiten können kurz erläutert werden. Für einen Probelauf reichen Janu
 
 ## Sie möchten mitmachen?
 
-**Alternative ohne Detaildaten: [Nur technische Vorprüfung herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Nur_Preflight.zip).**
+**Alternative ohne Detaildaten: [Nur technische Vorprüfung herunterladen](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.10/ARIA-Performance_Nur_Preflight.zip).**
 Diese separate RDL prüft ausschließlich DWH-Schema und Leserechte. Keine
 klinischen Datensätze, Pseudonyme, individuellen Zeitpunkte oder Fallzahlen.
 Die Exceldatei zeigt technische Voraussetzungen und noch offene Prüfungen,

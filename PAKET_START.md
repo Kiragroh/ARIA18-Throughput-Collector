@@ -1,4 +1,4 @@
-# ARIA Performance: Gesamtpaket 2.0.0-rc.9 (Teststand)
+# ARIA Performance: Gesamtpaket 2.0.0-rc.10 (Teststand)
 
 ## Durchfuehrung
 
