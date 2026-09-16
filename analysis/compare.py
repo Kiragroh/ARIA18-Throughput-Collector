@@ -14,6 +14,7 @@ from .contracts import assert_aggregate_payload
 from .provenance import CALCULATION_SETTINGS
 
 POPULATION = ('patients','fractions','technical_fractions','manual_fractions','treated_plans',
+              'estimated_manual_plans','plans_with_manual_estimate',
     'new_plans','treatment_days','patients_per_day','fractions_per_day','plan_ends_complete',
     'plan_ends_incomplete','plan_ends_target_unknown','plan_open_followup','plans_resumed_after_gap')
 FLOW = ('completed_counselling_appointments','open_counselling_appointments',

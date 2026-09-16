@@ -9,7 +9,7 @@ except ImportError:
     import build_rdl as layout
 
 ROOT = Path(__file__).resolve().parents[1]
-COLLECTOR_RELEASE = '2.0.0-rc.7'
+COLLECTOR_RELEASE = '2.0.0-rc.8'
 NS = {"r":"http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition"}
 PARAMETERS = {
     "PeriodStart":("DateTime",'=DateSerial(2025, 1, 1)',"Auswertung von"),
@@ -356,16 +356,29 @@ def build(include_inventory=True):
         for name, (sql, columns) in inventory_queries().items():
             queries[name], fields[name] = sql, columns
         queries["ImageObjects"], fields["ImageObjects"] = image_adapter.query(), image_adapter.FIELDS
+        try:
+            from . import image_acquisition_v2
+        except ImportError:
+            import image_acquisition_v2
+        queries['ImageAcquisition'], fields['ImageAcquisition'] = image_acquisition_v2.query(), image_acquisition_v2.FIELDS
+        try:
+            from . import waiting_area_v2
+        except ImportError:
+            import waiting_area_v2
+        queries['WaitingArea'], fields['WaitingArea'] = waiting_area_v2.query(), waiting_area_v2.FIELDS
         queries["EventDetails"] = queries.pop("EventDetails")
     sql_dir = ROOT/"sql/v2"
     sql_dir.mkdir(parents=True,exist_ok=True)
     # Reuse the tested RDL table/parameter rendering layer with the v2 contract.
     layout.FIELDS = fields
     layout.PAGE_NAMES = {"Metadata":"00_Metadata","Capabilities":"01_Capabilities",
-                         "ActivityCatalog":"02_Activities","EventDetails":"90_Events", "ImageObjects":"91_Images"}
+                         "ActivityCatalog":"02_Activities","EventDetails":"90_Events", "ImageObjects":"91_Images",
+                         "ImageAcquisition":"92_Acquisition", "WaitingArea":"93_Wartebereich"}
     layout.CAPTIONS = {"Metadata":"Exportvertrag und Auswertungszeitraum","Capabilities":"Quellenabdeckung",
                        "ActivityCatalog":"Lokales Aktivitaetsinventar","EventDetails":"Lokale pseudonymisierte Ereignisse",
-                       "ImageObjects":"Bildobjekte: lokale pseudonymisierte Zusatzquelle"}
+                       "ImageObjects":"Bildobjekte: lokale pseudonymisierte Zusatzquelle",
+                       "ImageAcquisition":"Bildhersteller und Aufnahmeobjekte: native Zusatzquelle",
+                       "WaitingArea":"Wartebereich: optionale Diagnostik, Testhinweise und auffaellige Zeiten getrennt; keine validierte Klinikwartezeit"}
     for i, name in enumerate(n for n in queries if n not in layout.PAGE_NAMES):
         layout.PAGE_NAMES[name] = str(i+3).zfill(2)+"_"+name
         layout.CAPTIONS[name] = name
@@ -379,6 +392,9 @@ def build(include_inventory=True):
             dataset = layout._dataset_xml(name,"")
         finally:
             layout._compose_sql = old
+        if name in {'ImageAcquisition','WaitingArea'}:
+            dataset = dataset.replace('<DataSourceName>DataSource1</DataSourceName>',
+                                      '<DataSourceName>AcquisitionSource</DataSourceName>')
         datasets.append(dataset.replace("<rd:UseGenericDesigner>","<Timeout>600</Timeout><rd:UseGenericDesigner>"))
     params = []
     cells = []
@@ -393,7 +409,7 @@ def build(include_inventory=True):
     top = 40
     for name in queries:
         table,top = layout._tablix(name,top)
-        if name in {"EventDetails", "ImageObjects"}:
+        if name in {"EventDetails", "ImageObjects", "ImageAcquisition"}:
             # Millions of long hash cells do not need multiline print measurement.
             # This changes row layout only; the full Excel cell values stay intact.
             element = ET.fromstring(table)
@@ -415,6 +431,10 @@ def build(include_inventory=True):
                "PARAMETER_LAYOUT":"\n".join(cells)}
     for token,value in replace.items():
         template = template.replace("{{"+token+"}}",value)
+    if include_inventory:
+        template = template.replace('</DataSources>', '<DataSource Name="AcquisitionSource">'
+            '<DataSourceReference>/VarianTemplate/Data Sources/VARIAN</DataSourceReference>'
+            '</DataSource></DataSources>')
     template = template.replace("<Value>ARIA18_Durchsatz_Klinikvergleich_Collector</Value>",
                                 "<Value>ARIA18_Throughput_Collector_2.0</Value>")
     template = template.replace("fbc7de2f-80a7-4b66-bbe4-5135857e6ac7","a1a5210f-7e8a-459e-84f7-ec4f27228a30")

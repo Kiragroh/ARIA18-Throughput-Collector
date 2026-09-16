@@ -1,5 +1,31 @@
 # Bildgebung: Rueckmeldung und belastbare Grenzen
 
+## Herstellerquelle ab Collector rc.8
+
+Der Full Collector nutzt zusaetzlich die native gemeinsame Datenquelle
+`/VarianTemplate/Data Sources/VARIAN`. Sie muss im Reportserver vorhanden und
+lesbar sein. Die DWH-Quelle allein enthaelt nicht alle Herstellerangaben.
+Fehlende native Tabellen/Spalten oder SELECT-Rechte ergeben `UNAVAILABLE`;
+eine fehlende Reportserver-Datenquelle muss lokal zugeordnet werden.
+
+`Image -> ImageSlice -> Slice -> Equipment.Manufacturer` liefert die
+Aufnahmehersteller. Brainlab-RTIMAGE vom Typ ImagePI wird als ExacTrac erkannt,
+aber ImageDRR und ReferenceImage bleiben ausgeschlossen. Varian allein beweist
+kein CBCT: CT-Objekte benoetigen zusaetzlich ein bekanntes Verification-Modell.
+ImageCT-Schichtobjekte sind keine zusaetzlichen Aufnahmen und werden aus der
+Frequenzzaehlung entfernt. kV/MV bleibt ohne passenden Nachweis unbestimmt.
+
+Die Zusatzdaten werden nur ueber denselben gesalzenen Bildschluessel desselben
+Exports verbunden. Fehlende Aufnahmegeraete werden nicht aus dem Plangeraet
+oder einer Patient-/Tag-Heuristik erfunden. Nicht zugeordnete ExacTrac-Objekte
+bleiben in der Herkunftspruefung sichtbar, aber nicht im LINAC-Nenner.
+Alte Exceldateien ohne diese Quelle koennen nicht nachtraeglich anhand eines
+Herstellers klassifiziert werden; dafuer ist ein neuer Export erforderlich.
+
+Kurztest UKL, 02.-03.01.2025: Die native Quelle enthaelt 94 Brainlab-ImagePI
+und 188 Brainlab-ImageDRR. Diese Zahlen sind Quellinventar, kein Nachweis einer
+vollstaendigen standortuebergreifenden Zuordnung. UKE benoetigt einen neuen Export.
+
 Ein technischer Hardware-Erfahrungsbericht vom 15.09.2026 beschreibt relevante
 Unterschiede zwischen regulaeren Linacs, Halcyon, regulaeren/adaptiven Ethos-
 Workflows und externem ExacTrac. Diese Hinweise sind Ausgangspunkte fuer lokale

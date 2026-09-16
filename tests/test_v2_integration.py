@@ -92,7 +92,7 @@ def test_small_auxiliary_flow_cell_does_not_erase_unrelated_totals():
     assert result["open_with_treatment"] is None
 
 
-def test_missing_middle_interval_is_not_free_time():
+def test_missing_middle_interval_is_not_free_time(connected_rows):
     from analysis.throughput import prepare_visits,aggregate
     rows=[]
     for i in range(6):
@@ -102,6 +102,7 @@ def test_missing_middle_interval_is_not_free_time():
             event_end=start+pd.Timedelta(minutes=20),activity_start=start if i!=2 else None,
             activity_end=start+pd.Timedelta(minutes=15) if i!=2 else None))
     profile=Profile(machines={'M1':'Machine 1'},activity_codes={'TX':'treatment_external'})
+    rows = connected_rows(rows)
     prepared=prepare_visits(pd.DataFrame(rows),profile)
     group=aggregate(prepared,profile)['year']['activity'][0]['groups'][0]
     assert group['kpi']['visits']==5

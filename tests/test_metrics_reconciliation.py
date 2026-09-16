@@ -13,9 +13,10 @@ def slots(n=6):
             for i in range(n)]
 
 
-def test_small_device_does_not_hide_publishable_pool():
+def test_small_device_does_not_hide_publishable_pool(connected_rows):
     rows = slots()
     rows.append(dict(rows[0], machine="M2", patient_key="rare", event_key="rare"))
+    rows = connected_rows(rows)
     profile = Profile(machines={"M1":"Device 1","M2":"Device 2"}, activity_codes={"TX":"treatment_external"})
     groups = aggregate(prepare_visits(pd.DataFrame(rows), profile), profile)["quarter"]["activity"][0]["groups"]
     pool = next(g for g in groups if g["machine"] == "ALL")
@@ -24,11 +25,12 @@ def test_small_device_does_not_hide_publishable_pool():
     assert pool["pool_excludes_suppressed"] is True
 
 
-def test_duration_ratio_and_calendar_overlap_are_distinct():
+def test_duration_ratio_and_calendar_overlap_are_distinct(connected_rows):
     rows = slots()
     for r in rows:
         r["activity_start"] = str(pd.Timestamp(r["event_start"]) + pd.Timedelta(minutes=10))
         r["activity_end"] = str(pd.Timestamp(r["event_end"]) + pd.Timedelta(minutes=10))
+    rows = connected_rows(rows)
     profile = Profile(machines={"M1":"Device 1"}, activity_codes={"TX":"treatment_external"})
     pool = aggregate(prepare_visits(pd.DataFrame(rows), profile),profile)["year"]["activity"][0]["groups"][-1]
     assert pool["kpi"]["slot_coverage_pct"] == 0

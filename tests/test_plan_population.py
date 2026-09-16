@@ -21,6 +21,35 @@ def test_incomplete_plan_requires_more_than_seven_observed_days():
     assert out.end.date().isoformat() == "2025-01-03"
 
 
+def test_manual_minimum_plans_cluster_full_context_and_split_after_30_days():
+    rows = []
+    for patient in range(6):
+        for day in ['2024-12-20', '2025-01-19', '2025-02-19']:
+            rows.append(dict(source='appointment', event_key=f'{patient}-{day}', patient_key=str(patient),
+                plan_key='', course_key='', machine='T', event_start=day+' 08:00',
+                event_end=day+' 08:15', activity_code='TOMO', status='completed'))
+    profile = Profile(machines={'T':'Tomo'}, activity_codes={'TOMO':'treatment_legacy'})
+    out = summarize_population(pd.DataFrame(rows), profile,
+                               {'data_through':'2026-04-01','context_start':'2024-01-01'})
+    assert out['summary']['treated_plans'] == 0
+    assert out['summary']['estimated_manual_plans'] == 12
+    assert out['summary']['plans_with_manual_estimate'] == 12
+    assert out['periods']['month'][0]['current']['estimated_manual_plans'] == 6
+    assert out['summary']['new_plans'] == 0
+
+
+def test_manual_only_device_not_used_for_slot_utilization():
+    from analysis.throughput import prepare_visits
+    row = dict(source='appointment', event_key='t', patient_key='p', machine='T',
+        event_start='2025-01-02 08:00',event_end='2025-01-02 08:15',
+        activity_start='2025-01-02 08:00',activity_end='2025-01-02 08:15',
+        completed='2025-01-02 08:15',activity_code='TOMO',status='completed')
+    out = prepare_visits(pd.DataFrame([row]), Profile(machines={'T':'Tomo'},
+                         activity_codes={'TOMO':'treatment_legacy'}))
+    assert out['slots'].empty and not out['expected']
+    assert all(frame.empty for frame in out['visits'].values())
+
+
 def test_completion_is_not_inferred_when_target_missing():
     out=plans([delivery("2025-01-02",1,None)],"2025-02-01").iloc[0]
     assert out.state == "ended_target_unknown"
@@ -43,6 +72,20 @@ def test_left_truncated_plan_is_not_a_new_start():
 def test_machine_change_does_not_duplicate_plan_or_patient():
     rows=[delivery("2025-01-02",1),delivery("2025-01-03",2,machine="Other")]
     assert len(plans(rows,"2025-02-01"))==1
+
+
+def test_rv_device_appointments_never_add_clinical_treatment_days():
+    from analysis.ingest import normalize_flow
+    profile = Profile(machines={'M':'Linac 1'},activity_codes={'TX':'treatment_external','C':'counselling'})
+    beam = delivery('2025-01-10',1)
+    slot = dict(beam, source='appointment', event_key='slot',patient_key='other',
+                activity_code='TX',status='completed',event_start='2025-02-01 08:00')
+    counsel = dict(slot,event_key='counsel',activity_code='C')
+    rows = pd.DataFrame([beam,slot,counsel])
+    clinical = normalize_flow(rows,profile)
+    assert clinical.event_key.tolist() == [beam['event_key'],'counsel']
+    days = treatment_days(rows,profile,'2025-03-01')
+    assert days.evidence.tolist() == ['technical']
 
 
 def test_old_export_cannot_claim_previous_year_completeness():

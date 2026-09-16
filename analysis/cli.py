@@ -53,6 +53,9 @@ def suppress_flow(flow,minimum):
     for key in hidden:
         if key in data:
             data[key]=None
+    data['withheld'] = {key:'Kleingruppe oder rueckrechenbare Summe' for key in hidden if key in data}
+    if not data.get('sources_complete'):
+        data['withheld']['unresolved_pct'] = 'Quellenumfang oder Datenstand nicht bestaetigt'
     return data
 
 

@@ -250,7 +250,7 @@ def test_cli_rejects_repeated_alias_before_writing_output(tmp_path):
     assert not (tmp_path/'result').exists()
 
 
-def test_new_duration_denominators_use_the_same_slot_subset():
+def test_new_duration_denominators_use_the_same_slot_subset(connected_rows):
     import pandas as pd
     from analysis.contracts import Profile
     from analysis.throughput import prepare_visits,aggregate
@@ -261,6 +261,7 @@ def test_new_duration_denominators_use_the_same_slot_subset():
             activity_code='TX',status='completed',event_start=start,event_end=start+pd.Timedelta(minutes=20),
             activity_start=start+pd.Timedelta(minutes=5),activity_end=start+pd.Timedelta(minutes=15)))
     profile=Profile(machines={'M':'Machine'},activity_codes={'TX':'treatment_external'})
+    rows = connected_rows(rows)
     pool=aggregate(prepare_visits(pd.DataFrame(rows),profile),profile)['year']['activity'][0]['groups'][-1]['kpi']
     assert pool['expected_visits']==6
     assert pool['booked_minutes']==120 and pool['overlap_minutes_in_slots']==60

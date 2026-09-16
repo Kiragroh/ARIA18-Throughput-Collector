@@ -1,7 +1,7 @@
 # RDL ausfuehren und Ergebnisse bereitstellen
 
-**[Gesamtpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.8/ARIA-Performance_Gesamtpaket.zip)** |
-**[Nur Durchfuehrung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.8/ARIA-Performance_Durchfuehrung.zip)**
+**[Gesamtpaket](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Gesamtpaket.zip)** |
+**[Nur Durchfuehrung](https://github.com/Kiragroh/ARIA18-Throughput-Collector/releases/download/v2.0.0-rc.9/ARIA-Performance_Durchfuehrung.zip)**
 
 Entpacken und `Durchfuehrung/START_HIER.html` oeffnen. Beide Pakete enthalten
 dieselben Durchfuehrungsdateien: RDL, Offline-Anleitung mit JSON-Formular und
@@ -14,10 +14,13 @@ laenger. Das ist kein fester Timeout und keine Laufzeitgarantie. Nicht allein
 wegen dieser Wartezeit mehrfach starten. Fuer Fehler und Rueckfragen genuegen
 der Fehlercode ohne Patientendaten, vorhandene Excel-Prueftabellen und das JSON.
 
-Paket rc.8 enthaelt den unveraenderten, nativ getesteten Collector rc.7.
-Ein vorhandener rc.7-Export muss fuer dieses reine Paketupdate nicht wiederholt
-werden. Bei rc.5 oder aelter bitte neu importieren und exportieren, damit
-korrigierte Ressourcen-Zuordnungen und Quellenpruefungen enthalten sind.
+Paket rc.9 enthaelt Collector rc.8 mit einer nativen Bildhersteller-Zusatzquelle.
+Fuer Hersteller-/ExacTrac-Erkennung bitte neu exportieren. Zusaetzlich zur
+gemeinsamen DWH-Datenquelle wird `/VarianTemplate/Data Sources/VARIAN` benoetigt.
+Falls diese lokal anders heisst, muss sie beim Import passend zugeordnet werden.
+Fehlende Tabellen-/Spaltenrechte werden als nicht verfuegbare Zusatzquelle
+ausgewiesen. Alte Exporte bleiben analysierbar, enthalten aber keine nachtraeglich
+rekonstruierbaren Herstellerangaben.
 
 ## Die Einstellungen
 

@@ -1,4 +1,4 @@
-# ARIA Performance: Gesamtpaket 2.0.0-rc.8 (Teststand)
+# ARIA Performance: Gesamtpaket 2.0.0-rc.9 (Teststand)
 
 ## Durchfuehrung
 
@@ -22,10 +22,11 @@ und Statuswerte muessen fuer die Auswertung fachlich zugeordnet werden.
 
 Standardjahr 2025; bislang gegen ARIA 18 getestet. Auswertungsdaten und
 Prueftabellen stehen in derselben Exceldatei, kein separater Preflight noetig.
-Enthalten sind Collector rc.7 und Analyseverfahren rc.6. Paket rc.8 korrigiert
-nur Teilnahmeunterlagen, Versionsangaben und Downloadlinks. Ein vorhandener
-rc.7-Export muss nicht erneut erstellt werden. Bei Exporten vor rc.6 dagegen
-neu exportieren: verlorene Geraetezuordnungen lassen sich nicht rekonstruieren.
+Enthalten sind Collector rc.8 und Analyseverfahren rc.7. Fuer native
+Hersteller-/ExacTrac-Erkennung ist ein neuer Export notwendig. Die gemeinsame
+Datenquelle VARIAN muss neben variandw zugeordnet und lesbar sein. Die Analyse
+trennt CT-Schichtobjekte und schaetzt Mindestplaene fuer reine Termingeraete;
+manuelle Geraete liefern keine technische Auslastung oder Slotnutzung.
 [release-v2.json](release-v2.json) dokumentiert die einzelnen Versionsstaende.
 
 Pilot-/Releasekandidat, keine klinische Freigabe. Exporte sind pseudonymisiert,
