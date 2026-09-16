@@ -4,6 +4,9 @@
   "analysis_version": "2.0.0-rc.7",
   "collector_sha256_lf": "90ebefb2675659f4874a9b827b7955fe0faf06deb5de21d13398d1e7b7f2f739",
   "release_assets": [
+    "ARIA-Performance_Nur_Preflight.zip",
+    "ARIA-Performance_Nur_Preflight.zip.sha256",
+    "ARIA18_Technischer_Preflight_1.0.rdl",
     "ARIA-Performance_Durchfuehrung.zip",
     "ARIA-Performance_Durchfuehrung.zip.sha256",
     "ARIA-Performance_Gesamtpaket.zip",
