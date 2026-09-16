@@ -2,17 +2,18 @@
 import xml.etree.ElementTree as ET
 try:
     from . import build_rdl as layout
-    from .build_collector_v2 import build,NS,SOURCES,stage
+    from .build_collector_v2 import build,NS,SOURCES,STAGE_KEYS,column_available,stage,appointment_device_ctes
 except ImportError:
     import build_rdl as layout
-    from build_collector_v2 import build,NS,SOURCES,stage
+    from build_collector_v2 import build,NS,SOURCES,STAGE_KEYS,column_available,stage,appointment_device_ctes
 
 
 def guarded(names,fields,query):
     missing=[]
     for name in names:
         table,columns=SOURCES[name]
-        missing.extend(f"COL_LENGTH(N'{table}',N'{c}') IS NULL" for c,_,required in columns if required)
+        missing.extend('NOT '+column_available(table,c) for c,_,required in columns
+                       if required or c in STAGE_KEYS.get(name,()))
     empty=', '.join(("N'SOURCE_UNAVAILABLE'" if f=='source_state' else 'CAST(NULL AS nvarchar(255))')+' AS ['+f+']' for f in fields)
     return 'SET NOCOUNT ON;\nIF '+ ' OR '.join(missing)+'\nBEGIN SELECT '+empty+'; RETURN; END;\n'+query
 
@@ -22,25 +23,20 @@ def queries():
         'distinct_appointments','resource_rows','with_activity_start','with_activity_end',
         'with_calendar_end','plausible_activity_intervals']
     appointment=''.join(stage(n,True) for n in ['Patient','Activity','Machine','Resource','ResourceMachine','Appointment'])+"""
-;WITH resources AS (
- SELECT DISTINCT a.DimActivityTransactionID,m.MachineId FROM #Appointment a
- JOIN #Resource r ON r.ctrResourceSer=a.ctrResourceSer JOIN #Machine m ON m.MachineId=r.ResourceId
- UNION
- SELECT DISTINCT a.DimActivityTransactionID,m.MachineId FROM #Appointment a
- JOIN #ResourceMachine r ON r.DimResourceID=a.DimResourceID JOIN #Machine m ON m.MachineId=r.MachineId
-), devices AS (
- SELECT a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,
- CASE WHEN COUNT(DISTINCT r.MachineId)=1 THEN MIN(r.MachineId)
-      WHEN COUNT(DISTINCT r.MachineId)>1 THEN N'AMBIGUOUS_DEVICE' ELSE N'UNMAPPED' END AS machine
- FROM #Appointment a LEFT JOIN resources r ON r.DimActivityTransactionID=a.DimActivityTransactionID
- GROUP BY a.DimPatientID,a.DimActivityID,a.AppointmentDateTime
-), appointments AS (
+;WITH """+appointment_device_ctes()+""", appointments AS (
  SELECT a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,a.AppointmentStatus,d.machine,
  COUNT_BIG(*) AS resource_rows,MAX(a.ActivityStartDateTime) AS activity_start,
  MAX(a.ActivityEndDateTime) AS activity_end,MAX(a.ScheduledEndTime) AS calendar_end
- FROM #Appointment a JOIN #Patient p ON p.DimPatientID=a.DimPatientID AND p.IsMOTestPatient=0
- JOIN devices d ON d.DimPatientID=a.DimPatientID AND d.DimActivityID=a.DimActivityID AND d.AppointmentDateTime=a.AppointmentDateTime
- GROUP BY a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,a.AppointmentStatus,d.machine
+ FROM #Appointment a LEFT JOIN #Patient p ON p.DimPatientID=a.DimPatientID
+ JOIN appointment_devices d ON (d.DimPatientID=a.DimPatientID OR (d.DimPatientID IS NULL AND a.DimPatientID IS NULL))
+  AND d.DimActivityID=a.DimActivityID AND d.AppointmentDateTime=a.AppointmentDateTime
+  AND (a.DimPatientID>0 OR d.standalone_id=a.DimActivityTransactionID)
+ WHERE ((a.DimPatientID>0 AND p.IsMOTestPatient=0) OR COALESCE(a.DimPatientID,0)<=0)
+  AND COALESCE(a.IsScheduled,N'Y')=N'Y'
+  AND COALESCE(a.AppointmentResourceStatus,N'')<>N'Deleted'
+  AND COALESCE(a.AppointmentStatus,N'')<>N'Deleted'
+ GROUP BY a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,a.AppointmentStatus,d.machine,
+  CASE WHEN COALESCE(a.DimPatientID,0)<=0 AND d.machine IN (N'',N'AMBIGUOUS_DEVICE') THEN a.DimActivityTransactionID END
 )
 SELECT N'AVAILABLE' AS source_state,act.ActivityCode AS activity_code,MAX(act.ActivityNameDEU) AS activity_name,
  a.AppointmentStatus AS appointment_status,a.machine,COUNT_BIG(*) AS distinct_appointments,
@@ -115,8 +111,8 @@ WHERE t.type IN ('U','V') AND s.name=N'DWH' AND (c.name LIKE N'%Version%' OR t.n
     return {
         'AppointmentInventory':(guarded(['Patient','Activity','Machine','Appointment'],af,appointment),af),
         'MachineInventory':(guarded(['Patient','Machine','Treatment'],mf,machine),mf),
-        'HistoryStatusInventory':(guarded(['Patient','Appointment'],hf,history),hf),
-        'CompletionDiagnostics':(guarded(['Patient','Appointment'],cf,completion),cf),
+        'HistoryStatusInventory':(guarded(['Patient','Appointment','History'],hf,history),hf),
+        'CompletionDiagnostics':(guarded(['Patient','Appointment','History'],cf,completion),cf),
         'VersionInfo':(versions,vf)}
 
 

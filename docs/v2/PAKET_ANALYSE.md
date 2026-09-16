@@ -50,9 +50,17 @@ Ausgabe: `Standortanalyse.html`, `Kennzahlen.csv`, `aggregate.json` und
 Umschalten im HTML braucht keine neue Abfrage. Ein geaenderter Dateiinhalt
 oder ein geaendertes Profil wird neu berechnet.
 
+## 4. Mehrere Standorte (Pilot)
+
+Die lokale Analyse kann anschliessend mehrere `aggregate.json`-Dateien
+gegenueberstellen, ohne Patientendaten zusammenzufuehren oder erneut SQL
+abzufragen. [Anleitung zum Standortvergleich](docs/STANDORTVERGLEICH.md)
+mit synthetischem Sechs-Standorte-Test, Pruefkriterien und CSV-Ausgaben.
+
 ## Interpretation
 
 [Methodik und Nenner](docs/METHODIK.md) | [AG-Projektidee](docs/AG_PROJEKT.md)
+| [Pruefumfang rc.6](docs/VALIDIERUNG_RC6.md)
 
 Aktivitaet ist das Standardmodell. Workflow und Imaging/Beam haben andere
 Zeitanker und duerfen nicht als identische Auslastungsmasse gelesen werden.
@@ -62,7 +70,11 @@ oder unterdrueckt, nicht als Null interpretiert.
 
 Echte Exporte nur auf geschuetztem Speicher verarbeiten. Auch die aggregierten
 Ausgaben vor Weitergabe lokal pruefen. Keine klinischen Daten auf GitHub.
-Pilotversion ohne klinische Freigabe; Paket rc.5, Rechenmethodik und RDL rc.4.
+Pilotversion ohne klinische Freigabe. RDL und Analyse im aktuellen Arbeitsstand
+sind rc.6; die oeffentlichen rc.5-Downloads werden damit noch nicht ersetzt.
+Vorhandene rc.4-Exporte bleiben verwendbar. Die neue Ressourcenaufloesung fuer
+patientenlose Slots erfordert jedoch einen neuen Export. Neue Herkunftsmetadaten werden
+nur bei einer echten lokalen Neuberechnung erzeugt, nicht nachgetragen.
 Patienten, Fraktionen, bestrahlte Plaene und aus erster Bestrahlung abgeleitete
 Neueinstellungen werden zusaetzlich ausgewiesen. Die Vorjahrespopulation und
 Planattribute erfordern einen rc.4-Export; alte Exporte werden als begrenzt markiert.

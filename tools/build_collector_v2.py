@@ -9,6 +9,7 @@ except ImportError:
     import build_rdl as layout
 
 ROOT = Path(__file__).resolve().parents[1]
+COLLECTOR_RELEASE = '2.0.0-rc.7'
 NS = {"r":"http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition"}
 PARAMETERS = {
     "PeriodStart":("DateTime",'=DateSerial(2025, 1, 1)',"Auswertung von"),
@@ -66,23 +67,32 @@ FIELDS = ["contract_version","run_id","source","event_key","patient_key","course
           "activity_start","activity_end","completed","time_source","completion_candidates","source_rows",
           "activity_name","activity_category","milestone_time","resource_status","patient_class",
           "planned_fractions","plan_first_treatment","plan_last_treatment"]
+STAGE_KEYS = {
+    'History': ('DimActivityTransactionID','ScheduledActivityHstryDateTime','ScheduledActivityCode'),
+    'Plan': ('DimPlanID',),
+}
 
 
 def lit(value):
     return "N'"+value.replace("'","''")+"'"
 
 
+def column_available(table, column):
+    return (f"(COL_LENGTH({lit(table)},{lit(column)}) IS NOT NULL AND "
+            f"COALESCE(HAS_PERMS_BY_NAME({lit(table)},N'OBJECT',N'SELECT',{lit(column)},N'COLUMN'),0)=1)")
+
+
 def stage(name, inventory=False):
     table,columns = SOURCES[name]
     required = [col for col,_,mandatory in columns if mandatory]
-    checks = "\n".join(f"IF COL_LENGTH(N'{table}',N'{col}') IS NULL THROW 51001, N'Required source unavailable: {table}.{col}', 1;"
+    checks = "\n".join(f"IF NOT {column_available(table,col)} THROW 51001, N'Required source unavailable: {table}.{col}', 1;"
                        for col in required)
     expressions = []
     for col,type_,mandatory in columns:
         present = lit(f"TRY_CONVERT({type_}, s.[{col}])")
         missing = lit(f"CAST(NULL AS {type_})")
         expressions.append(present if mandatory else
-                           f"CASE WHEN COL_LENGTH(N'{table}',N'{col}') IS NOT NULL THEN {present} ELSE {missing} END")
+                           f"CASE WHEN {column_available(table,col)} THEN {present} ELSE {missing} END")
     sql = f"CREATE TABLE #{name} ("+", ".join(f"[{col}] {type_} NULL" for col,type_,_ in columns)+");\n"+checks+"\n"
     where = ""
     if name=="Treatment":
@@ -98,9 +108,9 @@ def stage(name, inventory=False):
         where=' WHERE s.AppointmentDateTime>=@context AND s.AppointmentDateTime<DATEADD(day,1,@through)'
     if inventory and name=='Treatment':
         where=' WHERE s.TreatmentRecordDateTime>=@context AND s.TreatmentRecordDateTime<DATEADD(day,1,@through)'
-    condition = " AND ".join(f"COL_LENGTH(N'{table}',N'{col}') IS NOT NULL" for col in
-                            (["DimActivityTransactionID","ScheduledActivityHstryDateTime","ScheduledActivityCode"] if name=="History"
-                             else ["DimPlanID"] if name=="Plan" else []))
+    condition = " AND ".join(column_available(table,col) for col in STAGE_KEYS.get(name,()))
+    if not required and not condition:
+        condition = '('+' OR '.join(column_available(table,col) for col,_,_ in columns)+')'
     sql += f"IF OBJECT_ID(N'{table}') IS NOT NULL"+(" AND "+condition if condition else "")+"\nBEGIN\n"
     select_expression = " + N', ' + ".join(expressions)
     sql += f"DECLARE @sql_{name} nvarchar(max) = N'INSERT INTO #{name} SELECT ' + {select_expression} + {lit(' FROM '+table+' s'+where)};\n"
@@ -110,24 +120,59 @@ def stage(name, inventory=False):
 
 
 def capabilities():
+    try:
+        from . import imaging_objects_v2 as images
+    except ImportError:
+        import imaging_objects_v2 as images
     values = ",\n".join(f"({lit(table)},{lit(col)},{1 if required else 0})"
                           for table,columns in SOURCES.values() for col,_,required in columns)
+    values += ',\n'+',\n'.join(f"({lit(images.TABLE)},{lit(col)},0)" for col in images.COLUMNS)
     return ("SELECT N'2.0' AS contract_version, source_name, column_name, is_required,"
-            " CASE WHEN COL_LENGTH(source_name,column_name) IS NULL THEN 0 ELSE 1 END AS available"
+            " CASE WHEN COL_LENGTH(source_name,column_name) IS NOT NULL AND "
+            "COALESCE(HAS_PERMS_BY_NAME(source_name,N'OBJECT',N'SELECT',column_name,N'COLUMN'),0)=1 THEN 1 ELSE 0 END AS available,"
+            " CASE WHEN COL_LENGTH(source_name,column_name) IS NULL THEN 0 ELSE 1 END AS schema_available,"
+            " COALESCE(HAS_PERMS_BY_NAME(source_name,N'OBJECT',N'SELECT',column_name,N'COLUMN'),0) AS select_allowed"
             " FROM (VALUES "+values+") v(source_name,column_name,is_required)"
             " UNION ALL SELECT N'2.0',N'DWH.FactTreatmentHistory',N'delivery_evidence_any_of_MU_or_dose',1,"
-            "CASE WHEN "+delivery_evidence_missing()+" THEN 0 ELSE 1 END;")
+            "CASE WHEN "+delivery_evidence_missing()+" THEN 0 ELSE 1 END,"
+            "CASE WHEN "+' AND '.join(f"COL_LENGTH(N'DWH.FactTreatmentHistory',N'{c}') IS NULL" for c in ('DeliveredMU','FieldMUActual','DoseDelivered'))+" THEN 0 ELSE 1 END,"
+            "CASE WHEN "+' OR '.join(f"COALESCE(HAS_PERMS_BY_NAME(N'DWH.FactTreatmentHistory',N'OBJECT',N'SELECT',N'{c}',N'COLUMN'),0)=1" for c in ('DeliveredMU','FieldMUActual','DoseDelivered'))+" THEN 1 ELSE 0 END;")
 
 
 def delivery_evidence_missing():
-    return " AND ".join("COL_LENGTH(N'DWH.FactTreatmentHistory',N'"+column+"') IS NULL"
+    return " AND ".join("NOT "+column_available('DWH.FactTreatmentHistory',column)
                         for column in ("DeliveredMU","FieldMUActual","DoseDelivered"))
 
 
 def source_gaps():
-    required = [f"COL_LENGTH(N'{table}',N'{column}') IS NULL"
+    required = ["NOT "+column_available(table,column)
                 for table, columns in SOURCES.values() for column, _, needed in columns if needed]
     return " OR ".join(required+["("+delivery_evidence_missing()+")"])
+
+
+def appointment_device_ctes():
+    # Patientless reservations at the same time are independent per resource.
+    return """resource_map AS (
+ SELECT DISTINCT a.DimActivityTransactionID, m.MachineId
+ FROM #Appointment a
+ JOIN #Resource r ON r.ctrResourceSer=a.ctrResourceSer
+ JOIN #Machine m ON m.MachineId=r.ResourceId
+ WHERE COALESCE(a.AppointmentResourceStatus,N'') NOT IN (N'Deleted',N'Cancelled')
+ UNION
+ SELECT DISTINCT a.DimActivityTransactionID, m.MachineId
+ FROM #Appointment a
+ JOIN #ResourceMachine r ON r.DimResourceID=a.DimResourceID
+ JOIN #Machine m ON m.MachineId=r.MachineId
+ WHERE COALESCE(a.AppointmentResourceStatus,N'') NOT IN (N'Deleted',N'Cancelled')
+), appointment_devices AS (
+ SELECT a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,
+ CASE WHEN COALESCE(a.DimPatientID,0)<=0 THEN a.DimActivityTransactionID END AS standalone_id,
+ CASE WHEN COUNT(DISTINCT r.MachineId)=1 THEN MIN(r.MachineId)
+      WHEN COUNT(DISTINCT r.MachineId)>1 THEN N'AMBIGUOUS_DEVICE' ELSE N'' END AS machine
+ FROM #Appointment a LEFT JOIN resource_map r ON r.DimActivityTransactionID=a.DimActivityTransactionID
+ GROUP BY a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,
+ CASE WHEN COALESCE(a.DimPatientID,0)<=0 THEN a.DimActivityTransactionID END
+)"""
 
 
 def event_sql():
@@ -149,7 +194,7 @@ BEGIN
 END;
 """
     cohort_checks="\n".join(
-        f"IF COL_LENGTH(N'{table}',N'{column}') IS NULL THROW 51001,N'Missing cohort source',1;"
+        f"IF NOT {column_available(table,column)} THROW 51001,N'Missing cohort source',1;"
         for table,column in [("DWH.DimActivityTransaction","DimPatientID"),
                               ("DWH.DimActivityTransaction","AppointmentDateTime"),
                               ("DWH.FactTreatmentHistory","DimPatientID"),
@@ -167,9 +212,7 @@ EXEC sys.sp_executesql @cohort_sql,N'@context date,@end date',@context=@ContextS
 """
     sources = "".join(stage(name)+("CREATE INDEX ix_appointment_id ON #Appointment(DimActivityTransactionID);\n" if name=="Appointment" else "") for name in SOURCES)
     checks = """
-IF COL_LENGTH(N'DWH.FactTreatmentHistory',N'DeliveredMU') IS NULL
- AND COL_LENGTH(N'DWH.FactTreatmentHistory',N'FieldMUActual') IS NULL
- AND COL_LENGTH(N'DWH.FactTreatmentHistory',N'DoseDelivered') IS NULL
+IF """+delivery_evidence_missing()+"""
  THROW 51001, N'No delivery evidence column available', 1;
 CREATE INDEX ix_history_id ON #History(DimActivityTransactionID,ScheduledActivityHstryDateTime);
 CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
@@ -178,23 +221,7 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
  CASE WHEN COUNT(DISTINCT NoFractionsPlanned)=1 THEN MAX(NoFractionsPlanned) END AS planned_fractions,
  MIN(FirstDayOfTreatment) AS first_treatment,MAX(LastDayOfTreatment) AS last_treatment
  FROM #Plan GROUP BY DimPlanID
-), resource_map AS (
- SELECT DISTINCT a.DimActivityTransactionID, m.MachineId
- FROM #Appointment a
- JOIN #Resource r ON r.ctrResourceSer=a.ctrResourceSer
- JOIN #Machine m ON m.MachineId=r.ResourceId
- UNION
- SELECT DISTINCT a.DimActivityTransactionID, m.MachineId
- FROM #Appointment a
- JOIN #ResourceMachine r ON r.DimResourceID=a.DimResourceID
- JOIN #Machine m ON m.MachineId=r.MachineId
-), appointment_devices AS (
- SELECT a.DimPatientID,a.DimActivityID,a.AppointmentDateTime,
- CASE WHEN COUNT(DISTINCT r.MachineId)=1 THEN MIN(r.MachineId)
-      WHEN COUNT(DISTINCT r.MachineId)>1 THEN N'AMBIGUOUS_DEVICE' ELSE N'' END AS machine
- FROM #Appointment a LEFT JOIN resource_map r ON r.DimActivityTransactionID=a.DimActivityTransactionID
- GROUP BY a.DimPatientID,a.DimActivityID,a.AppointmentDateTime
-), events AS (
+), """+appointment_device_ctes()+""", events AS (
  SELECT
  CASE WHEN t.IsImage=1 THEN N'imaging' ELSE N'delivery' END AS source,
  CONCAT(N'T:',t.DimPatientID,N':',t.DimCourseID,N':',t.DimPlanID,N':',t.DimFieldID,N':',
@@ -225,7 +252,9 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
                            OR COALESCE(t.FieldMUActual,0)>0 OR COALESCE(t.DoseDelivered,0)>0)
  UNION ALL
  SELECT N'appointment',
- CONCAT(N'A:',a.DimPatientID,N':',a.DimActivityID,N':',CONVERT(nvarchar(33),a.AppointmentDateTime,126)),
+ CONCAT(N'A:',a.DimPatientID,N':',a.DimActivityID,N':',CONVERT(nvarchar(33),a.AppointmentDateTime,126),
+   CASE WHEN COALESCE(a.DimPatientID,0)<=0 THEN CONCAT(N':R:',r.machine,
+     CASE WHEN COALESCE(r.machine,N'') IN (N'',N'AMBIGUOUS_DEVICE') THEN CONCAT(N':',a.DimActivityTransactionID) END) END),
  a.DimPatientID,CAST(NULL AS bigint),CAST(NULL AS bigint),COALESCE(r.machine,N''),
  a.AppointmentDateTime,a.ScheduledEndTime,CAST(NULL AS int),act.ActivityCode,
  a.AppointmentStatus,0,
@@ -243,6 +272,7 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
  LEFT JOIN #Patient p ON p.DimPatientID=a.DimPatientID
  LEFT JOIN appointment_devices r ON (r.DimPatientID=a.DimPatientID OR (r.DimPatientID IS NULL AND a.DimPatientID IS NULL))
   AND r.DimActivityID=a.DimActivityID AND r.AppointmentDateTime=a.AppointmentDateTime
+  AND (a.DimPatientID>0 OR r.standalone_id=a.DimActivityTransactionID)
  OUTER APPLY (
   SELECT MIN(h.ScheduledActivityHstryDateTime) AS completed,COUNT(DISTINCT h.ScheduledActivityHstryDateTime) AS candidate_count
   FROM #History h WHERE h.DimActivityTransactionID=a.DimActivityTransactionID
@@ -267,7 +297,9 @@ CREATE INDEX ix_patient_id ON #Patient(DimPatientID);
  CASE WHEN COUNT(DISTINCT completed)<=1 THEN MIN(completed) END AS completed,
  time_source,MAX(completion_candidates) AS completion_candidates,COUNT_BIG(*) AS source_rows,
  MAX(activity_name) AS activity_name,MAX(activity_category) AS activity_category,
- MIN(milestone_time) AS milestone_time,MIN(resource_status) AS resource_status,
+ MIN(milestone_time) AS milestone_time,
+ COALESCE(MIN(CASE WHEN resource_status NOT IN (N'Cancelled',N'Deleted') THEN resource_status END),
+          MIN(resource_status)) AS resource_status,
  MAX(patient_class) AS patient_class,
  CASE WHEN COUNT(DISTINCT planned_fractions)=1 THEN MAX(planned_fractions) END AS planned_fractions,
  MIN(plan_first_treatment) AS plan_first_treatment,MAX(plan_last_treatment) AS plan_last_treatment
@@ -303,7 +335,7 @@ def build(include_inventory=True):
         "@PeriodStart AS period_start,@PeriodEnd AS period_end,@PeriodReason AS period_reason,"
         "@ContextStart AS context_start,@DataThrough AS data_through,"
         "@DataThroughConfirmed AS data_through_confirmed,@IncludePseudonymizedDetails AS details_included,"
-        "N'2.0.0-rc.4' AS collector_release,N'18' AS tested_aria_major,N'NOT_DETECTED_FROM_DWH' AS aria_version_status,"
+        f"N'{COLLECTOR_RELEASE}' AS collector_release,N'18' AS tested_aria_major,N'NOT_DETECTED_FROM_DWH' AS aria_version_status,"
         "1 AS comparison_population_complete,"
         "CASE WHEN "+image_adapter.missing()+" THEN N'UNAVAILABLE' ELSE N'AVAILABLE' END AS image_objects_state,"
         "CASE WHEN "+source_gaps()+" THEN N'EVENTS_UNAVAILABLE_CHECK_CAPABILITIES' ELSE N'READY' END AS collection_state;",
@@ -312,7 +344,7 @@ def build(include_inventory=True):
         "EventDetails":event_sql()
     }
     fields = dict(Metadata=metadata_fields,
-                  Capabilities=["contract_version","source_name","column_name","is_required","available"],
+                  Capabilities=["contract_version","source_name","column_name","is_required","available","schema_available","select_allowed"],
                   ActivityCatalog=["activity_code","activity_name","activity_category"],
                   EventDetails=FIELDS)
     if include_inventory:

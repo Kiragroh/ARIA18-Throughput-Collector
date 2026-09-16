@@ -1,12 +1,12 @@
 SET NOCOUNT ON;
-IF COL_LENGTH(N'DWH.DimActivity',N'DimActivityID') IS NULL OR COL_LENGTH(N'DWH.DimActivity',N'ActivityCode') IS NULL
+IF NOT (COL_LENGTH(N'DWH.DimActivity',N'DimActivityID') IS NOT NULL AND COALESCE(HAS_PERMS_BY_NAME(N'DWH.DimActivity',N'OBJECT',N'SELECT',N'DimActivityID',N'COLUMN'),0)=1) OR NOT (COL_LENGTH(N'DWH.DimActivity',N'ActivityCode') IS NOT NULL AND COALESCE(HAS_PERMS_BY_NAME(N'DWH.DimActivity',N'OBJECT',N'SELECT',N'ActivityCode',N'COLUMN'),0)=1)
 BEGIN SELECT CAST(NULL AS nvarchar(255)) AS [activity_code], CAST(NULL AS nvarchar(255)) AS [activity_name], CAST(NULL AS nvarchar(255)) AS [activity_category]; RETURN; END;
 CREATE TABLE #Activity ([DimActivityID] bigint NULL, [ActivityCode] nvarchar(255) NULL, [ActivityNameDEU] nvarchar(1000) NULL, [ActivityCategoryDEU] nvarchar(1000) NULL);
-IF COL_LENGTH(N'DWH.DimActivity',N'DimActivityID') IS NULL THROW 51001, N'Required source unavailable: DWH.DimActivity.DimActivityID', 1;
-IF COL_LENGTH(N'DWH.DimActivity',N'ActivityCode') IS NULL THROW 51001, N'Required source unavailable: DWH.DimActivity.ActivityCode', 1;
+IF NOT (COL_LENGTH(N'DWH.DimActivity',N'DimActivityID') IS NOT NULL AND COALESCE(HAS_PERMS_BY_NAME(N'DWH.DimActivity',N'OBJECT',N'SELECT',N'DimActivityID',N'COLUMN'),0)=1) THROW 51001, N'Required source unavailable: DWH.DimActivity.DimActivityID', 1;
+IF NOT (COL_LENGTH(N'DWH.DimActivity',N'ActivityCode') IS NOT NULL AND COALESCE(HAS_PERMS_BY_NAME(N'DWH.DimActivity',N'OBJECT',N'SELECT',N'ActivityCode',N'COLUMN'),0)=1) THROW 51001, N'Required source unavailable: DWH.DimActivity.ActivityCode', 1;
 IF OBJECT_ID(N'DWH.DimActivity') IS NOT NULL
 BEGIN
-DECLARE @sql_Activity nvarchar(max) = N'INSERT INTO #Activity SELECT ' + N'TRY_CONVERT(bigint, s.[DimActivityID])' + N', ' + N'TRY_CONVERT(nvarchar(255), s.[ActivityCode])' + N', ' + CASE WHEN COL_LENGTH(N'DWH.DimActivity',N'ActivityNameDEU') IS NOT NULL THEN N'TRY_CONVERT(nvarchar(1000), s.[ActivityNameDEU])' ELSE N'CAST(NULL AS nvarchar(1000))' END + N', ' + CASE WHEN COL_LENGTH(N'DWH.DimActivity',N'ActivityCategoryDEU') IS NOT NULL THEN N'TRY_CONVERT(nvarchar(1000), s.[ActivityCategoryDEU])' ELSE N'CAST(NULL AS nvarchar(1000))' END + N' FROM DWH.DimActivity s';
+DECLARE @sql_Activity nvarchar(max) = N'INSERT INTO #Activity SELECT ' + N'TRY_CONVERT(bigint, s.[DimActivityID])' + N', ' + N'TRY_CONVERT(nvarchar(255), s.[ActivityCode])' + N', ' + CASE WHEN (COL_LENGTH(N'DWH.DimActivity',N'ActivityNameDEU') IS NOT NULL AND COALESCE(HAS_PERMS_BY_NAME(N'DWH.DimActivity',N'OBJECT',N'SELECT',N'ActivityNameDEU',N'COLUMN'),0)=1) THEN N'TRY_CONVERT(nvarchar(1000), s.[ActivityNameDEU])' ELSE N'CAST(NULL AS nvarchar(1000))' END + N', ' + CASE WHEN (COL_LENGTH(N'DWH.DimActivity',N'ActivityCategoryDEU') IS NOT NULL AND COALESCE(HAS_PERMS_BY_NAME(N'DWH.DimActivity',N'OBJECT',N'SELECT',N'ActivityCategoryDEU',N'COLUMN'),0)=1) THEN N'TRY_CONVERT(nvarchar(1000), s.[ActivityCategoryDEU])' ELSE N'CAST(NULL AS nvarchar(1000))' END + N' FROM DWH.DimActivity s';
 EXEC sys.sp_executesql @sql_Activity, N'@context date,@through date', @context= @ContextStart, @through= @DataThrough;
 END;
 SELECT DISTINCT ActivityCode AS activity_code,ActivityNameDEU AS activity_name,ActivityCategoryDEU AS activity_category FROM #Activity ORDER BY activity_code;

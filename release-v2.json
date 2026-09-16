@@ -1,0 +1,13 @@
+{
+  "package_version": "2.0.0-rc.8",
+  "collector_release": "2.0.0-rc.7",
+  "analysis_version": "2.0.0-rc.6",
+  "collector_sha256_lf": "b47b9dd995b703d1e7eb3cfdcfc275c7f681ca3fb53eecaa9eef1231e9378336",
+  "release_assets": [
+    "ARIA-Performance_Durchfuehrung.zip",
+    "ARIA-Performance_Durchfuehrung.zip.sha256",
+    "ARIA-Performance_Gesamtpaket.zip",
+    "ARIA-Performance_Gesamtpaket.zip.sha256",
+    "Kooperation_ARIA_Performance.html"
+  ]
+}

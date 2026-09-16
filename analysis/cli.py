@@ -10,6 +10,8 @@ from .contracts import load_profile
 from .ingest import load_export, normalize_flow, eligible_events, resolve_treatment_devices
 from .population import summarize_population
 from .imaging_frequency import summarize_images
+from .reconciliation import reference_conventions, source_filter_audit
+from .provenance import create_provenance
 from .throughput import prepare_visits, aggregate
 from .flow import summarize
 from .metrics import deduplicate
@@ -56,12 +58,14 @@ def suppress_flow(flow,minimum):
 
 def analyze(path,profile):
     metadata,events,coverage,activities = load_export(path)
+    source_fields = tuple(events.columns)
     for field,value in (("period_start",profile.start),("period_end",profile.end)):
         if str(pd.Timestamp(metadata[field]).date()) != value:
             raise ValueError("Profile period must match export metadata")
     if any(c["is_required"] and not c["available"] for c in coverage):
         raise ValueError("Required source coverage is missing")
     notes = []
+    source_filters = source_filter_audit(events, profile)
     before_filter = len(events)
     events = eligible_events(events, profile)
     filtered_rows = before_filter-len(events)
@@ -84,6 +88,7 @@ def analyze(path,profile):
     flow=suppress_flow(flow,profile.minimum_patients)
     if any(v is None and raw_flow.get(k) is not None for k,v in flow.items()):
         notes.append("Kleine Teilgruppen und abhaengige Summen im Patientenfluss unterdrueckt.")
+    flow["reference_conventions"] = reference_conventions(flow_events, profile, data_through=metadata["data_through"])
     population = summarize_population(events, profile, metadata)
     if not population["comparison_available"]:
         notes.append("Vorjahr nicht vergleichbar: Dieser Export enthaelt keine vollstaendige Vorjahrespopulation. Neuer Gesamtexport erforderlich.")
@@ -103,6 +108,8 @@ def analyze(path,profile):
         record_fallback_count=int(bad_time.sum())
         measurements.loc[bad_time,["event_start","event_end"]] = None
     prepared = prepare_visits(measurements,profile)
+    if prepared['audit']['inferred_timing_slots']:
+        notes.append('Zusaetzliche Terminzeit-Zuordnungen aus eindeutiger technischer Bestrahlungsevidenz; Terminarten bleiben fachlich unklassifiziert und werden nicht als manuelle Behandlungen ergaenzt.')
     imaging = summarize_images(events, prepared, profile, metadata)
     periods = aggregate(prepared,profile)
     quality = {}
@@ -110,7 +117,10 @@ def analyze(path,profile):
         quality[key] = "<5" if 0<value<profile.minimum_patients else value
     quality["unknown_activity_rows"] = "<5" if 0<len(unknown)<profile.minimum_patients else len(unknown)
     quality["source_coverage_confirmed"] = confirmed
-    quality["imaging_source"] = "DWH-FactTreatmentHistory; direkte Bildobjekte nicht enthalten"
+    quality["imaging_source"] = ("DWH.FactTreatmentHistory und DWH.FactPatientImage; direkte Bildobjekte separat ausgewertet"
+                                 if imaging["available"] else
+                                 "DWH.FactTreatmentHistory; direkte Bildobjekte nicht verfuegbar")
+    quality["source_filters"] = source_filters
     quality["profile_confirmed"] = profile.confirmed
     quality["record_timestamp_fallback_rows"]=record_fallback_count
     quality["future_observation_horizon_months"] = 12
@@ -127,7 +137,8 @@ def analyze(path,profile):
     return dict(version=VERSION,site=profile.site,start=profile.start,end=profile.end,
                 period_reason=profile.period_reason,data_through=str(pd.Timestamp(metadata["data_through"]).date()),
                 periods=periods,flow=flow,quality=quality,notes=notes,default_model=profile.model,
-                coverage=coverage,population=population,imaging=imaging)
+                coverage=coverage,population=population,imaging=imaging,
+                provenance=create_provenance(path,metadata,profile,source_fields,coverage))
 
 
 def export_outputs(data,output):

@@ -1,4 +1,42 @@
-# Pruefstatus Paket 2.0.0-rc.5
+# Pruefstatus: aktuelles Pilotpaket
+
+## Paket rc.8, Collector rc.7, Analyse rc.6
+
+rc.8 aktualisiert die oeffentlichen Einstiegsseiten und Teilnahmeunterlagen.
+RDL und Rechenverfahren sind gegenueber dem rc.7-Paket unveraendert. Die
+ausgefuehrte Definition wird durch den RDL-Hash in `release-v2.json` identifiziert.
+
+- [Collector rc.7: native Quellen-/Rechte- und Ausfalltests](VALIDIERUNG_RC7.md).
+- [Analyse und Collector rc.6: Zuordnungen und Standortvergleich](VALIDIERUNG_RC6.md).
+- 248 lokale Tests in 49,72 Sekunden bestanden, einschliesslich Auswertung aus
+  entpackten Paketen. Neue Konsistenztests pruefen gemeinsame Versionen,
+  Downloadziele, Paketidentitaet und den unveraenderten Collector-Fingerprint.
+- Der CI-Lauf prueft die eingecheckte Praesentation vor den Tests gegen Vorlage
+  und Releaseinventar, ohne eine veraltete Datei dabei still neu zu schreiben.
+- Offline-Praesentation in 21 Desktop-/Mobilansichten mit Navigation, Bildern
+  und Druck geprueft; Begleitformular mit JSON-Export und Wiederimport,
+  optionalen Referenzzahlen und sicherer Report-URL auf Desktop/Mobil getestet.
+- Fachliche Multistandortabnahme weiter offen. Insbesondere alte Exporte,
+  lokale manuelle Therapien, Datenvollstaendigkeit und gemeinsame Nachbeobachtung
+  bleiben zu pruefen. Technische Tests allein erteilen keine klinische Freigabe.
+
+## Historisch: Definitionsabgleich vor rc.6
+
+- 107 automatisierte Tests bestanden (44,27 s), einschliesslich entpacktem
+  Analysepaket. Zusaetzliche Faelle: Kurs-/Behandlungstaggrenzen, Jahreswechsel
+  der Aufklaerung, abgeleitete Anwesenheit, fehlende Kursreferenz, Stornos,
+  zukuenftige Therapie, Kleingruppen und disjunkte Quellfilter.
+- Reale aktualisierte Standortlieferung gegen bestehende Referenzfunktionen
+  auf identischen Eingangsereignissen geprueft. Definitionsunterschiede erklaeren
+  einen Teil, aber nicht alle Abweichungen zu aelteren lokalen Vergleichszahlen.
+- Zweiter Referenzstandort: vorhandener Export Januar/Februar 2025 in 9,73 s
+  eingelesen und mit beiden operativen Definitionen geprueft. Dort gleiche
+  aggregierte Ergebnisse beider Varianten. Keine neue Live-Datenbankabfrage.
+- Offline-Browserpruefung der neuen Tabellen auf Desktop/Mobil in Hell/Dunkel;
+  alle 17 Diagramme weiterhin befuellt, Monatswechsel und Vergroesserung sowie
+  Bildgebung fuer alle drei Zeitmodelle geprueft.
+- Nur zusaetzliche Diagnostik und Quellenhinweis korrigiert. Hauptkohorte,
+  Primaermetriken und RDL unveraendert. Noch kein neuer freigegebener Release.
 
 ## Teilnahmeunterlagen rc.5
 

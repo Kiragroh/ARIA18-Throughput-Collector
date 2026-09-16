@@ -7,6 +7,21 @@ KINDS = {"counselling", "observation", "treatment_external", "treatment_brachy",
          "treatment_legacy", "treatment_xray", "block", "ignore"}
 
 
+def assert_aggregate_payload(value):
+    """Reject record fields, but allow their names in a schema inventory."""
+    forbidden = {'patient_key','event_key','plan_key','course_key','activity_name',
+                 'patient_id','patient_name','patient_names',
+                 'patientfullname','patientid','event_id','run_id','activity_note'}
+    if isinstance(value,dict):
+        if any(str(key).casefold() in forbidden for key in value):
+            raise ValueError('Only aggregate fields are permitted')
+        for item in value.values():
+            assert_aggregate_payload(item)
+    elif isinstance(value,list):
+        for item in value:
+            assert_aggregate_payload(item)
+
+
 @dataclass
 class Profile:
     start: str = "2025-01-01"

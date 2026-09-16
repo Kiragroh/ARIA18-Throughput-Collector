@@ -28,7 +28,69 @@ Aufklaerungsquote. Einige beginnen nach einer Aufklaerung aus dem Vorjahr oder o
 in der Quelle auffindbare Aufklaerung. Umgekehrt beginnt die Behandlung einer
 Aufklaerungskohorte eventuell erst im Folgejahr.
 
+## Getrennter Definitionsabgleich
+
+Die vorab festgelegte Aufklaerungskohorte bleibt dem **ersten abgeschlossenen
+Termin** zugeordnet. Eine zusaetzliche operative Sensitivitaetsauswertung ordnet
+den Pfad dem **letzten abgeschlossenen Termin** zu. Ausschliesslich offene
+Aufklaerungen werden darin nur bei nachfolgendem Behandlungsbeginn als abgeleitete
+Anwesenheit gezaehlt und separat von dokumentierten Abschluessen ausgewiesen.
+Das aendert weder den Status noch die Zahl abgeschlossener Termine. Auch der
+Kalendertag des Behandlungsbeginns gilt hier als passende Terminzuordnung.
+
+Der Abgleich stellt zwei Behandlungsdefinitionen nebeneinander:
+
+- Einzelne belegte Behandlungstage mit maximal 30 Tagen Abstand.
+- ARIA-Kursintervalle vom ersten bis letzten belegten Behandlungstag, danach
+  Zusammenfuehrung bei Ueberlappung oder maximal 30 Tagen Abstand. Ohne Kursreferenz
+  wird die Planreferenz verwendet. Ein solches Kursintervall kann eine laengere
+  interne Pause ueberbruecken; deshalb ist es nicht die automatische Hauptdefinition.
+
+Bestaetigte manuelle Therapien bleiben in beiden Varianten enthalten. Die Zahlen
+sind alternative Definitionen, keine addierbaren Patientengruppen. Kleine
+Teilgruppen und kleine Differenzen zwischen Varianten werden unterdrueckt.
+Ein identisches Ergebnis belegt noch keine identische oder vollstaendige Quelle.
+
+Der Quellfilter-Abgleich zaehlt **Ereigniszeilen**, nicht Patienten oder Fraktionen,
+und trennt Auswahlzeitraum und gesamten Kontext. Direkte Bildobjekte sind davon
+ausgenommen. Testnamenskennzeichen, lokales Kennungsformat und Ressourcenstatus
+werden mit dieser Vorrangfolge disjunkt gezaehlt. Nichtnumerische Kennungen sind
+nicht automatisch Testpatienten; der Filter muss zum Standort passen. Fehlende
+Flagspalten werden als nicht pruefbar gekennzeichnet. Bereits upstream ausgeschlossene
+Datensaetze koennen anhand dieses Exports nicht nachtraeglich inventarisiert werden.
+
 ## Zeitmodelle
+
+### Terminzuordnung ohne standortspezifischen Namen
+
+Fachlich klassifizierte Therapietermine bleiben die primaere Terminquelle.
+Zusaetzlich kann ein noch nicht klassifizierter Geraetetermin einen Zeitanker
+liefern, wenn dieselbe Person am selben konfigurierten R&V-Geraet einen
+technischen Besuch hat und dessen gesamtes Intervall im dokumentierten
+Aktivitaetsintervall liegt. Kalender- und Aktivitaetszeiten muessen gleichentags,
+positiv und innerhalb der bestehenden Plausibilitaetsgrenzen liegen. Es gelten
+derselbe Terminabgleich von -120 bis +240 Minuten und die vorhandene
+Besuchsdefinition. Status muss abgeschlossen oder offen sein.
+
+Die Zuordnung muss in **beide Richtungen eindeutig** sein. Bereits ein
+klassifizierter Therapietermin als zeitlicher Kandidat sperrt die automatische
+Ergaenzung, auch wenn dessen Zuordnung mehrdeutig bleibt. Kein naechstgelegener
+Ersatz bei konkurrierenden unbekannten Terminen, keine Zuordnung eines Termins
+zu mehreren Besuchen. Explizites Ignore, Block, Aufklaerung oder Beobachtung
+wird niemals automatisch ueberstimmt.
+
+Diese Regel betrifft ausschliesslich Zeitmessungen und den zugehoerigen
+Slotnenner. Die klinische Terminart und der Status werden nicht umklassifiziert.
+Patienten, Fraktionen, Planbeginne und Behandlungsepisoden erhalten dadurch
+keine zusaetzlichen manuellen Nachweise. Brachy und historische Therapie ohne
+R&V benoetigen weiterhin eine lokale Zuordnung. Aus Zahl oder Namen der
+Termine wird kein technischer Bestrahlungsnachweis abgeleitet.
+
+R&V-gestuetzte Zeitzuordnungen werden im Kontext und pro Abschnitt/Geraet
+separat gezaehlt; kleine Teilgruppen bleiben unterdrueckt. Die lokale fachliche
+Pruefung bleibt erforderlich, auch wenn die technische Zuordnung eindeutig ist.
+
+### Zeitanker
 
 - **Aktivitaet (Standard):** dokumentierter Aktivitaetsbeginn bis dokumentiertes Ende.
   Fehlende einzelne Anker koennen durch zugeordnete technische Anker ersetzt
@@ -80,6 +142,23 @@ aus genau einem technisch belegten Tagesgeraet derselben Person aufgeloest werde
 Die Zahl dieser Zuordnungen bleibt sichtbar. Bei mehreren tatsaechlichen Geraeten
 bleibt die Zuordnung ungeklaert. Brachy und historische Therapien werden dadurch
 nicht einem LINAC zugeschlagen.
+Ein externer Therapietermin ohne aufloesbares Geraet beweist am selben Tag wie
+eine technisch belegte externe Bestrahlung keine **zusaetzliche** Fraktion.
+Er bleibt als Behandlungsnachweis und Prueffall erhalten, wird aber nicht noch
+einmal als manuelle Fraktion addiert. Der Kontextzaehler weist dies gesondert
+aus. Andere bestaetigte Modalitaeten, insbesondere Brachy und historische
+Therapie ohne R&V, bleiben getrennt zaehlbar. Eine wirklich zusaetzliche
+Anwendung benoetigt einen eigenen belastbaren Nachweis.
+
+Ab Collector rc.6 werden patientenlose Reservierungen bei der Ressourcenauflosung
+zunaechst nach Quelltransaktion getrennt. Erst nach eindeutiger Geraetezuordnung
+werden gleiche Slots desselben Geraets zusammengefuehrt. Parallele Pausen
+mehrerer Geraete verlieren dadurch nicht ihre Zuordnung. Geloeschte/stornierte
+Ressourcenzuordnungen erzeugen kein zusaetzliches aktuelles Geraet. Das ist
+getrennt vom Stornostatus eines klinischen Termins. Das Terminarteninventar
+enthaelt jetzt auch patientenlose Reservierungen. Bereits in alten Exporten
+verlorene Ressourceninformation kann lokal nicht rekonstruiert werden.
+
 Exakte Aktivitaetsnamen koennen im Profil mehrdeutige Aktivitaetscodes uebersteuern.
 Testnamen und nichtklinische Kennungen werden nur anhand nicht-identifizierender
 Quellflags geprueft. Die numerische Kennungsregel ist standortabhaengig, nicht
@@ -162,6 +241,34 @@ aus einer kurzen Bildzeit wird weder HyperSight noch eine andere Hardware
 abgeleitet. Vergleiche sind deskriptiv, nicht fallmixadjustiert oder kausal.
 
 ## Technische Grenzen
+
+Ab Collector rc.7 bedeutet `Capabilities.available`: Die Spalte ist in den
+Metadaten sichtbar und fuer das ausfuehrende Datenbankkonto lesbar. Zusaetzlich
+werden `schema_available` und `select_allowed` getrennt ausgegeben. Metadaten
+koennen selbst durch Berechtigungen unsichtbar sein; `schema_available=0` ist
+deshalb nicht automatisch der Nachweis, dass die Spalte nicht existiert.
+Die effektiven SELECT-Rechte werden pro Spalte geprueft, nicht pauschal anhand
+einer Benutzerrolle. Siehe [Microsoft: HAS_PERMS_BY_NAME](https://learn.microsoft.com/en-us/sql/t-sql/functions/has-perms-by-name-transact-sql).
+
+Pflichtfelder und mindestens ein lesbarer MU-/Dosisnachweis sind Voraussetzung
+fuer Ereignisse. Fehlen sie, bleibt der kombinierte Report als Quellenpruefung
+ausfuehrbar; Metadaten melden `EVENTS_UNAVAILABLE_CHECK_CAPABILITIES`. Daraus
+entsteht keine Analyse mit Null Patienten. Optionale Spalten werden typisiert
+leer geliefert, nicht als Nullmessung. Fehlende Historien-Schluessel deaktivieren
+die davon abhaengigen Diagnosen mit `SOURCE_UNAVAILABLE`. Fehlende Bildobjekte
+deaktivieren nur die Zusatzquelle, nicht vorhandene technische Therapieereignisse.
+
+`DWH.FactPatientImage` ist als optionale Quelle mit allen abgefragten Spalten im
+Inventar enthalten. Nicht vorhandene Plan-/Zeit-/Bildfelder begrenzen die jeweils
+betroffenen Kennzahlen. Vorhandene Leserechte belegen weder vollstaendige
+Dokumentation noch einen aktuellen DWH-Datenstand. Die Rechtepruefung ersetzt
+keine lokale Funktionspruefung; Sonderfaelle wie fehlerhafte Views bleiben moeglich.
+
+Das lokale Profilformular uebernimmt den Auswertungszeitraum aus den
+Exportmetadaten, auch beim Wiederverwenden einer vorhandenen Codezuordnung.
+Eine bisherige Quellenfreigabe wird nicht automatisch auf einen neuen Export
+uebertragen. Einreichende benoetigen unveraendert nur Excel und Begleit-JSON;
+das technische Profil dient der lokalen Auswertung.
 
 SSRS-Abfragezeit und Berichtslaufzeit sind getrennte Grenzen; der Ereignisexport
 hat einen begrenzten Abfrage-Timeout. Siehe

@@ -1,5 +1,58 @@
 # Changelog
 
+## 2.0.0-rc.8 - 2026-09-16
+
+- Projektstartseite, Kooperation, Offline-Formular und beide Pakete zeigen
+  denselben aktuellen Paketstand. Downloadziele werden automatisch gegen
+  das Releaseinventar geprueft; kein versehentlicher Einstieg mit rc.5.
+- Paketidentitaet in `release-v2.json`: Collector rc.7, Analyse rc.6,
+  LF-normalisierter Hash der nativ geprueften Definition. Keine neue SQL-
+  oder Rechenlogik; bereits vorhandene rc.7-Exporte weiterverwenden.
+- Laufzeithinweis und gemeinsame Rueckmeldungs-/Korrekturschleife im Einstieg.
+  Beide Pakete behalten nur die noetigen Dateien; die Praesentation ist
+  zusaetzlich als einzelne Offline-HTML verfuegbar.
+
+## 2.0.0-rc.7 - 2026-09-16
+
+- Collector rc.7: Quellenverfuegbarkeit prueft Schema und effektive SELECT-Rechte
+  je Spalte. Bildobjektfelder stehen im Inventar; fehlende Abschlusshistorie wird
+  als nicht verfuegbar statt als dokumentierte Null ausgewiesen. Optionale Quellen
+  blockieren nicht den gesamten Ereignisexport. Lokales Profilformular uebernimmt
+  Zeitraum und Standort aus dem Export und erklaert fehlende Leserechte.
+- Zeitmessung kann unbekannte Terminbezeichnungen bei eindeutigem technischem
+  R&V-Nachweis und vollstaendig umschliessendem dokumentiertem Aktivitaetsintervall
+  zuordnen. Deklarierte Termine haben Vorrang; Mehrdeutigkeiten bleiben offen.
+  Separate Zaehler, keine Umklassifizierung oder neuen manuellen Fraktionen.
+- Standortvergleich prueft auch den tatsaechlichen RDL-Exportstand: unterschiedliche,
+  unbekannte oder bekannte alte Ressourcenabfragen werden nicht durch eine gleiche
+  Python-Version als vergleichbar behandelt. Herkunftstabelle und automatisch
+  erzeugte Pruefhinweise unterscheiden Neuberechnung, Profilpruefung und Neuabfrage.
+- Bei fehlenden Besuchsintervallen bleibt freie Zeit auf vollstaendig messbare
+  Geraetetage beschraenkt und wird pro Abschnitt/Modell entsprechend gekennzeichnet;
+  keine Hochrechnung dieser Teilmenge als gesamte Jahresauslastung.
+- rc.6-Arbeitsstand: patientenlose Paralleltermine bleiben pro Geraet getrennt;
+  geloeschte/stornierte Ressourcen erzeugen keine kuenstliche Mehrdeutigkeit.
+  Hauptabfrage und Pruefinventar verwenden dieselbe Ressourcenlogik, das Inventar
+  erfasst jetzt auch patientenlose Reservierungen.
+- Externe Termine ohne aufloesbares Geraet mit bereits technischem Tagesnachweis
+  bleiben als Prueffaelle erhalten, zaehlen jedoch nicht als zusaetzliche manuelle
+  Fraktionen. Brachy und historische Therapie bleiben unabhaengig zaehlbar.
+- Lokaler Vergleich von 2 bis 12 aggregierten Standorten mit gruppierten
+  Boxplots, drei Zeitmodellen, Population, Patientenfluss und Bildobjekten.
+  Getrennte Vergleichbarkeitspruefung und exakte Slot-Nenner; keine Rangliste,
+  keine gepoolten Patienten und kein Mittelwert aus Standortmedianen.
+- Reproduzierbare Herkunftsmetadaten fuer neu berechnete Aggregate;
+  Altdateien bleiben ausdruecklich deskriptiv. Sechs-Standorte-Demo und
+  Anleitung im Gesamtpaket, keine neuen SQL-Abfragen fuer den Vergleich.
+- Getrennter Definitionsabgleich fuer operative Behandlungspfade: dokumentierte
+  und nur aus Behandlungsbeginn abgeleitete Anwesenheit, letzter statt erster
+  Aufklaerungstermin sowie Kursintervalle gegen belegte Behandlungstage.
+  Die vorab definierte Studienkohorte bleibt unveraendert.
+- Ausschlussgruende des lokalen Profils als Ereigniszeilen fuer Auswahl und
+  Gesamtkontext sichtbar; fehlende Quellflags werden nicht als geprueft behandelt.
+- Bildgebungsquellenhinweis folgt dem tatsaechlichen Export statt eines alten
+  festen Texts ohne direkte Bildobjekte. Keine Aenderung der RDL-Datei erforderlich.
+
 ## 2.0.0-rc.5 - 2026-09-16
 
 - Optionaler Plausibilitaetsabgleich im Offline-Formular: bekannte Patientenzahl
