@@ -40,7 +40,7 @@ without pooling patients or averaging site medians.
 - [x] Run the comparison on existing local aggregates to verify unproven inputs
   remain unproven; do not publish these outputs.
 - [x] Document invocation and remaining clinical acceptance.
-- [ ] Commit and push the scoped analysis branch. Do not replace the released
+- [x] Commit and push the scoped analysis branch. Do not replace the released
   Hamburg test ZIP.
 
 ## Verification (2026-09-16)
@@ -54,3 +54,6 @@ without pooling patients or averaging site medians.
   Missing provenance, unconfirmed source coverage and differing follow-up remain
   explicitly descriptive. No clinical values or outputs added to this repository.
 - No live SQL run and no RDL modification. Released rc.5 assets unchanged.
+- Implementation committed as `1e2f123` and pushed on the scoped draft branch.
+  Clinical acceptance remains open; completing this implementation checklist
+  does not complete the overall clinical validation goal.
